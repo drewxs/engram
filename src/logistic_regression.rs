@@ -16,9 +16,9 @@ impl LogisticRegression {
         }
         LogisticRegression {
             weights,
-            learning_rate: 0.1,
+            learning_rate: 0.01,
             num_iterations: 1000, // TODO: implement AdaGrad, RMSProp, Adam, etc.
-            regularization_param: 0.1,
+            regularization_param: 1.0,
         }
     }
 
