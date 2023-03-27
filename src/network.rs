@@ -1,12 +1,16 @@
 use std::ops::{Add, Mul, Sub};
 
-use crate::{activation::Activation, initializer::Initializer, matrix::Matrix};
+use crate::{
+    activation::Activation,
+    initializer::Initializer,
+    matrix::{Matrix, Tensor},
+};
 
 pub struct Network {
     layers: Vec<usize>,
-    weights: Vec<Matrix>,
-    biases: Vec<Matrix>,
-    data: Vec<Matrix>,
+    weights: Tensor,
+    biases: Tensor,
+    data: Tensor,
     activation: Activation,
     learning_rate: f64,
 }
@@ -71,6 +75,18 @@ impl Network {
             self.biases[i] = self.biases[i].clone().add(&gradients);
             errors = self.weights[i].clone().reversed_axes().mul(&errors);
             gradients = self.data[i].map(&|x: &f64| self.activation.gradient(*x));
+        }
+    }
+
+    pub fn train(&mut self, inputs: Tensor, targets: Tensor, epochs: usize) {
+        for i in 1..=epochs {
+            if epochs < 100 || i % (epochs / 100) == 0 {
+                println!("Epoch {} of {}", i, epochs);
+            }
+            for j in 0..inputs.len() {
+                let outputs = self.feed_forward(inputs[j].clone());
+                self.back_propagate(outputs, targets[j].clone());
+            }
         }
     }
 }
