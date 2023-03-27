@@ -15,13 +15,13 @@ impl Initializer {
         }
     }
 
-    // Xavier initialization
+    // Xavier/Glorot initialization
     // Use for sigmoid and tanh activation functions
     // Gaussian, µ = 0, σ = √[2 / (f_in + f_out)]
     fn xavier(f_in: usize, f_out: usize) -> Matrix {
         let variance = 2.0 / ((f_in + f_out) as f64);
         let mut rng = rand::thread_rng();
-        Matrix::from_shape_fn((f_out, f_in), |_| rng.gen::<f64>() * variance.sqrt())
+        Matrix::from_shape_simple_fn((f_out, f_in), || rng.gen::<f64>() * variance.sqrt())
     }
 
     // Kaiming initialization
@@ -30,6 +30,6 @@ impl Initializer {
     fn kaiming(f_in: usize, f_out: usize) -> Matrix {
         let variance = 2.0 / ((f_in) as f64);
         let mut rng = rand::thread_rng();
-        Matrix::from_shape_fn((f_out, f_in), |_| rng.gen::<f64>() * variance.sqrt())
+        Matrix::from_shape_simple_fn((f_out, f_in), || rng.gen::<f64>() * variance.sqrt())
     }
 }
