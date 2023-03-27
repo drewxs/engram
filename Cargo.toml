@@ -1,7 +1,12 @@
 [package]
 name = "engram"
+description = "Machine learning library"
 version = "0.1.0"
 edition = "2021"
+authors = ["Andrew X. Shah <drewshah0@gmail.com>"]
+repository = "https://github.com/drewxs/engram"
+readme = "README.md"
+license = "MIT"
 
 [dependencies]
 ndarray = "0.15.6"
