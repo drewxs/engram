@@ -9,5 +9,4 @@ readme = "README.md"
 license = "MIT"
 
 [dependencies]
-ndarray = "0.15.6"
 rand = "0.8.5"

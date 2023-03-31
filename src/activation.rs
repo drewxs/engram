@@ -1,19 +1,4 @@
-pub fn sigmoid(x: f64) -> f64 {
-    1.0 / (1.0 + (-x).exp())
-}
-
-pub fn tanh(x: f64) -> f64 {
-    x.tanh()
-}
-
-pub fn relu(x: f64) -> f64 {
-    f64::max(x, 0.0)
-}
-
-pub fn leaky_relu(x: f64) -> f64 {
-    f64::max(x, 0.01 * x)
-}
-
+/// Activation functions and their derivatives
 #[derive(Debug)]
 pub enum Activation {
     Sigmoid,
@@ -22,13 +7,8 @@ pub enum Activation {
     LeakyReLU,
 }
 
-impl Default for Activation {
-    fn default() -> Self {
-        Self::Sigmoid
-    }
-}
-
 impl Activation {
+    /// Returns the result of the activation function.
     pub fn apply(&self, x: f64) -> f64 {
         match self {
             Self::Sigmoid => sigmoid(x),
@@ -38,6 +18,7 @@ impl Activation {
         }
     }
 
+    /// Returns the derivative of the activation function.
     pub fn gradient(&self, x: f64) -> f64 {
         match self {
             Self::Sigmoid => sigmoid(x) * (1.0 - sigmoid(x)),
@@ -58,4 +39,20 @@ impl Activation {
             }
         }
     }
+}
+
+pub fn sigmoid(x: f64) -> f64 {
+    1.0 / (1.0 + (-x).exp())
+}
+
+pub fn tanh(x: f64) -> f64 {
+    x.tanh()
+}
+
+pub fn relu(x: f64) -> f64 {
+    f64::max(x, 0.0)
+}
+
+pub fn leaky_relu(x: f64) -> f64 {
+    f64::max(x, 0.01 * x)
 }
