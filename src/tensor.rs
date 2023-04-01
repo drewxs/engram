@@ -4,8 +4,6 @@ use crate::initializer::Initializer;
 pub type Tensor1D = Vec<f64>;
 /// A two-dimensional matrix of floating point values.
 pub type Tensor2D = Vec<Tensor1D>;
-/// A three-dimensional matrix of floating point values.
-pub type Tensor3D = Vec<Tensor>;
 
 /// A matrix of floating point values, represented as a two-dimensional vector.
 #[derive(Clone, Debug)]

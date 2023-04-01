@@ -1,15 +1,15 @@
 use crate::{
     activation::Activation,
     initializer::Initializer,
-    tensor::{Tensor, Tensor1D, Tensor2D, Tensor3D},
+    tensor::{Tensor, Tensor1D, Tensor2D},
 };
 
 #[derive(Debug)]
 pub struct Network {
     layers: Vec<usize>,
-    weights: Tensor3D,
-    biases: Tensor3D,
-    data: Tensor3D,
+    weights: Vec<Tensor>,
+    biases: Vec<Tensor>,
+    data: Vec<Tensor>,
     activation: Activation,
     learning_rate: f64,
 }
