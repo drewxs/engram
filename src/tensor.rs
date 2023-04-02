@@ -40,6 +40,7 @@ impl Tensor {
     /// Creates a new `Tensor` with the specified number of rows and columns, initialized using the provided initializer.
     pub fn initialize(rows: usize, cols: usize, initializer: &Initializer) -> Tensor {
         let mut res = Tensor::zeros(rows, cols);
+
         res.data = initializer.initialize(rows, cols);
 
         res
@@ -56,9 +57,11 @@ impl Tensor {
         for i in 0..self.rows {
             for j in 0..other.cols {
                 let mut sum = 0.0;
+
                 for k in 0..self.cols {
                     sum += self.data[i][k] * other.data[k][j];
                 }
+
                 res.data[i][j] = sum;
             }
         }

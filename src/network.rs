@@ -49,6 +49,8 @@ impl Network {
         }
 
         let mut curr = Tensor::from(vec![inputs]).transpose();
+        self.data = vec![curr.clone()];
+
         for i in 0..self.layers.len() - 1 {
             curr = self.weights[i]
                 .clone()
@@ -88,6 +90,7 @@ impl Network {
             if epochs < 100 || i % (epochs / 100) == 0 {
                 println!("Epoch {} of {}", i, epochs);
             }
+
             for j in 0..inputs.len() {
                 let outputs = self.feed_forward(inputs[j].clone());
                 self.back_propagate(outputs, targets[j].clone());

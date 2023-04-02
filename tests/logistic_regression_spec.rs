@@ -24,6 +24,7 @@ fn test_logistic_regression() {
     let test_data = vec![vec![0.5, 0.5], vec![-1.0, 1.0], vec![2.0, -2.0]];
     let expected_predictions = vec![0.65, 0.42, 0.65];
     let epsilon = 0.1;
+
     for (i, d) in test_data.iter().enumerate() {
         let prediction = lr.predict(d);
         let expected = expected_predictions[i];
