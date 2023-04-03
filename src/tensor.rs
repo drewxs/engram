@@ -223,7 +223,7 @@ impl Tensor {
     }
 
     /// Multiplies a tensor by a scalar in-place.
-    pub fn mul_scalar_assign(&mut self, scalar: f64) -> Tensor {
+    pub fn mul_scalar_assign(&mut self, scalar: f64) {
         for i in 0..self.rows {
             for j in 0..self.cols {
                 self.data[i][j] *= scalar;
@@ -345,6 +345,40 @@ impl Tensor {
     /// Squares each element in the tensor in-place.
     pub fn square_assign(&mut self) {
         self.map_assign(&|x| x * x);
+    }
+
+    /// Returns the square root of each element in the tensor.
+    pub fn sqrt(&mut self) -> Tensor {
+        self.map(&|x| x.sqrt())
+    }
+
+    /// Takes the square root of each element in the tensor in-place.
+    pub fn sqrt_assign(&mut self) {
+        self.map_assign(&|x| x.sqrt());
+    }
+
+    /// Returns each element in the tensor raised to the given exponent.
+    pub fn pow(&mut self, exponent: f64) -> Tensor {
+        self.map(&|x| x.powf(exponent))
+    }
+
+    /// Raises each element in the tensor to the given exponent in-place.
+    pub fn pow_assign(&mut self, exponent: f64) {
+        self.map_assign(&|x| x.powf(exponent));
+    }
+
+    /// Returns the sum of all elements in the tensor.
+    pub fn sum(&mut self) -> f64 {
+        self.data
+            .clone()
+            .into_iter()
+            .flatten()
+            .fold(0.0, |acc, x| acc + x)
+    }
+
+    /// Returns the mean of all elements in the tensor.
+    pub fn mean(&mut self) -> f64 {
+        self.sum() / (self.rows * self.cols) as f64
     }
 
     /// Returns the transpose of the tensor.
