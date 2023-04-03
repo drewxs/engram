@@ -44,6 +44,21 @@ impl Tensor {
         res
     }
 
+    /// Returns the shape of the tensor as a tuple of (rows, columns).
+    pub fn shape(&self) -> (usize, usize) {
+        (self.rows, self.cols)
+    }
+
+    /// Returns the number of elements in the tensor.
+    pub fn size(&self) -> usize {
+        self.rows * self.cols
+    }
+
+    /// Returns an iterator over the rows of the tensor.
+    pub fn iter_rows(&self) -> impl Iterator<Item = &Tensor1D> {
+        self.data.iter()
+    }
+
     /// Adds two tensors element-wise.
     pub fn add(&mut self, other: &Tensor) -> Tensor {
         if self.rows != other.rows || self.cols != other.cols {
