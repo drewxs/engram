@@ -34,7 +34,7 @@ impl Optimizer {
                 let mut new_accumulators = sq_gradients.clone();
                 new_accumulators.add_assign(&accumulators);
 
-                let mut old_accumulators = std::mem::replace(accumulators, new_accumulators);
+                let old_accumulators = std::mem::replace(accumulators, new_accumulators);
 
                 weights.sub_assign(
                     &gradients

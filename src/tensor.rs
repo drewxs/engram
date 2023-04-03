@@ -65,7 +65,7 @@ impl Tensor {
     }
 
     /// Adds two tensors element-wise.
-    pub fn add(&mut self, other: &Tensor) -> Tensor {
+    pub fn add(&self, other: &Tensor) -> Tensor {
         if self.rows != other.rows || self.cols != other.cols {
             panic!("Tensor.add invoked with invalid tensor dimensions");
         }
@@ -95,7 +95,7 @@ impl Tensor {
     }
 
     /// Adds a scalar to a tensor element-wise.
-    pub fn add_scalar(&mut self, scalar: f64) -> Tensor {
+    pub fn add_scalar(&self, scalar: f64) -> Tensor {
         let mut res = Tensor::zeros(self.rows, self.cols);
 
         for i in 0..self.rows {
@@ -117,7 +117,7 @@ impl Tensor {
     }
 
     /// Subtracts two tensors element-wise.
-    pub fn sub(&mut self, other: &Tensor) -> Tensor {
+    pub fn sub(&self, other: &Tensor) -> Tensor {
         if self.rows != other.rows || self.cols != other.cols {
             panic!("Tensor.sub invoked with invalid tensor dimensions");
         }
@@ -147,7 +147,7 @@ impl Tensor {
     }
 
     /// Subtracts a scalar from a tensor element-wise.
-    pub fn sub_scalar(&mut self, scalar: f64) -> Tensor {
+    pub fn sub_scalar(&self, scalar: f64) -> Tensor {
         let mut res = Tensor::zeros(self.rows, self.cols);
 
         for i in 0..self.rows {
@@ -169,7 +169,7 @@ impl Tensor {
     }
 
     /// Performs matrix multiplication between two tensors.
-    pub fn mul(&mut self, other: &Tensor) -> Tensor {
+    pub fn mul(&self, other: &Tensor) -> Tensor {
         if self.cols != other.rows {
             panic!("Tensor.mul invoked with invalid tensor dimensions");
         }
@@ -215,7 +215,7 @@ impl Tensor {
     }
 
     /// Multiplies a tensor by a scalar.
-    pub fn mul_scalar(&mut self, scalar: f64) -> Tensor {
+    pub fn mul_scalar(&self, scalar: f64) -> Tensor {
         let mut res = Tensor::zeros(self.rows, self.cols);
 
         for i in 0..self.rows {
@@ -237,7 +237,7 @@ impl Tensor {
     }
 
     /// Divides two tensors element-wise.
-    pub fn div(&mut self, other: &Tensor) -> Tensor {
+    pub fn div(&self, other: &Tensor) -> Tensor {
         if self.rows != other.rows || self.cols != other.cols {
             panic!("Tensor.div invoked with invalid tensor dimensions");
         }
@@ -267,7 +267,7 @@ impl Tensor {
     }
 
     /// Divides a tensor by a scalar.
-    pub fn div_scalar(&mut self, scalar: f64) -> Tensor {
+    pub fn div_scalar(&self, scalar: f64) -> Tensor {
         let mut res = Tensor::zeros(self.rows, self.cols);
 
         for i in 0..self.rows {
@@ -289,7 +289,7 @@ impl Tensor {
     }
 
     /// Multiplies two tensors element-wise.
-    pub fn dot(&mut self, other: &Tensor) -> Tensor {
+    pub fn dot(&self, other: &Tensor) -> Tensor {
         if self.rows != other.rows || self.cols != other.cols {
             panic!("Tensor.dot invoked with invalid tensor dimensions");
         }
@@ -319,7 +319,7 @@ impl Tensor {
     }
 
     /// Applies a function to each element in the tensor.
-    pub fn map(&mut self, function: &dyn Fn(f64) -> f64) -> Tensor {
+    pub fn map(&self, function: &dyn Fn(f64) -> f64) -> Tensor {
         let data = (self.data)
             .clone()
             .into_iter()
@@ -343,7 +343,7 @@ impl Tensor {
     }
 
     /// Returns the square of each element in the tensor.
-    pub fn square(&mut self) -> Tensor {
+    pub fn square(&self) -> Tensor {
         self.map(&|x| x * x)
     }
 
@@ -353,7 +353,7 @@ impl Tensor {
     }
 
     /// Returns the square root of each element in the tensor.
-    pub fn sqrt(&mut self) -> Tensor {
+    pub fn sqrt(&self) -> Tensor {
         self.map(&|x| x.sqrt())
     }
 
@@ -363,7 +363,7 @@ impl Tensor {
     }
 
     /// Returns each element in the tensor raised to the given exponent.
-    pub fn pow(&mut self, exponent: f64) -> Tensor {
+    pub fn pow(&self, exponent: f64) -> Tensor {
         self.map(&|x| x.powf(exponent))
     }
 
@@ -373,7 +373,7 @@ impl Tensor {
     }
 
     /// Returns each element in the tensor applied with the natural logarithm.
-    pub fn ln(&mut self) -> Tensor {
+    pub fn ln(&self) -> Tensor {
         self.map(&|x| x.ln())
     }
 
@@ -383,7 +383,7 @@ impl Tensor {
     }
 
     /// Returns each element in the tensor applied with the base 2 logarithm.
-    pub fn log2(&mut self) -> Tensor {
+    pub fn log2(&self) -> Tensor {
         self.map(&|x| x.log2())
     }
 
@@ -393,7 +393,7 @@ impl Tensor {
     }
 
     /// Returns the sum of all elements in the tensor.
-    pub fn sum(&mut self) -> f64 {
+    pub fn sum(&self) -> f64 {
         self.data
             .clone()
             .into_iter()
@@ -402,12 +402,12 @@ impl Tensor {
     }
 
     /// Returns the mean of all elements in the tensor.
-    pub fn mean(&mut self) -> f64 {
+    pub fn mean(&self) -> f64 {
         self.sum() / (self.rows * self.cols) as f64
     }
 
     /// Returns the transpose of the tensor.
-    pub fn transpose(&mut self) -> Tensor {
+    pub fn transpose(&self) -> Tensor {
         let mut res = Tensor::zeros(self.rows, self.cols);
 
         for i in 0..self.rows {
@@ -433,7 +433,7 @@ impl Tensor {
     }
 
     /// Returns a slice of the tensor.
-    pub fn slice(&mut self, start: usize, end: usize) -> Tensor {
+    pub fn slice(&self, start: usize, end: usize) -> Tensor {
         let mut res = Tensor::zeros(1, end - start);
 
         for i in 0..(end - start) {
@@ -441,6 +441,11 @@ impl Tensor {
         }
 
         res
+    }
+
+    /// Returns the first element in the tensor.
+    pub fn first(&self) -> f64 {
+        self.data[0][0]
     }
 }
 
@@ -452,7 +457,7 @@ macro_rules! tensor {
         $(
             data.push(vec![$($x as f64),*]);
         )*
-        data
+        crate::tensor::Tensor::from(data)
     }};
 }
 
