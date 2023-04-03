@@ -26,6 +26,11 @@ impl Tensor {
         }
     }
 
+    /// Creates a new `Tensor` of zeros with the same shape as the provided `Tensor`.
+    pub fn zeros_like(other: &Tensor) -> Tensor {
+        Tensor::zeros(other.rows, other.cols)
+    }
+
     /// Creates a new `Tensor` from a two-dimensional vector of floating point values.
     pub fn from(data: Tensor2D) -> Tensor {
         Tensor {
@@ -367,6 +372,26 @@ impl Tensor {
         self.map_assign(&|x| x.powf(exponent));
     }
 
+    /// Returns each element in the tensor applied with the natural logarithm.
+    pub fn ln(&mut self) -> Tensor {
+        self.map(&|x| x.ln())
+    }
+
+    /// Applies the natural logarithm to each element in the tensor in-place.
+    pub fn ln_assign(&mut self) {
+        self.map_assign(&|x| x.ln());
+    }
+
+    /// Returns each element in the tensor applied with the base 2 logarithm.
+    pub fn log2(&mut self) -> Tensor {
+        self.map(&|x| x.log2())
+    }
+
+    /// Applies the base 2 logarithm to each element in the tensor in-place.
+    pub fn log2_assign(&mut self) {
+        self.map_assign(&|x| x.log2());
+    }
+
     /// Returns the sum of all elements in the tensor.
     pub fn sum(&mut self) -> f64 {
         self.data
@@ -405,6 +430,17 @@ impl Tensor {
         }
 
         self.data = res.data;
+    }
+
+    /// Returns a slice of the tensor.
+    pub fn slice(&mut self, start: usize, end: usize) -> Tensor {
+        let mut res = Tensor::zeros(1, end - start);
+
+        for i in 0..(end - start) {
+            res.data[0][i] = self.data[0][start + i];
+        }
+
+        res
     }
 }
 
