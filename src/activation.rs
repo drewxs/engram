@@ -1,5 +1,5 @@
 /// Activation functions and their derivatives
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Activation {
     Sigmoid,
     TanH,

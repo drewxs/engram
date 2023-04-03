@@ -1,7 +1,7 @@
-use engram::activation::Activation;
-use engram::initializer::Initializer;
-use engram::network::Network;
-use engram::tensor;
+use engram::{
+    activation::Activation, initializer::Initializer, network::Network, optimizer::Optimizer,
+    tensor,
+};
 
 #[test]
 fn test_network() {
@@ -10,12 +10,18 @@ fn test_network() {
     let inputs = tensor![[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]];
     let targets = tensor![[0.0], [1.0], [1.0], [0.0]];
 
-    let mut network = Network::new(layers, Initializer::Xavier, Activation::Sigmoid, 0.5);
+    let mut network = Network::new(
+        layers,
+        Initializer::Xavier,
+        Activation::Sigmoid,
+        Optimizer::SGD { learning_rate: 0.1 },
+        0.5,
+    );
 
-    network.train(inputs, targets, 10000);
+    network.train(&inputs, &targets, 10, 5000);
 
     let tolerance = 0.2;
-    let y_hat = network.feed_forward(vec![0.0, 0.0])[0];
+    let y_hat = network.feed_forward(&tensor![[0.0, 0.0]]).first();
 
     println!("y_hat: {:?}", y_hat);
     println!("y: {:?}", 0.0);
