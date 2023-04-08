@@ -59,6 +59,11 @@ impl Tensor {
         self.rows * self.cols
     }
 
+    /// Returns the first element in the tensor.
+    pub fn first(&self) -> f64 {
+        self.data[0][0]
+    }
+
     /// Returns an iterator over the rows of the tensor.
     pub fn iter_rows(&self) -> impl Iterator<Item = &Tensor1D> {
         self.data.iter()
@@ -392,20 +397,6 @@ impl Tensor {
         self.mapv_assign(&|x| x.log2());
     }
 
-    /// Returns the sum of all elements in the tensor.
-    pub fn sum(&self) -> f64 {
-        self.data
-            .clone()
-            .into_iter()
-            .flatten()
-            .fold(0.0, |acc, x| acc + x)
-    }
-
-    /// Returns the mean of all elements in the tensor.
-    pub fn mean(&self) -> f64 {
-        self.sum() / (self.rows * self.cols) as f64
-    }
-
     /// Returns the transpose of the tensor.
     pub fn transpose(&self) -> Tensor {
         let mut res = Tensor::zeros(self.rows, self.cols);
@@ -443,9 +434,23 @@ impl Tensor {
         res
     }
 
-    /// Returns the first element in the tensor.
-    pub fn first(&self) -> f64 {
-        self.data[0][0]
+    /// Returns the sum of all elements in the tensor.
+    pub fn sum(&self) -> f64 {
+        self.data
+            .clone()
+            .into_iter()
+            .flatten()
+            .fold(0.0, |acc, x| acc + x)
+    }
+
+    /// Returns the mean of all elements in the tensor.
+    pub fn mean(&self) -> f64 {
+        self.sum() / (self.rows * self.cols) as f64
+    }
+
+    /// Returns the p-norm of the tensor.
+    pub fn norm(&self, p: f64) -> f64 {
+        self.mapv(&|x| x.powf(p)).sum().sqrt()
     }
 }
 
