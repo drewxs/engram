@@ -38,7 +38,7 @@ impl Optimizer {
 
                 weights.sub_assign(
                     &gradients
-                        .div(&old_accumulators.add_scalar(*epsilon).map(&f64::sqrt))
+                        .div(&old_accumulators.add_scalar(*epsilon).mapv(&f64::sqrt))
                         .mul_scalar(*learning_rate),
                 );
             }

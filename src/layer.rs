@@ -28,7 +28,7 @@ impl Layer {
         let output = (self.weights)
             .mul(inputs)
             .add(&self.biases)
-            .map(&|x| activation.apply(x));
+            .mapv(&|x| activation.apply(x));
 
         self.data = output.clone();
 
@@ -42,7 +42,7 @@ impl Layer {
         activation: Activation,
         learning_rate: f64,
     ) -> Tensor {
-        let gradients = self.data.clone().map(&|x| activation.gradient(x));
+        let gradients = self.data.clone().mapv(&|x| activation.gradient(x));
         let delta = error.mul(&gradients);
         let weights_delta = (self.weights)
             .transpose()

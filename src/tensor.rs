@@ -319,7 +319,7 @@ impl Tensor {
     }
 
     /// Applies a function to each element in the tensor.
-    pub fn map(&self, function: &dyn Fn(f64) -> f64) -> Tensor {
+    pub fn mapv(&self, function: &dyn Fn(f64) -> f64) -> Tensor {
         let data = (self.data)
             .clone()
             .into_iter()
@@ -334,7 +334,7 @@ impl Tensor {
     }
 
     /// Applies a function to each element in the tensor in-place.
-    pub fn map_assign(&mut self, function: &dyn Fn(f64) -> f64) {
+    pub fn mapv_assign(&mut self, function: &dyn Fn(f64) -> f64) {
         self.data = (self.data)
             .clone()
             .into_iter()
@@ -344,52 +344,52 @@ impl Tensor {
 
     /// Returns the square of each element in the tensor.
     pub fn square(&self) -> Tensor {
-        self.map(&|x| x * x)
+        self.mapv(&|x| x * x)
     }
 
     /// Squares each element in the tensor in-place.
     pub fn square_assign(&mut self) {
-        self.map_assign(&|x| x * x);
+        self.mapv_assign(&|x| x * x);
     }
 
     /// Returns the square root of each element in the tensor.
     pub fn sqrt(&self) -> Tensor {
-        self.map(&|x| x.sqrt())
+        self.mapv(&|x| x.sqrt())
     }
 
     /// Takes the square root of each element in the tensor in-place.
     pub fn sqrt_assign(&mut self) {
-        self.map_assign(&|x| x.sqrt());
+        self.mapv_assign(&|x| x.sqrt());
     }
 
     /// Returns each element in the tensor raised to the given exponent.
     pub fn pow(&self, exponent: f64) -> Tensor {
-        self.map(&|x| x.powf(exponent))
+        self.mapv(&|x| x.powf(exponent))
     }
 
     /// Raises each element in the tensor to the given exponent in-place.
     pub fn pow_assign(&mut self, exponent: f64) {
-        self.map_assign(&|x| x.powf(exponent));
+        self.mapv_assign(&|x| x.powf(exponent));
     }
 
     /// Returns each element in the tensor applied with the natural logarithm.
     pub fn ln(&self) -> Tensor {
-        self.map(&|x| x.ln())
+        self.mapv(&|x| x.ln())
     }
 
     /// Applies the natural logarithm to each element in the tensor in-place.
     pub fn ln_assign(&mut self) {
-        self.map_assign(&|x| x.ln());
+        self.mapv_assign(&|x| x.ln());
     }
 
     /// Returns each element in the tensor applied with the base 2 logarithm.
     pub fn log2(&self) -> Tensor {
-        self.map(&|x| x.log2())
+        self.mapv(&|x| x.log2())
     }
 
     /// Applies the base 2 logarithm to each element in the tensor in-place.
     pub fn log2_assign(&mut self) {
-        self.map_assign(&|x| x.log2());
+        self.mapv_assign(&|x| x.log2());
     }
 
     /// Returns the sum of all elements in the tensor.
