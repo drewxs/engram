@@ -43,9 +43,7 @@ impl Tensor {
     /// Creates a new `Tensor` with the specified number of rows and columns, initialized using the provided initializer.
     pub fn initialize(rows: usize, cols: usize, initializer: &Initializer) -> Tensor {
         let mut res = Tensor::zeros(rows, cols);
-
         res.data = initializer.initialize(rows, cols);
-
         res
     }
 
@@ -69,6 +67,45 @@ impl Tensor {
         self.data.iter()
     }
 
+    /// Returns a mutable iterator over the rows of the tensor.
+    pub fn iter_rows_mut(&mut self) -> impl Iterator<Item = &mut Tensor1D> {
+        self.data.iter_mut()
+    }
+
+    /// Performs matrix multiplication between two tensors.
+    pub fn matmul(&self, other: &Tensor) -> Tensor {
+        if self.cols != other.rows {
+            panic!("Tensor.matmul invoked with invalid tensor dimensions");
+        }
+
+        let mut res = Tensor::zeros(self.rows, other.cols);
+        for i in 0..self.rows {
+            for j in 0..other.cols {
+                for k in 0..self.cols {
+                    res.data[i][j] += self.data[i][k] * other.data[k][j];
+                }
+            }
+        }
+        res
+    }
+
+    /// Performs matrix multiplication between two tensors in-place.
+    pub fn matmul_assign(&mut self, other: &Tensor) {
+        if self.cols != other.rows {
+            panic!("Tensor.matmul_assign invoked with invalid tensor dimensions");
+        }
+
+        let mut res = Tensor::zeros(self.rows, other.cols);
+        for i in 0..self.rows {
+            for j in 0..other.cols {
+                for k in 0..self.cols {
+                    res.data[i][j] += self.data[i][k] * other.data[k][j];
+                }
+            }
+        }
+        *self = res;
+    }
+
     /// Adds two tensors element-wise.
     pub fn add(&self, other: &Tensor) -> Tensor {
         if self.rows != other.rows || self.cols != other.cols {
@@ -76,13 +113,11 @@ impl Tensor {
         }
 
         let mut res = Tensor::zeros(self.rows, self.cols);
-
         for i in 0..self.rows {
             for j in 0..self.cols {
                 res.data[i][j] = self.data[i][j] + other.data[i][j];
             }
         }
-
         res
     }
 
@@ -102,13 +137,11 @@ impl Tensor {
     /// Adds a scalar to a tensor element-wise.
     pub fn add_scalar(&self, scalar: f64) -> Tensor {
         let mut res = Tensor::zeros(self.rows, self.cols);
-
         for i in 0..self.rows {
             for j in 0..self.cols {
                 res.data[i][j] = self.data[i][j] + scalar;
             }
         }
-
         res
     }
 
@@ -128,13 +161,11 @@ impl Tensor {
         }
 
         let mut res = Tensor::zeros(self.rows, self.cols);
-
         for i in 0..self.rows {
             for j in 0..self.cols {
                 res.data[i][j] = self.data[i][j] - other.data[i][j];
             }
         }
-
         res
     }
 
@@ -154,13 +185,11 @@ impl Tensor {
     /// Subtracts a scalar from a tensor element-wise.
     pub fn sub_scalar(&self, scalar: f64) -> Tensor {
         let mut res = Tensor::zeros(self.rows, self.cols);
-
         for i in 0..self.rows {
             for j in 0..self.cols {
                 res.data[i][j] = self.data[i][j] - scalar;
             }
         }
-
         res
     }
 
@@ -173,62 +202,42 @@ impl Tensor {
         }
     }
 
-    /// Performs matrix multiplication between two tensors.
+    /// Multiplies two tensors element-wise.
     pub fn mul(&self, other: &Tensor) -> Tensor {
         if self.cols != other.rows {
             panic!("Tensor.mul invoked with invalid tensor dimensions");
         }
 
-        let mut res = Tensor::zeros(self.rows, other.cols);
-
+        let mut res = Tensor::zeros(self.rows, self.cols);
         for i in 0..self.rows {
-            for j in 0..other.cols {
-                let mut sum = 0.0;
-
-                for k in 0..self.cols {
-                    sum += self.data[i][k] * other.data[k][j];
-                }
-
-                res.data[i][j] = sum;
+            for j in 0..self.cols {
+                res.data[i][j] = self.data[i][j] * other.data[i][j];
             }
         }
-
         res
     }
 
-    /// Performs matrix multiplication between two tensors in-place.
+    /// Multiplies two tensors element-wise in-place.
     pub fn mul_assign(&mut self, other: &Tensor) {
         if self.cols != other.rows {
             panic!("Tensor.mul_assign invoked with invalid tensor dimensions");
         }
 
-        let mut res = Tensor::zeros(self.rows, other.cols);
-
         for i in 0..self.rows {
-            for j in 0..other.cols {
-                let mut sum = 0.0;
-
-                for k in 0..self.cols {
-                    sum += self.data[i][k] * other.data[k][j];
-                }
-
-                res.data[i][j] = sum;
+            for j in 0..self.cols {
+                self.data[i][j] *= other.data[i][j];
             }
         }
-
-        self.data = res.data;
     }
 
     /// Multiplies a tensor by a scalar.
     pub fn mul_scalar(&self, scalar: f64) -> Tensor {
         let mut res = Tensor::zeros(self.rows, self.cols);
-
         for i in 0..self.rows {
             for j in 0..self.cols {
                 res.data[i][j] = self.data[i][j] * scalar;
             }
         }
-
         res
     }
 
@@ -248,13 +257,11 @@ impl Tensor {
         }
 
         let mut res = Tensor::zeros(self.rows, self.cols);
-
         for i in 0..self.rows {
             for j in 0..self.cols {
                 res.data[i][j] = self.data[i][j] / other.data[i][j];
             }
         }
-
         res
     }
 
@@ -274,13 +281,11 @@ impl Tensor {
     /// Divides a tensor by a scalar.
     pub fn div_scalar(&self, scalar: f64) -> Tensor {
         let mut res = Tensor::zeros(self.rows, self.cols);
-
         for i in 0..self.rows {
             for j in 0..self.cols {
                 res.data[i][j] = self.data[i][j] / scalar;
             }
         }
-
         res
     }
 
@@ -289,36 +294,6 @@ impl Tensor {
         for i in 0..self.rows {
             for j in 0..self.cols {
                 self.data[i][j] /= scalar;
-            }
-        }
-    }
-
-    /// Multiplies two tensors element-wise.
-    pub fn dot(&self, other: &Tensor) -> Tensor {
-        if self.rows != other.rows || self.cols != other.cols {
-            panic!("Tensor.dot invoked with invalid tensor dimensions");
-        }
-
-        let mut res = Tensor::zeros(self.rows, self.cols);
-
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                res.data[i][j] = self.data[i][j] * other.data[i][j];
-            }
-        }
-
-        res
-    }
-
-    /// Multiplies two tensors element-wise in-place.
-    pub fn dot_assign(&mut self, other: &Tensor) {
-        if self.rows != other.rows || self.cols != other.cols {
-            panic!("Tensor.dot_assign invoked with invalid tensor dimensions");
-        }
-
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                self.data[i][j] *= other.data[i][j];
             }
         }
     }
@@ -400,26 +375,22 @@ impl Tensor {
     /// Returns the transpose of the tensor.
     pub fn transpose(&self) -> Tensor {
         let mut res = Tensor::zeros(self.rows, self.cols);
-
         for i in 0..self.rows {
             for j in 0..self.cols {
                 res.data[j][i] = self.data[i][j];
             }
         }
-
         res
     }
 
     /// Transposes the tensor in-place.
     pub fn transpose_assign(&mut self) {
         let mut res = Tensor::zeros(self.rows, self.cols);
-
         for i in 0..self.rows {
             for j in 0..self.cols {
                 res.data[j][i] = self.data[i][j];
             }
         }
-
         self.data = res.data;
     }
 
@@ -430,6 +401,19 @@ impl Tensor {
             cols: self.cols,
             data: self.data[start..end].to_vec(),
         }
+    }
+
+    /// Computes the dot product between two tensors.
+    pub fn dot(&self, other: &Tensor) -> f64 {
+        if self.rows != other.rows || self.cols != other.cols {
+            panic!("Tensor.dot invoked with invalid tensor dimensions");
+        }
+
+        let mut res = 0.0;
+        for i in 0..self.cols {
+            res += self.data[0][i] * other.data[0][i];
+        }
+        res
     }
 
     /// Returns the sum of all elements in the tensor.
@@ -449,6 +433,11 @@ impl Tensor {
 }
 
 /// Creates a new `Tensor` from a two-dimensional vector of floating point values.
+///
+/// # Usage
+/// ```
+/// let tensor = tensor![[1.0, 2.0], [3.0, 4.0]];
+/// ```
 #[macro_export]
 macro_rules! tensor {
     ( $( [ $( $x:expr ),* ] ),* ) => {{
@@ -456,8 +445,6 @@ macro_rules! tensor {
         $(
             data.push(vec![$($x as f64),*]);
         )*
-        crate::tensor::Tensor::from(data)
+        $crate::tensor::Tensor::from(data)
     }};
 }
-
-pub use tensor;
