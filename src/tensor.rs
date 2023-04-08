@@ -425,13 +425,11 @@ impl Tensor {
 
     /// Returns a slice of the tensor.
     pub fn slice(&self, start: usize, end: usize) -> Tensor {
-        let mut res = Tensor::zeros(1, end - start);
-
-        for i in 0..(end - start) {
-            res.data[0][i] = self.data[0][start + i];
+        Tensor {
+            rows: end - start,
+            cols: self.cols,
+            data: self.data[start..end].to_vec(),
         }
-
-        res
     }
 
     /// Returns the sum of all elements in the tensor.
