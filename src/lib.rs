@@ -5,4 +5,5 @@ pub mod logistic_regression;
 pub mod loss;
 pub mod network;
 pub mod optimizer;
+pub mod regularization;
 pub mod tensor;
