@@ -1,4 +1,4 @@
-use engram::logistic_regression::LogisticRegression;
+use engram::LogisticRegression;
 
 #[test]
 fn test_logistic_regression() {

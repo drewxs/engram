@@ -1,7 +1,4 @@
-use engram::{
-    activation::Activation, initializer::Initializer, network::Network, optimizer::Optimizer,
-    tensor,
-};
+use engram::{tensor, Activation, Initializer, Network, Optimizer};
 
 #[test]
 fn test_network() {
@@ -18,7 +15,7 @@ fn test_network() {
         0.5,
     );
 
-    network.train(&inputs, &targets, 10, 5000);
+    network.train(&inputs, &targets, 10, 100);
 
     let tolerance = 0.2;
     let y_hat = network.feed_forward(&tensor![[0.0, 0.0]]).first();

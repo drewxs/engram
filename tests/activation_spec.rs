@@ -1,4 +1,4 @@
-use engram::activation::Activation;
+use engram::Activation;
 
 #[test]
 fn it_calculates_sigmoid() {

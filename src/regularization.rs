@@ -17,7 +17,7 @@
 //! let l2_grad = l2_reg.grad(&tensor);
 //! ```
 
-use crate::tensor::Tensor;
+use crate::Tensor;
 
 /// An enum representing the regularization methods that can be applied to a tensor.
 pub enum Regularization {
