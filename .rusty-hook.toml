@@ -1,6 +1,6 @@
 [hooks]
 pre-commit = "./hooks/pre-commit.sh"
-pre-push = "cargo test"
+pre-push = "./hooks/pre-push.sh"
 
 [logging]
 verbose = true
