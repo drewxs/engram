@@ -33,9 +33,9 @@ impl Initializer {
     /// Initializes a 2D tensor with random values based on the specified standard deviation.
     fn initialize_data(f_in: usize, f_out: usize, std_dev: f64) -> Tensor2D {
         let mut rng = rand::thread_rng();
-        let mut data = vec![];
+        let mut data = Vec::with_capacity(f_out);
         for _ in 0..f_out {
-            let mut row = vec![];
+            let mut row = Vec::with_capacity(f_in);
             for _ in 0..f_in {
                 row.push(rng.gen::<f64>() * std_dev);
             }
