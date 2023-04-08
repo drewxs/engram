@@ -1,5 +1,5 @@
 [hooks]
-pre-commit = "cargo fmt && cargo check"
+pre-commit = "./hooks/pre-commit.sh"
 pre-push = "cargo test"
 
 [logging]
