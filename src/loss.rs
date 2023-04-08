@@ -7,5 +7,5 @@ pub fn mean_squared_error(predictions: &Tensor, targets: &Tensor) -> f64 {
 
 /// Binary cross entropy loss.
 pub fn binary_cross_entropy(predictions: &Tensor, targets: &Tensor) -> f64 {
-    targets.mul(&predictions.clone().ln()).sum()
+    targets.mul(&predictions.ln()).sum()
 }
