@@ -1,3 +1,19 @@
+//! Implements a single layer in a neural network.
+//!
+//! Example:
+//!
+//! ```
+//! use engram::{Layer, Activation, Initializer, Tensor};
+//!
+//! let mut layer = Layer::new(3, 2, &Initializer::Xavier);
+//!
+//! let inputs = tensor![[1.0], [2.0], [3.0]];
+//! let output = layer.feed_forward(&inputs, Activation::Sigmoid);
+//!
+//! let mut error = tensor![[0.1], [-0.2]];
+//! layer.back_propagate(&mut error, Activation::Sigmoid, 0.1);
+//! ```
+
 use crate::{activation::Activation, initializer::Initializer, tensor::Tensor};
 
 /// A single layer in a neural network.
@@ -5,7 +21,9 @@ use crate::{activation::Activation, initializer::Initializer, tensor::Tensor};
 pub struct Layer {
     pub weights: Tensor,
     pub biases: Tensor,
-    pub data: Tensor,
+    pub weights_gradients: Tensor,
+    pub biases_gradients: Tensor,
+    pub output: Option<Tensor>,
 }
 
 impl Layer {
@@ -14,12 +32,16 @@ impl Layer {
     pub fn new(f_in: usize, f_out: usize, initializer: &Initializer) -> Layer {
         let weights = Tensor::initialize(f_in, f_out, initializer);
         let biases = Tensor::initialize(f_out, 1, initializer);
-        let data = Tensor::zeros(f_out, 1);
+        let weights_gradients = Tensor::zeros(f_in, f_out);
+        let biases_gradients = Tensor::zeros(1, f_out);
+        let output = None; // should have dimensions (f_out, 1)
 
         Layer {
             weights,
             biases,
-            data,
+            weights_gradients,
+            biases_gradients,
+            output,
         }
     }
 
@@ -29,30 +51,27 @@ impl Layer {
             .mul(inputs)
             .add(&self.biases)
             .mapv(&|x| activation.apply(x));
-
-        self.data = output.clone();
-
+        self.output = Some(output.clone());
         output
     }
 
     /// Performs backpropagation on the layer, using the specified error and learning rate.
-    pub fn back_propagate(
-        &mut self,
-        error: &mut Tensor,
-        activation: Activation,
-        learning_rate: f64,
-    ) -> Tensor {
-        let gradients = self.data.clone().mapv(&|x| activation.gradient(x));
-        let delta = error.mul(&gradients);
-        let weights_delta = (self.weights)
-            .transpose()
-            .mul(&delta)
-            .mul_scalar(learning_rate);
-        let bias_delta = delta.mul_scalar(learning_rate);
+    pub fn back_propagate(&mut self, error: &Tensor, activation: Activation) -> Tensor {
+        let output = match &self.output {
+            Some(output) => output,
+            None => panic!("Call to back_propagate without calling feed_forward first!"),
+        };
 
-        self.weights = self.weights.sub(&self.data.mul(&weights_delta.transpose()));
-        self.biases = self.biases.sub(&bias_delta);
+        // Compute error delta for this layer
+        let derivative = activation.gradient_tensor(&output);
+        let delta = error.mul(&derivative);
 
-        weights_delta
+        // Compute gradients for weights and biases
+        // Update weights and biases gradients
+        self.weights_gradients = self.weights.transpose().matmul(&delta);
+        self.biases_gradients = delta.clone();
+
+        // Compute error for previous layer
+        delta.matmul(&self.weights.transpose())
     }
 }

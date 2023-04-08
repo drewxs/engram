@@ -12,12 +12,11 @@ fn test_network() {
         Initializer::Xavier,
         Activation::Sigmoid,
         Optimizer::SGD { learning_rate: 0.1 },
-        0.5,
     );
 
     network.train(&inputs, &targets, 10, 100);
 
-    let tolerance = 0.2;
+    let tolerance = 0.01;
     let y_hat = network.feed_forward(&tensor![[0.0, 0.0]]).first();
 
     println!("y_hat: {:?}", y_hat);

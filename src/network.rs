@@ -1,15 +1,10 @@
-use crate::{
-    activation::Activation, initializer::Initializer, layer::Layer, loss::mean_squared_error,
-    optimizer::Optimizer, tensor::Tensor,
-};
+use crate::{Activation, Initializer, Layer, Optimizer, Tensor};
 
 #[derive(Debug)]
 pub struct Network {
     layers: Vec<Layer>,
     activation: Activation,
-    #[allow(dead_code)]
     optimizer: Optimizer,
-    learning_rate: f64,
 }
 
 impl Network {
@@ -19,7 +14,6 @@ impl Network {
         initializer: Initializer,
         activation: Activation,
         optimizer: Optimizer,
-        learning_rate: f64,
     ) -> Network {
         let mut layers = Vec::new();
 
@@ -32,19 +26,16 @@ impl Network {
             layers,
             activation,
             optimizer,
-            learning_rate,
         }
     }
 
     /// Feeds the specified input through the network, returning the output.
     pub fn feed_forward(&mut self, inputs: &Tensor) -> Tensor {
-        let mut curr = inputs.clone();
-
+        let mut output = inputs.clone();
         for layer in &mut self.layers {
-            curr = layer.feed_forward(&curr, self.activation);
+            output = layer.feed_forward(&output, self.activation);
         }
-
-        curr
+        output
     }
 
     /// Performs backpropagation on the network, using the specified outputs and targets.
@@ -53,28 +44,42 @@ impl Network {
         let mut delta = error.clone();
 
         for layer in self.layers.iter_mut().rev() {
-            delta = layer.back_propagate(&mut delta, self.activation, self.learning_rate);
+            delta = layer.back_propagate(&mut delta, self.activation);
         }
     }
 
     /// Trains the network on the specified inputs and targets for the specified number of epochs.
     pub fn train(&mut self, inputs: &Tensor, targets: &Tensor, batch_size: usize, epochs: usize) {
+        let num_batches = (inputs.shape().0 as f64 / batch_size as f64).ceil() as usize;
+
         for epoch in 0..epochs {
-            let mut epoch_loss = 0.0;
+            let mut error_sum = 0.0;
 
-            for batch_index in 0..inputs.shape().0 / batch_size {
-                let start = batch_index * batch_size;
-                let end = start + batch_size;
-                let batch_inputs = inputs.slice(start, end);
-                let batch_targets = targets.slice(start, end);
+            for batch in 0..num_batches {
+                let batch_start = batch * batch_size;
+                let batch_end = (batch + 1) * batch_size;
+                let inputs_batch = inputs.slice(batch_start, batch_end);
+                let targets_batch = targets.slice(batch_start, batch_end);
 
-                let output = self.feed_forward(&batch_inputs);
-                let loss = mean_squared_error(&output, &batch_targets);
-                epoch_loss += loss;
+                let outputs = self.feed_forward(&inputs_batch);
+                let mut error = targets_batch.sub(&outputs);
+
+                self.back_propagate(&mut error, &targets_batch);
+
+                for layer in &mut self.layers {
+                    self.optimizer
+                        .step(&mut layer.weights, &mut layer.weights_gradients);
+                    self.optimizer
+                        .step(&mut layer.biases, &mut layer.biases_gradients);
+                }
+
+                error_sum += error.sum();
             }
 
-            let epoch_loss = epoch_loss / (inputs.shape().0 as f64);
-            println!("Epoch {}: loss={}", epoch, epoch_loss);
+            if epoch % 10 == 0 {
+                let mse = error_sum / (inputs.shape().0 as f64);
+                println!("Epoch: {}, MSE: {}", epoch, mse);
+            }
         }
     }
 }
