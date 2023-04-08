@@ -436,11 +436,7 @@ impl Tensor {
 
     /// Returns the sum of all elements in the tensor.
     pub fn sum(&self) -> f64 {
-        self.data
-            .clone()
-            .into_iter()
-            .flatten()
-            .fold(0.0, |acc, x| acc + x)
+        self.data.iter().flatten().fold(0.0, |acc, x| acc + x)
     }
 
     /// Returns the mean of all elements in the tensor.
