@@ -6,10 +6,26 @@
 //!
 //! # Examples
 //!
-//! ```
-//! use engram::{Tensor, optimizer::{Optimizer, SGD, Adagrad}};
+//! ## Stochastic Gradient Descent (SGD)
 //!
-//! let optimizer = Optimizer::Adagrad(Adagrad::new(0.1, 0.01, Some(0.001), (4, 3));
+//! ```
+//! use engram::{Tensor, Optimizer, SGD};
+//!
+//! let optimizer = Optimizer::SGD { learning_rate: 0.1 };
+//! optimizer.step(&mut layer.weights, &mut gradients);
+//! ```
+//!
+//! ## Adaptive Gradient (Adagrad)
+//!
+//! ```
+//! use engram::{Tensor, Optimizer, Adagrad};
+//!
+//! let optimizer = Optimizer::Adagrad {
+//!     learning_rate: 0.1,
+//!     epsilon: 0.01,
+//!     accumulators: tensor![[0, 1], [1, 0]],
+//!     weight_decay: Some(0.001)
+//! };
 //! optimizer.step(&mut layer.weights, &mut gradients);
 //! ```
 
