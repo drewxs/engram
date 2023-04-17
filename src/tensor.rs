@@ -1,3 +1,8 @@
+//! This module provides a Tensor struct that represents a two-dimensional matrix of
+//! floating point values. It also provides type aliases for one- and two-dimensional
+//! vectors of floating point values, as well as methods for initializing, manipulating,
+//! and performing mathematical operations on tensors.
+
 use crate::initializer::Initializer;
 
 /// A one-dimensional matrix of floating point values.
@@ -18,6 +23,14 @@ pub struct Tensor {
 
 impl Tensor {
     /// Creates a new `Tensor` of zeros with the specified number of rows and columns.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::Tensor;
+    /// let tensor = Tensor::zeros(2, 3);
+    /// assert_eq!(tensor.data, vec![vec![0.0, 0.0, 0.0], vec![0.0, 0.0, 0.0]]);
+    /// ```
     pub fn zeros(rows: usize, cols: usize) -> Tensor {
         Tensor {
             rows,
@@ -27,11 +40,28 @@ impl Tensor {
     }
 
     /// Creates a new `Tensor` of zeros with the same shape as the provided `Tensor`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::Tensor;
+    /// let other = Tensor::zeros(2, 3);
+    /// let tensor = Tensor::zeros_like(&other);
+    /// assert_eq!(tensor.data, vec![vec![0.0, 0.0, 0.0], vec![0.0, 0.0, 0.0]]);
+    /// ```
     pub fn zeros_like(other: &Tensor) -> Tensor {
         Tensor::zeros(other.rows, other.cols)
     }
 
     /// Creates a new `Tensor` from a two-dimensional vector of floating point values.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let tensor = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
+    /// assert_eq!(tensor.data, vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]]);
+    /// ```
     pub fn from(data: Tensor2D) -> Tensor {
         Tensor {
             rows: data.len(),
@@ -41,6 +71,14 @@ impl Tensor {
     }
 
     /// Creates a new `Tensor` with the specified number of rows and columns, initialized using the provided initializer.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{Initializer, Tensor};
+    /// let tensor = Tensor::initialize(2, 3, &Initializer::Xavier);
+    /// assert!(tensor.data.iter().all(|w| w.iter().all(|x| x.abs() <= 1.0)));
+    /// ```
     pub fn initialize(rows: usize, cols: usize, initializer: &Initializer) -> Tensor {
         let mut res = Tensor::zeros(rows, cols);
         res.data = initializer.initialize(rows, cols);
@@ -48,31 +86,87 @@ impl Tensor {
     }
 
     /// Returns the shape of the tensor as a tuple of (rows, columns).
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::Tensor;
+    /// let tensor = Tensor::zeros(2, 3);
+    /// assert_eq!(tensor.shape(), (2, 3));
+    /// ```
     pub fn shape(&self) -> (usize, usize) {
         (self.rows, self.cols)
     }
 
     /// Returns the number of elements in the tensor.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::Tensor;
+    /// let tensor = Tensor::zeros(2, 3);
+    /// assert_eq!(tensor.size(), 6);
+    /// ```
     pub fn size(&self) -> usize {
         self.rows * self.cols
     }
 
     /// Returns the first element in the tensor.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let tensor = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
+    /// assert_eq!(tensor.first(), 1.0);
+    /// ```
     pub fn first(&self) -> f64 {
         self.data[0][0]
     }
 
     /// Returns an iterator over the rows of the tensor.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut tensor = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
+    /// let mut iter = tensor.iter_rows();
+    /// assert_eq!(iter.next(), Some(&vec![1.0, 2.0, 3.0]));
+    /// assert_eq!(iter.next(), Some(&vec![4.0, 5.0, 6.0]));
+    /// assert_eq!(iter.next(), None);
+    /// ```
     pub fn iter_rows(&self) -> impl Iterator<Item = &Tensor1D> {
         self.data.iter()
     }
 
     /// Returns a mutable iterator over the rows of the tensor.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut tensor = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
+    /// let mut iter = tensor.iter_rows_mut();
+    /// assert_eq!(iter.next(), Some(&mut vec![1.0, 2.0, 3.0]));
+    /// assert_eq!(iter.next(), Some(&mut vec![4.0, 5.0, 6.0]));
+    /// assert_eq!(iter.next(), None);
+    /// ```
     pub fn iter_rows_mut(&mut self) -> impl Iterator<Item = &mut Tensor1D> {
         self.data.iter_mut()
     }
 
     /// Performs matrix multiplication between two tensors.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
+    /// let c = a.matmul(&b);
+    /// assert_eq!(c.data, vec![vec![19.0, 22.0], vec![43.0, 50.0]]);
+    /// ```
     pub fn matmul(&self, other: &Tensor) -> Tensor {
         if self.cols != other.rows {
             panic!("Tensor.matmul invoked with invalid tensor dimensions");
@@ -90,6 +184,16 @@ impl Tensor {
     }
 
     /// Performs matrix multiplication between two tensors in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
+    /// a.matmul_assign(&b);
+    /// assert_eq!(a.data, vec![vec![19.0, 22.0], vec![43.0, 50.0]]);
+    /// ```
     pub fn matmul_assign(&mut self, other: &Tensor) {
         if self.cols != other.rows {
             panic!("Tensor.matmul_assign invoked with invalid tensor dimensions");
@@ -107,6 +211,16 @@ impl Tensor {
     }
 
     /// Adds two tensors element-wise.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
+    /// let c = a.add(&b);
+    /// assert_eq!(c.data, vec![vec![6.0, 8.0], vec![10.0, 12.0]]);
+    /// ```
     pub fn add(&self, other: &Tensor) -> Tensor {
         if self.rows != other.rows || self.cols != other.cols {
             panic!("Tensor.add invoked with invalid tensor dimensions");
@@ -122,6 +236,16 @@ impl Tensor {
     }
 
     /// Adds two tensors element-wise in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
+    /// a.add_assign(&b);
+    /// assert_eq!(a.data, vec![vec![6.0, 8.0], vec![10.0, 12.0]]);
+    /// ```
     pub fn add_assign(&mut self, other: &Tensor) {
         if self.rows != other.rows || self.cols != other.cols {
             panic!("Tensor.add_assign invoked with invalid tensor dimensions");
@@ -135,6 +259,15 @@ impl Tensor {
     }
 
     /// Adds a scalar to a tensor element-wise.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.add_scalar(5.0);
+    /// assert_eq!(b.data, vec![vec![6.0, 7.0], vec![8.0, 9.0]]);
+    /// ```
     pub fn add_scalar(&self, scalar: f64) -> Tensor {
         let mut res = Tensor::zeros(self.rows, self.cols);
         for i in 0..self.rows {
@@ -146,6 +279,15 @@ impl Tensor {
     }
 
     /// Adds a scalar to a tensor element-wise in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// a.add_scalar_assign(5.0);
+    /// assert_eq!(a.data, vec![vec![6.0, 7.0], vec![8.0, 9.0]]);
+    /// ```
     pub fn add_scalar_assign(&mut self, scalar: f64) {
         for i in 0..self.rows {
             for j in 0..self.cols {
@@ -155,6 +297,15 @@ impl Tensor {
     }
 
     /// Subtracts two tensors element-wise.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
+    /// let c = a.sub(&b);
+    /// assert_eq!(c.data, vec![vec![-4.0, -4.0], vec![-4.0, -4.0]]);
     pub fn sub(&self, other: &Tensor) -> Tensor {
         if self.rows != other.rows || self.cols != other.cols {
             panic!("Tensor.sub invoked with invalid tensor dimensions");
@@ -170,6 +321,16 @@ impl Tensor {
     }
 
     /// Subtracts two tensors element-wise in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
+    /// a.sub_assign(&b);
+    /// assert_eq!(a.data, vec![vec![-4.0, -4.0], vec![-4.0, -4.0]]);
+    /// ```
     pub fn sub_assign(&mut self, other: &Tensor) {
         if self.rows != other.rows || self.cols != other.cols {
             panic!("Tensor.sub_assign invoked with invalid tensor dimensions");
@@ -183,6 +344,15 @@ impl Tensor {
     }
 
     /// Subtracts a scalar from a tensor element-wise.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.sub_scalar(5.0);
+    /// assert_eq!(b.data, vec![vec![-4.0, -3.0], vec![-2.0, -1.0]]);
+    /// ```
     pub fn sub_scalar(&self, scalar: f64) -> Tensor {
         let mut res = Tensor::zeros(self.rows, self.cols);
         for i in 0..self.rows {
@@ -194,6 +364,15 @@ impl Tensor {
     }
 
     /// Subtracts a scalar from a tensor element-wise in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// a.sub_scalar_assign(5.0);
+    /// assert_eq!(a.data, vec![vec![-4.0, -3.0], vec![-2.0, -1.0]]);
+    /// ```
     pub fn sub_scalar_assign(&mut self, scalar: f64) {
         for i in 0..self.rows {
             for j in 0..self.cols {
@@ -203,6 +382,16 @@ impl Tensor {
     }
 
     /// Multiplies two tensors element-wise.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
+    /// let c = a.mul(&b);
+    /// assert_eq!(c.data, vec![vec![5.0, 12.0], vec![21.0, 32.0]]);
+    /// ```
     pub fn mul(&self, other: &Tensor) -> Tensor {
         if self.cols != other.rows {
             panic!("Tensor.mul invoked with invalid tensor dimensions");
@@ -218,6 +407,16 @@ impl Tensor {
     }
 
     /// Multiplies two tensors element-wise in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
+    /// a.mul_assign(&b);
+    /// assert_eq!(a.data, vec![vec![5.0, 12.0], vec![21.0, 32.0]]);
+    /// ```
     pub fn mul_assign(&mut self, other: &Tensor) {
         if self.cols != other.rows {
             panic!("Tensor.mul_assign invoked with invalid tensor dimensions");
@@ -231,6 +430,15 @@ impl Tensor {
     }
 
     /// Multiplies a tensor by a scalar.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.mul_scalar(5.0);
+    /// assert_eq!(b.data, vec![vec![5.0, 10.0], vec![15.0, 20.0]]);
+    /// ```
     pub fn mul_scalar(&self, scalar: f64) -> Tensor {
         let mut res = Tensor::zeros(self.rows, self.cols);
         for i in 0..self.rows {
@@ -242,6 +450,15 @@ impl Tensor {
     }
 
     /// Multiplies a tensor by a scalar in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// a.mul_scalar_assign(5.0);
+    /// assert_eq!(a.data, vec![vec![5.0, 10.0], vec![15.0, 20.0]]);
+    /// ```
     pub fn mul_scalar_assign(&mut self, scalar: f64) {
         for i in 0..self.rows {
             for j in 0..self.cols {
@@ -251,6 +468,16 @@ impl Tensor {
     }
 
     /// Divides two tensors element-wise.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = tensor![[5.0, 8.0], [30.0, 8.0]];
+    /// let c = a.div(&b);
+    /// assert_eq!(c.data, vec![vec![0.2, 0.25], vec![0.1, 0.5]]);
+    /// ```
     pub fn div(&self, other: &Tensor) -> Tensor {
         if self.rows != other.rows || self.cols != other.cols {
             panic!("Tensor.div invoked with invalid tensor dimensions");
@@ -266,6 +493,16 @@ impl Tensor {
     }
 
     /// Divides two tensors element-wise in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = tensor![[5.0, 8.0], [30.0, 8.0]];
+    /// a.div_assign(&b);
+    /// assert_eq!(a.data, vec![vec![0.2, 0.25], vec![0.1, 0.5]]);
+    /// ```
     pub fn div_assign(&mut self, other: &Tensor) {
         if self.rows != other.rows || self.cols != other.cols {
             panic!("Tensor.div_assign invoked with invalid tensor dimensions");
@@ -279,6 +516,15 @@ impl Tensor {
     }
 
     /// Divides a tensor by a scalar.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.div_scalar(5.0);
+    /// assert_eq!(b.data, vec![vec![0.2, 0.4], vec![0.6, 0.8]]);
+    /// ```
     pub fn div_scalar(&self, scalar: f64) -> Tensor {
         let mut res = Tensor::zeros(self.rows, self.cols);
         for i in 0..self.rows {
@@ -290,6 +536,15 @@ impl Tensor {
     }
 
     /// Divides a tensor by a scalar in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// a.div_scalar_assign(5.0);
+    /// assert_eq!(a.data, vec![vec![0.2, 0.4], vec![0.6, 0.8]]);
+    /// ```
     pub fn div_scalar_assign(&mut self, scalar: f64) {
         for i in 0..self.rows {
             for j in 0..self.cols {
@@ -299,6 +554,15 @@ impl Tensor {
     }
 
     /// Applies a function to each element in the tensor.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.mapv(&|x| x * 2.0);
+    /// assert_eq!(b.data, vec![vec![2.0, 4.0], vec![6.0, 8.0]]);
+    /// ```
     pub fn mapv(&self, function: &dyn Fn(f64) -> f64) -> Tensor {
         let data = (self.data)
             .clone()
@@ -314,6 +578,15 @@ impl Tensor {
     }
 
     /// Applies a function to each element in the tensor in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// a.mapv_assign(&|x| x * 2.0);
+    /// assert_eq!(a.data, vec![vec![2.0, 4.0], vec![6.0, 8.0]]);
+    /// ```
     pub fn mapv_assign(&mut self, function: &dyn Fn(f64) -> f64) {
         self.data = (self.data)
             .clone()
@@ -323,56 +596,173 @@ impl Tensor {
     }
 
     /// Returns the square of each element in the tensor.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.square();
+    /// assert_eq!(b.data, vec![vec![1.0, 4.0], vec![9.0, 16.0]]);
+    /// ```
     pub fn square(&self) -> Tensor {
         self.mapv(&|x| x * x)
     }
 
     /// Squares each element in the tensor in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// a.square_assign();
+    /// assert_eq!(a.data, vec![vec![1.0, 4.0], vec![9.0, 16.0]]);
+    /// ```
     pub fn square_assign(&mut self) {
         self.mapv_assign(&|x| x * x);
     }
 
     /// Returns the square root of each element in the tensor.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 4.0], [9.0, 16.0]];
+    /// let b = a.sqrt();
+    /// assert_eq!(b.data, vec![vec![1.0, 2.0], vec![3.0, 4.0]]);
+    /// ```
     pub fn sqrt(&self) -> Tensor {
         self.mapv(&|x| x.sqrt())
     }
 
     /// Takes the square root of each element in the tensor in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 4.0], [9.0, 16.0]];
+    /// a.sqrt_assign();
+    /// assert_eq!(a.data, vec![vec![1.0, 2.0], vec![3.0, 4.0]]);
+    /// ```
     pub fn sqrt_assign(&mut self) {
         self.mapv_assign(&|x| x.sqrt());
     }
 
     /// Returns each element in the tensor raised to the given exponent.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.pow(2.0);
+    /// assert_eq!(b.data, vec![vec![1.0, 4.0], vec![9.0, 16.0]]);
+    /// ```
     pub fn pow(&self, exponent: f64) -> Tensor {
         self.mapv(&|x| x.powf(exponent))
     }
 
     /// Raises each element in the tensor to the given exponent in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// a.pow_assign(2.0);
+    /// assert_eq!(a.data, vec![vec![1.0, 4.0], vec![9.0, 16.0]]);
+    /// ```
     pub fn pow_assign(&mut self, exponent: f64) {
         self.mapv_assign(&|x| x.powf(exponent));
     }
 
     /// Returns each element in the tensor applied with the natural logarithm.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.ln();
+    /// assert_eq!(b.data, vec![vec![0.0, 0.6931471805599453], vec![1.0986122886681098, 1.3862943611198906]]);
+    /// ```
     pub fn ln(&self) -> Tensor {
         self.mapv(&|x| x.ln())
     }
 
     /// Applies the natural logarithm to each element in the tensor in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// a.ln_assign();
+    /// assert_eq!(a.data, vec![vec![0.0, 0.6931471805599453], vec![1.0986122886681098, 1.3862943611198906]]);
+    /// ```
     pub fn ln_assign(&mut self) {
         self.mapv_assign(&|x| x.ln());
     }
 
     /// Returns each element in the tensor applied with the base 2 logarithm.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [4.0, 8.0]];
+    /// let b = a.log2();
+    /// assert_eq!(b.data, vec![vec![0.0, 1.0], vec![2.0, 3.0]]);
+    /// ```
     pub fn log2(&self) -> Tensor {
         self.mapv(&|x| x.log2())
     }
 
     /// Applies the base 2 logarithm to each element in the tensor in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 2.0], [4.0, 8.0]];
+    /// a.log2_assign();
+    /// assert_eq!(a.data, vec![vec![0.0, 1.0], vec![2.0, 3.0]]);
+    /// ```
     pub fn log2_assign(&mut self) {
         self.mapv_assign(&|x| x.log2());
     }
 
+    /// Returns a flattened version of the tensor data.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.flatten();
+    /// assert_eq!(b, vec![1.0, 2.0, 3.0, 4.0]);
+    /// ```
+    pub fn flatten(&self) -> Tensor1D {
+        let mut flat_data = Vec::new();
+        for row in &self.data {
+            flat_data.extend(row);
+        }
+        Tensor1D::from(flat_data)
+    }
+
     /// Returns the transpose of the tensor.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.transpose();
+    /// assert_eq!(b.data, vec![vec![1.0, 3.0], vec![2.0, 4.0]]);
+    /// ```
     pub fn transpose(&self) -> Tensor {
         let mut res = Tensor::zeros(self.rows, self.cols);
         for i in 0..self.rows {
@@ -384,6 +774,15 @@ impl Tensor {
     }
 
     /// Transposes the tensor in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// a.transpose_assign();
+    /// assert_eq!(a.data, vec![vec![1.0, 3.0], vec![2.0, 4.0]]);
+    /// ```
     pub fn transpose_assign(&mut self) {
         let mut res = Tensor::zeros(self.rows, self.cols);
         for i in 0..self.rows {
@@ -395,6 +794,15 @@ impl Tensor {
     }
 
     /// Returns a slice of the tensor.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]];
+    /// let b = a.slice(1, 3);
+    /// assert_eq!(b.data, vec![vec![3.0, 4.0], vec![5.0, 6.0]]);
+    /// ```
     pub fn slice(&self, start: usize, end: usize) -> Tensor {
         Tensor {
             rows: end - start,
@@ -404,29 +812,68 @@ impl Tensor {
     }
 
     /// Computes the dot product between two tensors.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0], [2.0], [3.0]];
+    /// let b = tensor![[4.0], [5.0], [6.0]];
+    /// let c = a.dot(&b);
+    /// assert_eq!(c, 32.0);
+    /// ```
     pub fn dot(&self, other: &Tensor) -> f64 {
-        if self.rows != other.rows || self.cols != other.cols {
+        if self.shape() != other.shape() {
             panic!("Tensor.dot invoked with invalid tensor dimensions");
         }
 
+        let flat_self = self.flatten();
+        let flat_other = other.flatten();
         let mut res = 0.0;
-        for i in 0..self.cols {
-            res += self.data[0][i] * other.data[0][i];
+        for i in 0..flat_self.len() {
+            res += flat_self[i] * flat_other[i];
         }
         res
     }
 
     /// Returns the sum of all elements in the tensor.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.sum();
+    /// assert_eq!(b, 10.0);
+    /// ```
     pub fn sum(&self) -> f64 {
         self.data.iter().flatten().fold(0.0, |acc, x| acc + x)
     }
 
     /// Returns the mean of all elements in the tensor.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.mean();
+    /// assert_eq!(b, 2.5);
+    /// ```
     pub fn mean(&self) -> f64 {
         self.sum() / (self.rows * self.cols) as f64
     }
 
     /// Returns the p-norm of the tensor.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.norm(2.0);
+    /// assert_eq!(b, 5.477225575051661);
+    /// ```
     pub fn norm(&self, p: f64) -> f64 {
         self.mapv(&|x| x.powf(p)).sum().sqrt()
     }
@@ -436,6 +883,7 @@ impl Tensor {
 ///
 /// # Usage
 /// ```
+/// # use engram::tensor;
 /// let tensor = tensor![[1.0, 2.0], [3.0, 4.0]];
 /// ```
 #[macro_export]
