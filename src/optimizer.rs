@@ -3,31 +3,6 @@
 //! Use to minimize the loss function during the training process of a neural network by
 //! adjusting the weights of the network based on the gradients of the loss function with
 //! respect to the weights.
-//!
-//! # Examples
-//!
-//! ## Stochastic Gradient Descent (SGD)
-//!
-//! ```
-//! use engram::{Tensor, Optimizer, SGD};
-//!
-//! let optimizer = Optimizer::SGD { learning_rate: 0.1 };
-//! optimizer.step(&mut layer.weights, &mut gradients);
-//! ```
-//!
-//! ## Adaptive Gradient (Adagrad)
-//!
-//! ```
-//! use engram::{Tensor, Optimizer, Adagrad};
-//!
-//! let optimizer = Optimizer::Adagrad {
-//!     learning_rate: 0.1,
-//!     epsilon: 0.01,
-//!     accumulators: tensor![[0, 1], [1, 0]],
-//!     weight_decay: Some(0.001)
-//! };
-//! optimizer.step(&mut layer.weights, &mut gradients);
-//! ```
 
 use crate::Tensor;
 

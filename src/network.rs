@@ -68,9 +68,8 @@ impl Network {
 
                 for layer in &mut self.layers {
                     self.optimizer
-                        .step(&mut layer.weights, &mut layer.weights_gradients);
-                    self.optimizer
-                        .step(&mut layer.biases, &mut layer.biases_gradients);
+                        .step(&mut layer.weights, &mut layer.d_weights);
+                    self.optimizer.step(&mut layer.biases, &mut layer.d_biases);
                 }
 
                 error_sum += error.sum();
