@@ -25,7 +25,6 @@ impl Tensor {
     /// Creates a new `Tensor` of zeros with the specified number of rows and columns.
     ///
     /// # Examples
-    ///
     /// ```
     /// # use engram::Tensor;
     /// let tensor = Tensor::zeros(2, 3);
@@ -168,16 +167,16 @@ impl Tensor {
     /// assert_eq!(c.data, vec![vec![19.0, 22.0], vec![43.0, 50.0]]);
     /// ```
     pub fn matmul(&self, other: &Tensor) -> Tensor {
-        if self.cols != other.rows {
-            panic!("Tensor.matmul invoked with invalid tensor dimensions");
-        }
+        self.validate_mul_shape(other, "matmul");
 
         let mut res = Tensor::zeros(self.rows, other.cols);
         for i in 0..self.rows {
             for j in 0..other.cols {
+                let mut sum = 0.0;
                 for k in 0..self.cols {
-                    res.data[i][j] += self.data[i][k] * other.data[k][j];
+                    sum += self.data[i][k] * other.data[k][j];
                 }
+                res.data[i][j] = sum;
             }
         }
         res
@@ -195,9 +194,7 @@ impl Tensor {
     /// assert_eq!(a.data, vec![vec![19.0, 22.0], vec![43.0, 50.0]]);
     /// ```
     pub fn matmul_assign(&mut self, other: &Tensor) {
-        if self.cols != other.rows {
-            panic!("Tensor.matmul_assign invoked with invalid tensor dimensions");
-        }
+        self.validate_mul_shape(other, "matmul_assign");
 
         let mut res = Tensor::zeros(self.rows, other.cols);
         for i in 0..self.rows {
@@ -208,177 +205,6 @@ impl Tensor {
             }
         }
         *self = res;
-    }
-
-    /// Adds two tensors element-wise.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use engram::{tensor, Tensor};
-    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
-    /// let c = a.add(&b);
-    /// assert_eq!(c.data, vec![vec![6.0, 8.0], vec![10.0, 12.0]]);
-    /// ```
-    pub fn add(&self, other: &Tensor) -> Tensor {
-        if self.rows != other.rows || self.cols != other.cols {
-            panic!("Tensor.add invoked with invalid tensor dimensions");
-        }
-
-        let mut res = Tensor::zeros(self.rows, self.cols);
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                res.data[i][j] = self.data[i][j] + other.data[i][j];
-            }
-        }
-        res
-    }
-
-    /// Adds two tensors element-wise in-place.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use engram::{tensor, Tensor};
-    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
-    /// a.add_assign(&b);
-    /// assert_eq!(a.data, vec![vec![6.0, 8.0], vec![10.0, 12.0]]);
-    /// ```
-    pub fn add_assign(&mut self, other: &Tensor) {
-        if self.rows != other.rows || self.cols != other.cols {
-            panic!("Tensor.add_assign invoked with invalid tensor dimensions");
-        }
-
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                self.data[i][j] += other.data[i][j];
-            }
-        }
-    }
-
-    /// Adds a scalar to a tensor element-wise.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use engram::{tensor, Tensor};
-    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// let b = a.add_scalar(5.0);
-    /// assert_eq!(b.data, vec![vec![6.0, 7.0], vec![8.0, 9.0]]);
-    /// ```
-    pub fn add_scalar(&self, scalar: f64) -> Tensor {
-        let mut res = Tensor::zeros(self.rows, self.cols);
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                res.data[i][j] = self.data[i][j] + scalar;
-            }
-        }
-        res
-    }
-
-    /// Adds a scalar to a tensor element-wise in-place.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use engram::{tensor, Tensor};
-    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// a.add_scalar_assign(5.0);
-    /// assert_eq!(a.data, vec![vec![6.0, 7.0], vec![8.0, 9.0]]);
-    /// ```
-    pub fn add_scalar_assign(&mut self, scalar: f64) {
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                self.data[i][j] += scalar;
-            }
-        }
-    }
-
-    /// Subtracts two tensors element-wise.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use engram::{tensor, Tensor};
-    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
-    /// let c = a.sub(&b);
-    /// assert_eq!(c.data, vec![vec![-4.0, -4.0], vec![-4.0, -4.0]]);
-    pub fn sub(&self, other: &Tensor) -> Tensor {
-        if self.rows != other.rows || self.cols != other.cols {
-            panic!("Tensor.sub invoked with invalid tensor dimensions");
-        }
-
-        let mut res = Tensor::zeros(self.rows, self.cols);
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                res.data[i][j] = self.data[i][j] - other.data[i][j];
-            }
-        }
-        res
-    }
-
-    /// Subtracts two tensors element-wise in-place.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use engram::{tensor, Tensor};
-    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
-    /// a.sub_assign(&b);
-    /// assert_eq!(a.data, vec![vec![-4.0, -4.0], vec![-4.0, -4.0]]);
-    /// ```
-    pub fn sub_assign(&mut self, other: &Tensor) {
-        if self.rows != other.rows || self.cols != other.cols {
-            panic!("Tensor.sub_assign invoked with invalid tensor dimensions");
-        }
-
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                self.data[i][j] -= other.data[i][j];
-            }
-        }
-    }
-
-    /// Subtracts a scalar from a tensor element-wise.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use engram::{tensor, Tensor};
-    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// let b = a.sub_scalar(5.0);
-    /// assert_eq!(b.data, vec![vec![-4.0, -3.0], vec![-2.0, -1.0]]);
-    /// ```
-    pub fn sub_scalar(&self, scalar: f64) -> Tensor {
-        let mut res = Tensor::zeros(self.rows, self.cols);
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                res.data[i][j] = self.data[i][j] - scalar;
-            }
-        }
-        res
-    }
-
-    /// Subtracts a scalar from a tensor element-wise in-place.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use engram::{tensor, Tensor};
-    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// a.sub_scalar_assign(5.0);
-    /// assert_eq!(a.data, vec![vec![-4.0, -3.0], vec![-2.0, -1.0]]);
-    /// ```
-    pub fn sub_scalar_assign(&mut self, scalar: f64) {
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                self.data[i][j] -= scalar;
-            }
-        }
     }
 
     /// Multiplies two tensors element-wise.
@@ -393,9 +219,7 @@ impl Tensor {
     /// assert_eq!(c.data, vec![vec![5.0, 12.0], vec![21.0, 32.0]]);
     /// ```
     pub fn mul(&self, other: &Tensor) -> Tensor {
-        if self.cols != other.rows {
-            panic!("Tensor.mul invoked with invalid tensor dimensions");
-        }
+        self.validate_mul_shape(other, "mul");
 
         let mut res = Tensor::zeros(self.rows, self.cols);
         for i in 0..self.rows {
@@ -418,9 +242,7 @@ impl Tensor {
     /// assert_eq!(a.data, vec![vec![5.0, 12.0], vec![21.0, 32.0]]);
     /// ```
     pub fn mul_assign(&mut self, other: &Tensor) {
-        if self.cols != other.rows {
-            panic!("Tensor.mul_assign invoked with invalid tensor dimensions");
-        }
+        self.validate_mul_shape(other, "mul_assign");
 
         for i in 0..self.rows {
             for j in 0..self.cols {
@@ -479,9 +301,7 @@ impl Tensor {
     /// assert_eq!(c.data, vec![vec![0.2, 0.25], vec![0.1, 0.5]]);
     /// ```
     pub fn div(&self, other: &Tensor) -> Tensor {
-        if self.rows != other.rows || self.cols != other.cols {
-            panic!("Tensor.div invoked with invalid tensor dimensions");
-        }
+        self.validate_shape(other, "div");
 
         let mut res = Tensor::zeros(self.rows, self.cols);
         for i in 0..self.rows {
@@ -504,9 +324,7 @@ impl Tensor {
     /// assert_eq!(a.data, vec![vec![0.2, 0.25], vec![0.1, 0.5]]);
     /// ```
     pub fn div_assign(&mut self, other: &Tensor) {
-        if self.rows != other.rows || self.cols != other.cols {
-            panic!("Tensor.div_assign invoked with invalid tensor dimensions");
-        }
+        self.validate_shape(other, "div_assign");
 
         for i in 0..self.rows {
             for j in 0..self.cols {
@@ -549,6 +367,169 @@ impl Tensor {
         for i in 0..self.rows {
             for j in 0..self.cols {
                 self.data[i][j] /= scalar;
+            }
+        }
+    }
+
+    /// Adds two tensors element-wise.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
+    /// let c = a.add(&b);
+    /// assert_eq!(c.data, vec![vec![6.0, 8.0], vec![10.0, 12.0]]);
+    /// ```
+    pub fn add(&self, other: &Tensor) -> Tensor {
+        self.validate_shape(other, "add");
+
+        let mut res = Tensor::zeros(self.rows, self.cols);
+        for i in 0..self.rows {
+            for j in 0..self.cols {
+                res.data[i][j] = self.data[i][j] + other.data[i][j];
+            }
+        }
+        res
+    }
+
+    /// Adds two tensors element-wise in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
+    /// a.add_assign(&b);
+    /// assert_eq!(a.data, vec![vec![6.0, 8.0], vec![10.0, 12.0]]);
+    /// ```
+    pub fn add_assign(&mut self, other: &Tensor) {
+        self.validate_shape(other, "add_assign");
+
+        for i in 0..self.rows {
+            for j in 0..self.cols {
+                self.data[i][j] += other.data[i][j];
+            }
+        }
+    }
+
+    /// Adds a scalar to a tensor element-wise.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.add_scalar(5.0);
+    /// assert_eq!(b.data, vec![vec![6.0, 7.0], vec![8.0, 9.0]]);
+    /// ```
+    pub fn add_scalar(&self, scalar: f64) -> Tensor {
+        let mut res = Tensor::zeros(self.rows, self.cols);
+        for i in 0..self.rows {
+            for j in 0..self.cols {
+                res.data[i][j] = self.data[i][j] + scalar;
+            }
+        }
+        res
+    }
+
+    /// Adds a scalar to a tensor element-wise in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// a.add_scalar_assign(5.0);
+    /// assert_eq!(a.data, vec![vec![6.0, 7.0], vec![8.0, 9.0]]);
+    /// ```
+    pub fn add_scalar_assign(&mut self, scalar: f64) {
+        for i in 0..self.rows {
+            for j in 0..self.cols {
+                self.data[i][j] += scalar;
+            }
+        }
+    }
+
+    /// Subtracts two tensors element-wise.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
+    /// let c = a.sub(&b);
+    /// assert_eq!(c.data, vec![vec![-4.0, -4.0], vec![-4.0, -4.0]]);
+    pub fn sub(&self, other: &Tensor) -> Tensor {
+        self.validate_shape(other, "sub");
+
+        let mut res = Tensor::zeros(self.rows, self.cols);
+        for i in 0..self.rows {
+            for j in 0..self.cols {
+                res.data[i][j] = self.data[i][j] - other.data[i][j];
+            }
+        }
+        res
+    }
+
+    /// Subtracts two tensors element-wise in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
+    /// a.sub_assign(&b);
+    /// assert_eq!(a.data, vec![vec![-4.0, -4.0], vec![-4.0, -4.0]]);
+    /// ```
+    pub fn sub_assign(&mut self, other: &Tensor) {
+        self.validate_shape(other, "sub_assign");
+
+        for i in 0..self.rows {
+            for j in 0..self.cols {
+                self.data[i][j] -= other.data[i][j];
+            }
+        }
+    }
+
+    /// Subtracts a scalar from a tensor element-wise.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.sub_scalar(5.0);
+    /// assert_eq!(b.data, vec![vec![-4.0, -3.0], vec![-2.0, -1.0]]);
+    /// ```
+    pub fn sub_scalar(&self, scalar: f64) -> Tensor {
+        let mut res = Tensor::zeros(self.rows, self.cols);
+        for i in 0..self.rows {
+            for j in 0..self.cols {
+                res.data[i][j] = self.data[i][j] - scalar;
+            }
+        }
+        res
+    }
+
+    /// Subtracts a scalar from a tensor element-wise in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// a.sub_scalar_assign(5.0);
+    /// assert_eq!(a.data, vec![vec![-4.0, -3.0], vec![-2.0, -1.0]]);
+    /// ```
+    pub fn sub_scalar_assign(&mut self, scalar: f64) {
+        for i in 0..self.rows {
+            for j in 0..self.cols {
+                self.data[i][j] -= scalar;
             }
         }
     }
@@ -823,9 +804,7 @@ impl Tensor {
     /// assert_eq!(c, 32.0);
     /// ```
     pub fn dot(&self, other: &Tensor) -> f64 {
-        if self.shape() != other.shape() {
-            panic!("Tensor.dot invoked with invalid tensor dimensions");
-        }
+        self.validate_shape(other, "dot");
 
         let flat_self = self.flatten();
         let flat_other = other.flatten();
@@ -876,6 +855,43 @@ impl Tensor {
     /// ```
     pub fn norm(&self, p: f64) -> f64 {
         self.mapv(&|x| x.powf(p)).sum().sqrt()
+    }
+
+    /// Validates that the shape of the tensor is the same as the shape of another tensor.
+    ///
+    /// # Examples
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// a.validate_shape(&b, "op");
+    /// ```
+    pub fn validate_shape(&self, other: &Tensor, op: &str) {
+        if self.shape() != other.shape() {
+            panic!(
+                "Tensor.{} invoked with invalid tensor dimensions ({}x{} and {}x{})",
+                op, self.rows, self.cols, other.rows, other.cols
+            );
+        }
+    }
+
+    /// Validates that the columns of the tensor are the same as the rows of another tensor.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// a.validate_mul_shape(&b, "op");
+    /// ```
+    pub fn validate_mul_shape(&self, other: &Tensor, op: &str) {
+        if self.cols != other.rows {
+            panic!(
+                "Tensor.{} invoked with invalid tensor dimensions ({}x{} and {}x{})",
+                op, self.rows, self.cols, other.rows, other.cols
+            );
+        }
     }
 }
 
