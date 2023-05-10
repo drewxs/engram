@@ -8,7 +8,8 @@ pub struct Network {
 }
 
 impl Network {
-    /// Creates a new `Network` with the specified layers, activation function, and learning rate.
+    /// Creates a new `Network` with the specified layers, activation function, learning rate, and
+    /// optimizer.
     pub fn new(
         layer_sizes: Vec<usize>,
         initializer: Initializer,
@@ -27,6 +28,17 @@ impl Network {
             activation,
             optimizer,
         }
+    }
+
+    /// Creates a new `Network` with defaults: xavier initialization, sigmoid activation,
+    /// and stochastic gradient descent optimizer with a learning rate of 0.1.
+    pub fn default(layer_sizes: Vec<usize>) -> Network {
+        Network::new(
+            layer_sizes,
+            Initializer::Xavier,
+            Activation::Sigmoid,
+            Optimizer::SGD { learning_rate: 0.1 },
+        )
     }
 
     /// Feeds the specified input through the network, returning the output.
