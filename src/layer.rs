@@ -36,7 +36,7 @@ impl Layer {
 
     /// Feeds the input through the layer, returning the output.
     pub fn feed_forward(&mut self, inputs: &Tensor, activation: Activation) -> Tensor {
-        let output = activation.apply_tensor(&(self.weights).mul(inputs).add(&self.biases));
+        let output = activation.apply_tensor(&(self.weights).matmul(inputs).add(&self.biases));
         self.output = Some(output.clone());
         output
     }
