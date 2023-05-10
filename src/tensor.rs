@@ -161,10 +161,10 @@ impl Tensor {
     ///
     /// ```
     /// # use engram::{tensor, Tensor};
-    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
+    /// let a = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
+    /// let b = tensor![[7.0, 8.0], [9.0, 10.0], [11.0, 12.0]];
     /// let c = a.matmul(&b);
-    /// assert_eq!(c.data, vec![vec![19.0, 22.0], vec![43.0, 50.0]]);
+    /// assert_eq!(c.data, vec![vec![58.0, 64.0], vec![139.0, 154.0]]);
     /// ```
     pub fn matmul(&self, other: &Tensor) -> Tensor {
         self.validate_mul_shape(other, "matmul");
