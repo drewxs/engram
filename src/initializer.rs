@@ -9,6 +9,21 @@ pub enum Initializer {
 }
 
 impl Initializer {
+    /// Initializes a 2D tensor with random values based on the specified initialization technique.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::Initializer;
+    /// let xavier = Initializer::Xavier;
+    /// let kaiming = Initializer::Kaiming;
+    /// let xavier_data = xavier.initialize(2, 3);
+    /// let kaiming_data = kaiming.initialize(5, 3);
+    /// assert_eq!(xavier_data.len(), 2);
+    /// assert_eq!(xavier_data[0].len(), 3);
+    /// assert_eq!(kaiming_data.len(), 5);
+    /// assert_eq!(kaiming_data[0].len(), 3);
+    /// ```
     pub fn initialize(&self, f_in: usize, f_out: usize) -> Tensor2D {
         match *self {
             Initializer::Xavier => Self::xavier(f_in, f_out),
