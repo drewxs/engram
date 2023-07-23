@@ -30,7 +30,9 @@ impl Tensor {
     /// ```
     /// # use engram::Tensor;
     /// let tensor = Tensor::zeros(2, 3);
+    /// let tensor_b = Tensor::zeros(3, 2);
     /// assert_eq!(tensor.data, vec![vec![0.0, 0.0, 0.0], vec![0.0, 0.0, 0.0]]);
+    /// assert_eq!(tensor_b.data, vec![vec![0.0, 0.0], vec![0.0, 0.0], vec![0.0, 0.0]]);
     /// ```
     pub fn zeros(rows: usize, cols: usize) -> Tensor {
         Tensor {
@@ -78,6 +80,8 @@ impl Tensor {
     /// ```
     /// # use engram::{Initializer, Tensor};
     /// let tensor = Tensor::initialize(2, 3, &Initializer::Xavier);
+    /// assert_eq!(tensor.data.len(), 2);
+    /// assert_eq!(tensor.data[0].len(), 3);
     /// assert!(tensor.data.iter().all(|w| w.iter().all(|x| x.abs() <= 1.0)));
     /// ```
     pub fn initialize(rows: usize, cols: usize, initializer: &Initializer) -> Tensor {
@@ -93,7 +97,9 @@ impl Tensor {
     /// ```
     /// # use engram::Tensor;
     /// let tensor = Tensor::zeros(2, 3);
+    /// let tensor_b = Tensor::zeros(3, 2);
     /// assert_eq!(tensor.shape(), (2, 3));
+    /// assert_eq!(tensor_b.shape(), (3, 2));
     /// ```
     pub fn shape(&self) -> (usize, usize) {
         (self.rows, self.cols)
@@ -106,7 +112,9 @@ impl Tensor {
     /// ```
     /// # use engram::Tensor;
     /// let tensor = Tensor::zeros(2, 3);
+    /// let tensor_b = Tensor::zeros(5, 4);
     /// assert_eq!(tensor.size(), 6);
+    /// assert_eq!(tensor_b.size(), 20);
     /// ```
     pub fn size(&self) -> usize {
         self.rows * self.cols
@@ -749,7 +757,9 @@ impl Tensor {
     /// assert_eq!(b.data, vec![vec![1.0, 3.0], vec![2.0, 4.0]]);
     /// ```
     pub fn transpose(&self) -> Tensor {
+        println!("Original: {:?}", self);
         let mut res = Tensor::zeros(self.cols, self.rows);
+        println!("Res: {:?}", res);
         for i in 0..self.rows {
             for j in 0..self.cols {
                 res.data[j][i] = self.data[i][j];
