@@ -199,9 +199,11 @@ impl Tensor {
         let mut res = Tensor::zeros(self.rows, other.cols);
         for i in 0..self.rows {
             for j in 0..other.cols {
+                let mut sum = 0.0;
                 for k in 0..self.cols {
-                    res.data[i][j] += self.data[i][k] * other.data[k][j];
+                    sum += self.data[i][k] * other.data[k][j];
                 }
+                res.data[i][j] = sum;
             }
         }
         *self = res;
