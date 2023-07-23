@@ -774,6 +774,26 @@ impl Tensor {
         self.data = res.data;
     }
 
+    /// Broadcasts the tensor to a new shape.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Tensor};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.broadcast_to((3, 3));
+    /// assert_eq!(b.data, vec![vec![1.0, 2.0, 1.0], vec![3.0, 4.0, 3.0], vec![1.0, 2.0, 1.0]]);
+    /// ```
+    pub fn broadcast_to(&self, shape: (usize, usize)) -> Tensor {
+        let mut result = Tensor::zeros(shape.0, shape.1);
+        for i in 0..shape.0 {
+            for j in 0..shape.1 {
+                result.data[i][j] = self.data[i % self.rows][j % self.cols];
+            }
+        }
+        result
+    }
+
     /// Returns a slice of the tensor.
     ///
     /// # Examples
