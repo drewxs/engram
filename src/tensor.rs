@@ -920,9 +920,11 @@ impl Tensor {
 /// Creates a new `Tensor` from a two-dimensional vector of floating point values.
 ///
 /// # Usage
+///
 /// ```
 /// # use engram::tensor;
 /// let tensor = tensor![[1.0, 2.0], [3.0, 4.0]];
+/// assert_eq!(tensor.data, vec![vec![1.0, 2.0], vec![3.0, 4.0]]);
 /// ```
 #[macro_export]
 macro_rules! tensor {
