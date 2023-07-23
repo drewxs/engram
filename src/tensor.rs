@@ -3,6 +3,8 @@
 //! vectors of floating point values, as well as methods for initializing, manipulating,
 //! and performing mathematical operations on tensors.
 
+use core::fmt;
+
 use crate::initializer::Initializer;
 
 /// A one-dimensional matrix of floating point values.
@@ -914,6 +916,42 @@ impl Tensor {
                 op, self.rows, self.cols, other.rows, other.cols
             );
         }
+    }
+}
+
+impl PartialEq for Tensor {
+    fn eq(&self, other: &Self) -> bool {
+        self.data == other.data
+    }
+}
+
+impl From<Vec<Vec<f64>>> for Tensor {
+    fn from(data: Vec<Vec<f64>>) -> Self {
+        let rows = data.len();
+        let cols = data[0].len();
+        Tensor { rows, cols, data }
+    }
+}
+
+impl FromIterator<Tensor1D> for Tensor {
+    fn from_iter<I: IntoIterator<Item = Tensor1D>>(iter: I) -> Self {
+        let mut data = vec![];
+        for row in iter {
+            data.push(row);
+        }
+        let rows = data.len();
+        let cols = data[0].len();
+        Tensor { rows, cols, data }
+    }
+}
+
+impl fmt::Display for Tensor {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut res = String::new();
+        for row in &self.data {
+            res.push_str(&format!("{:?}\n", row));
+        }
+        write!(f, "{}", res)
     }
 }
 
