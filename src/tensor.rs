@@ -231,7 +231,7 @@ impl Tensor {
     /// assert_eq!(c.data, vec![vec![5.0, 12.0], vec![21.0, 32.0]]);
     /// ```
     pub fn mul(&self, other: &Tensor) -> Tensor {
-        self.validate_mul_shape(other, "mul");
+        self.validate_shape(other, "mul");
 
         let mut res = Tensor::zeros(self.rows, self.cols);
         for i in 0..self.rows {
