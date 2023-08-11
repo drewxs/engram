@@ -752,9 +752,9 @@ impl Tensor {
     ///
     /// ```
     /// # use engram::{tensor, Tensor};
-    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let a = tensor![[1.0, 2.0, 3.0], [3.0, 4.0, 6.0]];
     /// let b = a.transpose();
-    /// assert_eq!(b.data, vec![vec![1.0, 3.0], vec![2.0, 4.0]]);
+    /// assert_eq!(b.data, vec![vec![1.0, 3.0], vec![2.0, 4.0], vec![3.0, 6.0]]);
     /// ```
     pub fn transpose(&self) -> Tensor {
         let mut res = Tensor::zeros(self.cols, self.rows);
