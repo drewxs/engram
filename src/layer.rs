@@ -59,8 +59,8 @@ impl Layer {
     /// ```
     pub fn feed_forward(&mut self, inputs: &Tensor, activation: Activation) -> Tensor {
         let weighted_sum = inputs.matmul(&self.weights.transpose());
-        let biases_broadcasted = self.biases.broadcast_to(weighted_sum.shape());
-        let output = activation.apply_tensor(&weighted_sum.add(&biases_broadcasted));
+        let biases = self.biases.broadcast_to(&weighted_sum);
+        let output = activation.apply_tensor(&weighted_sum.add(&biases));
 
         self.output = Some(output.clone());
         output
