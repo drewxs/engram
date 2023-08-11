@@ -53,12 +53,12 @@ impl Layer {
     /// ```
     /// # use engram::{Activation, Initializer, Layer, tensor};
     /// let mut layer = Layer::new(2, 3, &Initializer::Xavier);
-    /// let inputs = tensor![[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]];
+    /// let inputs = tensor![[1.0, 2.0, 7.0], [3.0, 4.0, 9.0], [5.0, 6.0, 9.0]];
     /// let output = layer.feed_forward(&inputs, Activation::Sigmoid);
-    /// assert_eq!(output.shape(), (3, 3));
+    /// assert_eq!(output.shape(), (3, 2));
     /// ```
     pub fn feed_forward(&mut self, inputs: &Tensor, activation: Activation) -> Tensor {
-        let weighted_sum = inputs.matmul(&self.weights.transpose());
+        let weighted_sum = inputs.matmul(&self.weights);
         let biases = self.biases.broadcast_to(&weighted_sum);
         let output = activation.apply_tensor(&weighted_sum.add(&biases));
 
@@ -66,23 +66,36 @@ impl Layer {
         output
     }
 
-    /// Performs backpropagation on the layer, using the specified error and learning rate.
-    pub fn back_propagate(&mut self, error: &Tensor, activation: Activation) -> Tensor {
+    /// Performs backpropagation on the layer based on the provided targets.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{Activation, Initializer, Layer, tensor};
+    /// let mut layer = Layer::new(2, 3, &Initializer::Xavier);
+    /// let inputs = tensor![[1.0, 2.0, 7.0], [3.0, 4.0, 9.0], [5.0, 6.0, 9.0]];
+    /// layer.feed_forward(&inputs, Activation::Sigmoid);
+    /// let targets = tensor![[1.0, 3.0], [2.0, 4.0], [3.0, 5.0]];
+    /// let error = layer.back_propagate(&targets, Activation::Sigmoid);
+    /// assert_eq!(error.shape(), (3, 3));
+    /// ```
+    pub fn back_propagate(&mut self, targets: &Tensor, activation: Activation) -> Tensor {
         let output = match &self.output {
             Some(output) => output,
             None => panic!("Call to back_propagate without calling feed_forward first!"),
         };
 
         // Compute error delta for this layer
+        let error = output.sub(&targets);
         let d_output = activation.gradient_tensor(&output);
-        let delta = error.mul(&d_output);
+        let error_delta = error.mul(&d_output);
 
         // Compute gradients for weights and biases
         // Update weights and biases gradients
-        self.d_weights = self.weights.transpose().matmul(&delta);
-        self.d_biases = delta.clone();
+        self.d_weights = self.weights.transpose().matmul(&error_delta);
+        self.d_biases = error_delta.clone();
 
         // Compute error for previous layer
-        delta.matmul(&self.weights.transpose())
+        error_delta.matmul(&self.weights.transpose())
     }
 }

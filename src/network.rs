@@ -50,12 +50,9 @@ impl Network {
     }
 
     /// Performs backpropagation on the network, using the specified outputs and targets.
-    pub fn back_propagate(&mut self, outputs: &Tensor, targets: &Tensor) {
-        let error = targets.sub(outputs);
-        let mut delta = error.clone();
-
+    pub fn back_propagate(&mut self, targets: &Tensor) {
         for layer in self.layers.iter_mut().rev() {
-            delta = layer.back_propagate(&mut delta, self.activation);
+            layer.back_propagate(&mut targets.clone(), self.activation);
         }
     }
 
@@ -73,9 +70,9 @@ impl Network {
                 let targets_batch = targets.slice(batch_start, batch_end);
 
                 let outputs = self.feed_forward(&inputs_batch);
-                let mut error = targets_batch.sub(&outputs);
+                let error = targets_batch.sub(&outputs);
 
-                self.back_propagate(&mut error, &targets_batch);
+                self.back_propagate(&targets_batch);
 
                 for layer in &mut self.layers {
                     self.optimizer
