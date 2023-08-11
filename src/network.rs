@@ -8,8 +8,7 @@ pub struct Network {
 }
 
 impl Network {
-    /// Creates a new `Network` with the specified layers, activation function, learning rate, and
-    /// optimizer.
+    /// Creates a new `Network` with the specified layers, activation function, learning rate, and optimizer.
     pub fn new(
         layer_sizes: Vec<usize>,
         initializer: Initializer,
@@ -62,7 +61,7 @@ impl Network {
 
     /// Trains the network on the specified inputs and targets for the specified number of epochs.
     pub fn train(&mut self, inputs: &Tensor, targets: &Tensor, batch_size: usize, epochs: usize) {
-        let num_batches = (inputs.shape().0 as f64 / batch_size as f64).ceil() as usize;
+        let num_batches = (inputs.rows as f64 / batch_size as f64).ceil() as usize;
 
         for epoch in 0..epochs {
             let mut error_sum = 0.0;
@@ -88,7 +87,7 @@ impl Network {
             }
 
             if epoch % 10 == 0 {
-                let mse = error_sum / (inputs.shape().0 as f64);
+                let mse = error_sum / (inputs.rows as f64);
                 println!("Epoch: {}, MSE: {}", epoch, mse);
             }
         }
