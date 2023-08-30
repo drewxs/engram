@@ -2,19 +2,20 @@
 
 General purpose machine learning library for Rust.
 
-Still in progress. Use [Leaf](https://github.com/autumnai/leaf/) or [Linfa](https://github.com/rust-ml/linfa/) for any serious projects.
-
 ## Usage
 
-Implementation/documentation still in early stages, come back later.
+WIP; check back later for updates.
 
-### Installation
+## Installation
 
-Not on [crates.io](https://crates.io/). Include the following in your `Cargo.toml`.
+```sh
+cargo add --git https://github.com/drewxs/engram
+```
+
+Or add directly to your `Cargo.toml` dependencies.
 
 ```toml
-[dependencies]
-engram = { git = "https://github.com/drewxs/engram.git" }
+engram = { git = "https://github.com/drewxs/engram", version = "0.1.0" }
 ```
 
 ---
