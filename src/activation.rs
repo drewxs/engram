@@ -1,6 +1,8 @@
+//! Activation functions and their derivatives
+
 use crate::Tensor;
 
-/// Activation functions and their derivatives
+/// An activation function.
 #[derive(Clone, Copy, Debug)]
 pub enum Activation {
     Sigmoid,
@@ -28,10 +30,10 @@ impl Activation {
     /// Returns the derivative of the activation function.
     pub fn gradient(&self, x: f64) -> f64 {
         match self {
-            Self::Sigmoid => Self::sigmoid_derivative(x),
-            Self::TanH => 1.0 - Self::tanh_derivative(x),
-            Self::ReLU => Self::relu_derivative(x),
-            Self::LeakyReLU => Self::leaky_relu_derivative(x),
+            Self::Sigmoid => Self::d_sigmoid(x),
+            Self::TanH => 1.0 - Self::d_tanh(x),
+            Self::ReLU => Self::d_relu(x),
+            Self::LeakyReLU => Self::d_leaky_relu(x),
         }
     }
 
@@ -46,7 +48,7 @@ impl Activation {
     }
 
     /// Returns the derivative of the sigmoid function.
-    fn sigmoid_derivative(x: f64) -> f64 {
+    fn d_sigmoid(x: f64) -> f64 {
         Self::sigmoid(x) * (1.0 - Self::sigmoid(x))
     }
 
@@ -56,7 +58,7 @@ impl Activation {
     }
 
     /// Returns the derivative of the hyperbolic tangent function.
-    fn tanh_derivative(x: f64) -> f64 {
+    fn d_tanh(x: f64) -> f64 {
         1.0 - Self::tanh(x).powi(2)
     }
 
@@ -66,7 +68,7 @@ impl Activation {
     }
 
     /// Returns the derivative of the rectified linear unit function.
-    fn relu_derivative(x: f64) -> f64 {
+    fn d_relu(x: f64) -> f64 {
         if x > 0.0 {
             1.0
         } else {
@@ -80,7 +82,7 @@ impl Activation {
     }
 
     /// Returns the derivative of the leaky rectified linear unit function.
-    fn leaky_relu_derivative(x: f64) -> f64 {
+    fn d_leaky_relu(x: f64) -> f64 {
         if x > 0.0 {
             1.0
         } else {
