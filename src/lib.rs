@@ -6,6 +6,7 @@ pub mod loss;
 pub mod network;
 pub mod optimizer;
 pub mod regularization;
+pub mod stats;
 pub mod tensor;
 
 pub use activation::*;
@@ -16,4 +17,5 @@ pub use loss::*;
 pub use network::*;
 pub use optimizer::*;
 pub use regularization::*;
+pub use stats::*;
 pub use tensor::*;
