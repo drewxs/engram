@@ -40,6 +40,11 @@ impl Network {
         )
     }
 
+    /// Adds a layer to the network.
+    pub fn add_layer(&mut self, layer: Layer) {
+        self.layers.push(layer);
+    }
+
     /// Feeds the specified input through the network, returning the output.
     pub fn feed_forward(&mut self, inputs: &Tensor) -> Tensor {
         let mut output = inputs.clone();
