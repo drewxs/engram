@@ -9,6 +9,8 @@ pub mod regularization;
 pub mod stats;
 pub mod tensor;
 
+pub mod prelude;
+
 pub use activation::*;
 pub use initializer::*;
 pub use layer::*;
