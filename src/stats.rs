@@ -160,7 +160,7 @@ pub fn mean_ci<T: Into<f64> + Copy + Add + Sub>(
     data: &[T],
     confidence: f64,
 ) -> Result<(f64, f64), MeanCIError> {
-    if confidence <= 0.0 || confidence >= 1.0 {
+    if data.is_empty() {
         return Err(MeanCIError::EmptyData);
     }
     if confidence <= 0.0 || confidence >= 1.0 {
