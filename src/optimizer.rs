@@ -8,7 +8,7 @@ use crate::Tensor;
 
 /// Stochastic Gradient Descent (SGD): A basic optimizer that updates the weights based on
 /// the gradients of the loss function with respect to the weights multiplied by a learning rate.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SGD {
     learning_rate: f64,
 }
@@ -28,7 +28,7 @@ impl SGD {
 /// This allows the learning rate to decrease for parameters that have consistently large gradients
 /// and increase for parameters that have consistently small gradients.
 /// Includes an option to apply weight decay regularization to the gradients.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Adagrad {
     learning_rate: f64,
     epsilon: f64,
@@ -72,7 +72,7 @@ impl Adagrad {
 }
 
 /// Optimizer enum that allows for different optimizers to be used with neural networks.
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Optimizer {
     SGD {
         learning_rate: f64,
