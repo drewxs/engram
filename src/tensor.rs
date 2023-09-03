@@ -910,6 +910,40 @@ impl Tensor {
         self.data.iter().flatten().fold(0.0, |acc, x| acc + x)
     }
 
+    /// Returns the sum of all elements in the tensor along the given axis.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::tensor;
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]];
+    /// let sum_cols = a.sum_axis(0);
+    /// let sum_rows = a.sum_axis(1);
+    /// assert_eq!(sum_cols.data, vec![vec![9.0, 12.0]]);
+    /// assert_eq!(sum_rows.data, vec![vec![3.0], vec![7.0], vec![11.0]]);
+    /// ```
+    pub fn sum_axis(&self, axis: u8) -> Tensor {
+        if axis == 0 {
+            let mut res = Tensor::zeros(1, self.cols);
+            for i in 0..self.rows {
+                for j in 0..self.cols {
+                    res.data[0][j] += self.data[i][j];
+                }
+            }
+            res
+        } else if axis == 1 {
+            let mut res = Tensor::zeros(self.rows, 1);
+            for i in 0..self.rows {
+                for j in 0..self.cols {
+                    res.data[i][0] += self.data[i][j];
+                }
+            }
+            res
+        } else {
+            panic!("Invalid axis value: {}", axis);
+        }
+    }
+
     /// Returns the mean of all elements in the tensor.
     ///
     /// # Examples
