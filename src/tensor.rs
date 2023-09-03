@@ -862,10 +862,10 @@ impl Tensor {
     /// ```
     /// # use engram::tensor;
     /// let a = tensor![[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]];
-    /// let b = a.reshape(2, 3);
-    /// let c = tensor![[1.0, 2.0], [4.0, 5.0], [7.0, 8.0], [3.0, 6.0]];
-    /// let d = c.reshape(2, 4);
-    /// assert_eq!(b.data, vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]]);
+    /// let b = tensor![[1.0, 2.0], [4.0, 5.0], [7.0, 8.0], [3.0, 6.0]];
+    /// let c = a.reshape(2, 3);
+    /// let d = b.reshape(2, 4);
+    /// assert_eq!(c.data, vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]]);
     /// assert_eq!(d.data, vec![vec![1.0, 2.0, 4.0, 5.0], vec![7.0, 8.0, 3.0, 6.0]]);
     /// ```
     pub fn reshape(&self, rows: usize, cols: usize) -> Tensor {
@@ -883,6 +883,51 @@ impl Tensor {
             }
         }
         res
+    }
+
+    // Returns a resized version of the tensor with the given rows and cols.
+    //
+    // # Examples
+    //
+    // ```
+    // # use engram::tensor;
+    // let a = tensor![[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]];
+    // let b = a.resize(2, 2);
+    // let c = b.resize(2, 3);
+    // assert_eq!(b.data, vec![vec![1.0, 2.0], vec![3.0, 4.0]]);
+    // assert_eq!(c.data, vec![vec![1.0, 2.0, 0.0], vec![3.0, 4.0, 0.0]]);
+    // ```
+    pub fn resize(&self, rows: usize, cols: usize) -> Tensor {
+        let mut result = Tensor::zeros(rows, cols);
+
+        for i in 0..rows {
+            for j in 0..cols {
+                result.data[i][j] = if i < self.rows && j < self.cols {
+                    self.data[i][j]
+                } else {
+                    0.0
+                };
+            }
+        }
+
+        result
+    }
+
+    /// Returns a resized version of the tensor with the same shape as the given tensor.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::tensor;
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]];
+    /// let b = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]];
+    /// let c = a.resize_to(&b);
+    /// let d = b.resize_to(&a);
+    /// assert_eq!(c.data, vec![vec![1.0, 2.0, 0.0], vec![3.0, 4.0, 0.0], vec![5.0, 6.0, 0.0]]);
+    /// assert_eq!(d.data, vec![vec![1.0, 2.0], vec![4.0, 5.0], vec![7.0, 8.0]]);
+    /// ```
+    pub fn resize_to(&self, other: &Tensor) -> Tensor {
+        self.resize(other.rows, other.cols)
     }
 
     /// Returns a slice of the tensor.
