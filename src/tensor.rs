@@ -834,7 +834,7 @@ impl Tensor {
         self.data = res.data;
     }
 
-    /// Broadcasts the tensor to a new shape.
+    /// Broadcasts the tensor to another tensor's shape.
     ///
     /// # Examples
     ///
@@ -846,13 +846,13 @@ impl Tensor {
     /// assert_eq!(b.data, vec![vec![1.0, 2.0, 8.0], vec![3.0, 4.0, 9.0]]);
     /// ```
     pub fn broadcast_to(&self, other: &Tensor) -> Tensor {
-        let mut result = Tensor::zeros(other.rows, other.cols);
+        let mut res = Tensor::zeros(other.rows, other.cols);
         for i in 0..other.rows {
             for j in 0..other.cols {
-                result.data[i][j] = self.data[i % self.rows][j % self.cols];
+                res.data[i][j] = self.data[i % self.rows][j % self.cols];
             }
         }
-        result
+        res
     }
 
     /// Reshapes the tensor to a new shape.
