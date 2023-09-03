@@ -855,6 +855,36 @@ impl Tensor {
         result
     }
 
+    /// Reshapes the tensor to a new shape.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::tensor;
+    /// let a = tensor![[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]];
+    /// let b = a.reshape(2, 3);
+    /// let c = tensor![[1.0, 2.0], [4.0, 5.0], [7.0, 8.0], [3.0, 6.0]];
+    /// let d = c.reshape(2, 4);
+    /// assert_eq!(b.data, vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]]);
+    /// assert_eq!(d.data, vec![vec![1.0, 2.0, 4.0, 5.0], vec![7.0, 8.0, 3.0, 6.0]]);
+    /// ```
+    pub fn reshape(&self, rows: usize, cols: usize) -> Tensor {
+        if self.rows * self.cols != rows * cols {
+            panic!("New shape must have the same total number of elements as the original tensor.");
+        }
+
+        let mut res = Tensor::zeros(rows, cols);
+        let mut idx = 0;
+        let flat = self.flatten();
+        for i in 0..rows {
+            for j in 0..cols {
+                res.data[i][j] = flat[idx];
+                idx += 1;
+            }
+        }
+        res
+    }
+
     /// Returns a slice of the tensor.
     ///
     /// # Examples
