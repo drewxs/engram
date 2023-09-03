@@ -1,4 +1,4 @@
-//! This module contains functions for calculating statistics.
+//! Statistics.
 
 use std::{
     collections::HashMap,

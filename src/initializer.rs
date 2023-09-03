@@ -1,3 +1,5 @@
+//! Initializations for weight matrices.
+
 use rand::Rng;
 
 use crate::tensor::Tensor2D;

@@ -1,3 +1,5 @@
+//! Loss functions.
+
 use crate::Tensor;
 
 /// Mean squared error loss.

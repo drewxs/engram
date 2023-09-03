@@ -1,4 +1,4 @@
-//! Implements different optimizers to be used with neural networks.
+//! Optimization algorithms.
 //!
 //! Use to minimize the loss function during the training process of a neural network by
 //! adjusting the weights of the network based on the gradients of the loss function with

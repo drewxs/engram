@@ -1,4 +1,5 @@
-//! This module provides implementations for L1 and L2 regularization.
+//! L1/L2 regularization.
+//!
 //! Regularization can be used to prevent overfitting.
 //!
 //! # Example

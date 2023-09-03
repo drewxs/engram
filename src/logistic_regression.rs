@@ -1,3 +1,5 @@
+//! Logistic regression model.
+
 use rand::Rng;
 
 pub struct LogisticRegression {
