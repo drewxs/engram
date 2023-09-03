@@ -1,10 +1,12 @@
+//! A generic feed forward neural network (FNN), also known as a multi-layer perceptron (MLP).
+//! Typically used for classification and regression tasks.
+
 use crate::{Activation, Initializer, Layer, Optimizer, Tensor};
 
 #[derive(Debug)]
 pub struct Network {
-    layers: Vec<Layer>,
-    activation: Activation,
-    optimizer: Optimizer,
+    pub layers: Vec<Layer>,
+    pub optimizer: Optimizer,
 }
 
 impl Network {
@@ -18,15 +20,16 @@ impl Network {
         let mut layers = Vec::new();
 
         for i in 0..layer_sizes.len() - 1 {
-            let layer = Layer::new(layer_sizes[i], layer_sizes[i + 1], &initializer);
+            let layer = Layer::new(
+                layer_sizes[i],
+                layer_sizes[i + 1],
+                &initializer,
+                activation.clone(),
+            );
             layers.push(layer);
         }
 
-        Network {
-            layers,
-            activation,
-            optimizer,
-        }
+        Network { layers, optimizer }
     }
 
     /// Creates a new `Network` with defaults: xavier initialization, sigmoid activation,
@@ -49,7 +52,7 @@ impl Network {
     pub fn feed_forward(&mut self, inputs: &Tensor) -> Tensor {
         let mut output = inputs.clone();
         for layer in &mut self.layers {
-            output = layer.feed_forward(&output, self.activation);
+            output = layer.feed_forward(&output);
         }
         output
     }
@@ -57,7 +60,7 @@ impl Network {
     /// Performs backpropagation on the network, using the specified outputs and targets.
     pub fn back_propagate(&mut self, targets: &Tensor) {
         for layer in self.layers.iter_mut().rev() {
-            layer.back_propagate(&mut targets.clone(), self.activation);
+            layer.back_propagate(targets);
         }
     }
 
@@ -71,8 +74,8 @@ impl Network {
             for batch in 0..num_batches {
                 let batch_start = batch * batch_size;
                 let batch_end = (batch + 1) * batch_size;
-                let inputs_batch = inputs.slice(batch_start, batch_end);
-                let targets_batch = targets.slice(batch_start, batch_end);
+                let inputs_batch = &inputs.slice(batch_start, batch_end);
+                let targets_batch = &targets.slice(batch_start, batch_end);
 
                 let outputs = self.feed_forward(&inputs_batch);
                 let error = targets_batch.sub(&outputs);
@@ -80,9 +83,7 @@ impl Network {
                 self.back_propagate(&targets_batch);
 
                 for layer in &mut self.layers {
-                    self.optimizer
-                        .step(&mut layer.weights, &mut layer.d_weights);
-                    self.optimizer.step(&mut layer.biases, &mut layer.d_biases);
+                    layer.step(&mut self.optimizer);
                 }
 
                 error_sum += error.sum();
