@@ -24,7 +24,7 @@ pub struct Tensor {
 }
 
 impl Tensor {
-    /// Creates a new `Tensor` of zeros with the specified number of rows and columns.
+    /// Creates a new `Tensor` of 0s with the specified number of rows and columns.
     ///
     /// # Examples
     /// ```
@@ -42,7 +42,7 @@ impl Tensor {
         }
     }
 
-    /// Creates a new `Tensor` of zeros with the same shape as the provided `Tensor`.
+    /// Creates a new `Tensor` of 0s with the same shape as the provided `Tensor`.
     ///
     /// # Examples
     ///
@@ -54,6 +54,24 @@ impl Tensor {
     /// ```
     pub fn zeros_like(other: &Tensor) -> Tensor {
         Tensor::zeros(other.rows, other.cols)
+    }
+
+    /// Creates a new `Tensor` of 1s with the specified number of rows and columns.
+    ///
+    /// # Examples
+    /// ```
+    /// # use engram::Tensor;
+    /// let tensor = Tensor::ones(2, 3);
+    /// let tensor_b = Tensor::ones(3, 2);
+    /// assert_eq!(tensor.data, vec![vec![1.0, 1.0, 1.0], vec![1.0, 1.0, 1.0]]);
+    /// assert_eq!(tensor_b.data, vec![vec![1.0, 1.0], vec![1.0, 1.0], vec![1.0, 1.0]]);
+    /// ```
+    pub fn ones(rows: usize, cols: usize) -> Tensor {
+        Tensor {
+            rows,
+            cols,
+            data: vec![vec![1.0; cols]; rows],
+        }
     }
 
     /// Creates a new `Tensor` from a two-dimensional vector of floating point values.
