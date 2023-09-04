@@ -11,13 +11,13 @@ pub mod tensor;
 
 pub mod prelude;
 
-pub use activation::*;
-pub use initializer::*;
-pub use layer::*;
+pub use activation::Activation;
+pub use initializer::Initializer;
+pub use layer::Layer;
 pub use logistic_regression::*;
 pub use loss::*;
 pub use network::*;
-pub use optimizer::*;
-pub use regularization::*;
+pub use optimizer::Optimizer;
+pub use regularization::Regularization;
 pub use stats::*;
 pub use tensor::*;

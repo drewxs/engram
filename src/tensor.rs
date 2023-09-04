@@ -5,7 +5,7 @@
 
 use std::{collections::HashMap, fmt};
 
-use crate::initializer::Initializer;
+use crate::{initializer::Initializer, Activation};
 
 /// A one-dimensional matrix of floating point values.
 pub type Tensor1D = Vec<f64>;
@@ -1069,6 +1069,34 @@ impl Tensor {
             }
         }
         res
+    }
+
+    /// Returns a new tensor with each element in the tensor activated by the given activation function.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Activation::Sigmoid};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.activate(&Sigmoid);
+    /// assert_eq!(b.data, vec![vec![0.7310585786300049, 0.8807970779778823], vec![0.9525741268224334, 0.9820137900379085]]);
+    /// ```
+    pub fn activate(&self, activation: &Activation) -> Tensor {
+        self.mapv(&|x| activation.apply(x))
+    }
+
+    /// Returns a new tensor with each element in the tensor activated by the derivative of the given activation function.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::{tensor, Activation::Sigmoid};
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.gradient(&Sigmoid);
+    /// assert_eq!(b.data, vec![vec![0.19661193324148185, 0.10499358540350662], vec![0.045176659730912, 0.017662706213291107]]);
+    /// ```
+    pub fn gradient(&self, activation: &Activation) -> Tensor {
+        self.mapv(&|x| activation.gradient(x))
     }
 
     /// Validates that the shape of the tensor is the same as the shape of another tensor.

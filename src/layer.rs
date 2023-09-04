@@ -63,7 +63,7 @@ impl Layer {
     pub fn feed_forward(&mut self, inputs: &Tensor) -> Tensor {
         let weighted_sum = inputs.matmul(&self.weights);
         let biases = self.biases.broadcast_to(&weighted_sum);
-        let output = self.activation.apply_tensor(&weighted_sum.add(&biases));
+        let output = weighted_sum.add(&biases).activate(&self.activation);
 
         self.inputs = Some(inputs.clone());
         self.output = Some(output.clone());
@@ -90,7 +90,7 @@ impl Layer {
 
         // Compute error delta for this layer
         let error = output.sub(&targets);
-        let d_output = self.activation.gradient_tensor(&output);
+        let d_output = output.activate(&self.activation);
         let error_delta = error.mul(&d_output);
 
         let inputs = self.inputs.as_ref().unwrap();
