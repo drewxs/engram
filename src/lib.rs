@@ -10,7 +10,7 @@ pub use activation::Activation;
 pub use linalg::*;
 pub use loss::*;
 pub use neural_network::*;
-pub use optimizer::Optimizer;
+pub use optimizer::*;
 pub use regression::*;
 pub use statistics::*;
 

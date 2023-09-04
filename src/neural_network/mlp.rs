@@ -60,7 +60,7 @@ impl Network {
     /// Performs backpropagation on the network, using the specified outputs and targets.
     pub fn back_propagate(&mut self, targets: &Tensor) {
         for layer in self.layers.iter_mut().rev() {
-            layer.back_propagate(targets);
+            layer.back_propagate(targets, &mut self.optimizer);
         }
     }
 
@@ -81,10 +81,6 @@ impl Network {
                 let error = targets_batch.sub(&outputs);
 
                 self.back_propagate(&targets_batch);
-
-                for layer in &mut self.layers {
-                    layer.step(&mut self.optimizer);
-                }
 
                 error_sum += error.sum();
             }

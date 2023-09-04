@@ -3,7 +3,7 @@
 //! This module provides a Layer struct for representing a single layer in a neural network,
 //! along with methods for feeding inputs through the layer and performing backpropagation.
 
-use crate::{Activation, Initializer, Optimizer, Tensor};
+use crate::{optimizer::Optimize, Activation, Initializer, Optimizer, Tensor};
 
 /// A single layer in a neural network.
 #[derive(Debug)]
@@ -82,7 +82,7 @@ impl Layer {
     /// let targets = tensor![[1.0, 3.0], [2.0, 4.0], [3.0, 5.0], [4.0, 6.0]];
     /// layer.back_propagate(&targets);
     /// ```
-    pub fn back_propagate(&mut self, targets: &Tensor) {
+    pub fn back_propagate(&mut self, targets: &Tensor, optimizer: &mut Optimizer) {
         let output = match &self.output {
             Some(output) => output,
             None => panic!("Call to back_propagate without calling feed_forward first!"),
@@ -106,24 +106,11 @@ impl Layer {
             .div_scalar(num_samples)
             .resize_to(&self.biases);
 
+        optimizer.step(&mut self.weights, &mut self.d_weights);
+        optimizer.step(&mut self.biases, &mut self.d_biases);
+
         // Update weights and biases based on gradients
         self.weights.sub_assign(&self.d_weights);
         self.biases.sub_assign(&self.d_biases);
-    }
-
-    /// Performs a single step of gradient descent on the layer's weights and biases.
-    ///
-    /// # Examples
-    ///
-    /// # use engram::{Activation, Initializer, Layer, Optimizer, tensor};
-    /// let mut layer = Layer::new(2, 3, &Initializer::Xavier, Activation::Sigmoid);
-    /// let inputs = tensor![[1.0, 2.0, 7.0], [3.0, 4.0, 9.0], [5.0, 6.0, 9.0]];
-    /// layer.feed_forward(&inputs);
-    /// let targets = tensor![[1.0, 3.0], [2.0, 4.0], [3.0, 5.0]];
-    /// layer.back_propagate(&targets);
-    /// layer.step(&mut Optimizer::SGD { learning_rate: 0.1 });
-    pub fn step(&mut self, optimizer: &mut Optimizer) {
-        optimizer.step(&mut self.weights, &mut self.d_weights);
-        optimizer.step(&mut self.biases, &mut self.d_biases);
     }
 }
