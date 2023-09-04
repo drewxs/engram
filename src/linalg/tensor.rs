@@ -1,7 +1,7 @@
-//! This module provides a Tensor struct that represents a two-dimensional matrix of
-//! floating point values. It also provides type aliases for one- and two-dimensional
-//! vectors of floating point values, as well as methods for initializing, manipulating,
-//! and performing mathematical operations on tensors.
+//! Tensors representing two-dimensional matrices of floating point values.
+//!
+//! Also provides type aliases for one- and two-dimensional vectors of floating point values,
+//! as well as methods for initializing, manipulating, and performing mathematical operations on tensors.
 
 use std::{collections::HashMap, fmt};
 

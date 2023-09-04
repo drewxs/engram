@@ -1,23 +1,17 @@
 pub mod activation;
-pub mod initializer;
-pub mod layer;
-pub mod logistic_regression;
+pub mod linalg;
 pub mod loss;
-pub mod network;
+pub mod neural_network;
 pub mod optimizer;
-pub mod regularization;
-pub mod stats;
-pub mod tensor;
-
-pub mod prelude;
+pub mod regression;
+pub mod statistics;
 
 pub use activation::Activation;
-pub use initializer::Initializer;
-pub use layer::Layer;
-pub use logistic_regression::*;
+pub use linalg::*;
 pub use loss::*;
-pub use network::*;
+pub use neural_network::*;
 pub use optimizer::Optimizer;
-pub use regularization::Regularization;
-pub use stats::*;
-pub use tensor::*;
+pub use regression::*;
+pub use statistics::*;
+
+pub mod prelude;
