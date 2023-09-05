@@ -3,7 +3,7 @@
 //! This module provides a Layer struct for representing a single layer in a neural network,
 //! along with methods for feeding inputs through the layer and performing backpropagation.
 
-use crate::{optimizer::Optimize, Activation, Initializer, Optimizer, Tensor};
+use crate::{optimizer::Optimize, Activation, Initializer, LossFunction, Optimizer, Tensor};
 
 /// A single layer in a neural network.
 #[derive(Debug)]
@@ -24,7 +24,7 @@ impl Layer {
     /// # Examples
     ///
     /// ```
-    /// # use engram::{Activation, Initializer, Layer};
+    /// # use engram::*;
     /// let layer = Layer::new(2, 3, &Initializer::Xavier, Activation::Sigmoid);
     /// assert_eq!(layer.weights.shape(), (2, 3));
     /// assert_eq!(layer.biases.shape(), (2, 1));
@@ -54,7 +54,7 @@ impl Layer {
     /// # Examples
     ///
     /// ```
-    /// # use engram::{Activation, Initializer, Layer, tensor};
+    /// # use engram::*;
     /// let mut layer = Layer::new(3, 2, &Initializer::Xavier, Activation::Sigmoid);
     /// let inputs = tensor![[1.0, 2.0, 7.0], [3.0, 4.0, 9.0], [5.0, 6.0, 9.0], [1.0, 2.0, 3.0]];
     /// let output = layer.feed_forward(&inputs);
@@ -75,33 +75,37 @@ impl Layer {
     /// # Examples
     ///
     /// ```
-    /// # use engram::{Activation, Initializer, Layer, Optimizer, tensor};
+    /// # use engram::*;
     /// let mut layer = Layer::new(3, 2, &Initializer::Xavier, Activation::Sigmoid);
     /// let inputs = tensor![[1.0, 2.0, 7.0], [3.0, 4.0, 9.0], [5.0, 6.0, 9.0], [1.0, 2.0, 3.0]];
     /// let output = layer.feed_forward(&inputs);
     /// let targets = tensor![[1.0, 3.0], [2.0, 4.0], [3.0, 5.0], [4.0, 6.0]];
-    /// layer.back_propagate(&targets, &mut Optimizer::SGD { learning_rate: 0.1 });
+    /// layer.back_propagate(&targets, &LossFunction::BinaryCrossEntropy, &mut Optimizer::SGD { learning_rate: 0.1 });
+    /// assert_eq!(layer.d_weights.shape(), (3, 2));
+    /// assert_eq!(layer.d_biases.shape(), (3, 1));
     /// ```
-    pub fn back_propagate(&mut self, targets: &Tensor, optimizer: &mut Optimizer) {
+    pub fn back_propagate(
+        &mut self,
+        targets: &Tensor,
+        loss_function: &LossFunction,
+        optimizer: &mut Optimizer,
+    ) {
         let output = match &self.output {
             Some(output) => output,
             None => panic!("Call to back_propagate without calling feed_forward first!"),
         };
 
-        // Compute error delta for this layer
-        let error = output.sub(&targets);
-        let d_output = output.activate(&self.activation);
-        let error_delta = error.mul(&d_output);
+        // Compute loss
+        let d_loss = loss_function
+            .loss(&output, &targets)
+            .activate(&self.activation);
 
         let inputs = self.inputs.as_ref().unwrap();
         let num_samples = inputs.rows as f64;
 
         // Compute gradients for weights and biases
-        self.d_weights = inputs
-            .transpose()
-            .matmul(&error_delta)
-            .div_scalar(num_samples);
-        self.d_biases = error_delta
+        self.d_weights = inputs.transpose().matmul(&d_loss).div_scalar(num_samples);
+        self.d_biases = d_loss
             .sum_axis(1)
             .div_scalar(num_samples)
             .resize_to(&self.biases);

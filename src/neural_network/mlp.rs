@@ -1,11 +1,12 @@
 //! A generic feed forward neural network (FNN), also known as a multi-layer perceptron (MLP).
 //! Typically used for classification and regression tasks.
 
-use crate::{Activation, Initializer, Layer, Optimizer, Tensor};
+use crate::{Activation, Initializer, Layer, LossFunction, Optimizer, Tensor};
 
 #[derive(Debug)]
 pub struct Network {
     pub layers: Vec<Layer>,
+    pub loss_function: LossFunction,
     pub optimizer: Optimizer,
 }
 
@@ -15,6 +16,7 @@ impl Network {
         layer_sizes: Vec<usize>,
         initializer: Initializer,
         activation: Activation,
+        loss_function: LossFunction,
         optimizer: Optimizer,
     ) -> Network {
         let mut layers = Vec::new();
@@ -29,7 +31,11 @@ impl Network {
             layers.push(layer);
         }
 
-        Network { layers, optimizer }
+        Network {
+            layers,
+            loss_function,
+            optimizer,
+        }
     }
 
     /// Creates a new `Network` with defaults: xavier initialization, sigmoid activation,
@@ -39,6 +45,7 @@ impl Network {
             layer_sizes,
             Initializer::Xavier,
             Activation::Sigmoid,
+            LossFunction::BinaryCrossEntropy,
             Optimizer::SGD { learning_rate: 0.1 },
         )
     }
@@ -60,7 +67,7 @@ impl Network {
     /// Performs backpropagation on the network, using the specified outputs and targets.
     pub fn back_propagate(&mut self, targets: &Tensor) {
         for layer in self.layers.iter_mut().rev() {
-            layer.back_propagate(targets, &mut self.optimizer);
+            layer.back_propagate(targets, &self.loss_function, &mut self.optimizer);
         }
     }
 

@@ -8,17 +8,14 @@ pub use mse::*;
 
 use crate::Tensor;
 
+#[derive(Debug)]
 pub enum LossFunction {
     BinaryCrossEntropy,
     MeanSquaredError,
 }
 
-pub trait Loss {
-    fn loss(&self, predictions: &Tensor, targets: &Tensor) -> f64;
-}
-
-impl Loss for LossFunction {
-    fn loss(&self, predictions: &Tensor, targets: &Tensor) -> f64 {
+impl LossFunction {
+    pub fn loss(&self, predictions: &Tensor, targets: &Tensor) -> Tensor {
         match self {
             LossFunction::BinaryCrossEntropy => binary_cross_entropy(predictions, targets),
             LossFunction::MeanSquaredError => mean_squared_error(predictions, targets),
