@@ -74,6 +74,20 @@ impl Tensor {
         }
     }
 
+    /// Creates a new `Tensor` of 1s with the same shape as the provided `Tensor`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::Tensor;
+    /// let other = Tensor::ones(2, 3);
+    /// let tensor = Tensor::ones_like(&other);
+    /// assert_eq!(tensor.data, vec![vec![1.0, 1.0, 1.0], vec![1.0, 1.0, 1.0]]);
+    /// ```
+    pub fn ones_like(other: &Tensor) -> Tensor {
+        Tensor::ones(other.rows, other.cols)
+    }
+
     /// Creates a new `Tensor` from a two-dimensional vector of floating point values.
     ///
     /// # Examples
