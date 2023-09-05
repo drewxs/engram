@@ -930,6 +930,20 @@ impl Tensor {
         self.resize(other.rows, other.cols)
     }
 
+    /// Returns a clipped version of the tensor with values between the given min and max.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::tensor;
+    /// let a = tensor![[-1.0, 2.0], [3.0, 4.0], [5.0, 6.0]];
+    /// let b = a.clip(0.0, 4.0);
+    /// assert_eq!(b.data, vec![vec![0.0, 2.0], vec![3.0, 4.0], vec![4.0, 4.0]]);
+    /// ```
+    pub fn clip(&self, min: f64, max: f64) -> Tensor {
+        self.mapv(&|x| x.max(min).min(max))
+    }
+
     /// Returns a slice of the tensor.
     ///
     /// # Examples
