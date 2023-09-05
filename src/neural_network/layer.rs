@@ -75,12 +75,12 @@ impl Layer {
     /// # Examples
     ///
     /// ```
-    /// # use engram::{Activation, Initializer, Layer, tensor};
+    /// # use engram::{Activation, Initializer, Layer, Optimizer, tensor};
     /// let mut layer = Layer::new(3, 2, &Initializer::Xavier, Activation::Sigmoid);
     /// let inputs = tensor![[1.0, 2.0, 7.0], [3.0, 4.0, 9.0], [5.0, 6.0, 9.0], [1.0, 2.0, 3.0]];
     /// let output = layer.feed_forward(&inputs);
     /// let targets = tensor![[1.0, 3.0], [2.0, 4.0], [3.0, 5.0], [4.0, 6.0]];
-    /// layer.back_propagate(&targets);
+    /// layer.back_propagate(&targets, &mut Optimizer::SGD { learning_rate: 0.1 });
     /// ```
     pub fn back_propagate(&mut self, targets: &Tensor, optimizer: &mut Optimizer) {
         let output = match &self.output {
