@@ -3,7 +3,7 @@
 /// # Examples
 ///
 /// ```
-/// # use engram::activation::relu;
+/// # use engram::*;
 /// assert_eq!(relu(0.0), 0.0, "relu(0.0)");
 /// assert_eq!(relu(10.0), 10.0, "relu(10.0)");
 /// ```
@@ -16,7 +16,7 @@ pub fn relu(x: f64) -> f64 {
 /// # Examples
 ///
 /// ```
-/// # use engram::activation::d_relu;
+/// # use engram::*;
 /// assert_eq!(d_relu(0.0), 0.0, "d_relu(0.0)");
 /// assert_eq!(d_relu(-10.0), 0.0, "d_relu(-10.0)");
 /// ```

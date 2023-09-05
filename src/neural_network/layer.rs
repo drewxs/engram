@@ -3,7 +3,7 @@
 //! This module provides a Layer struct for representing a single layer in a neural network,
 //! along with methods for feeding inputs through the layer and performing backpropagation.
 
-use crate::{optimizer::Optimize, Activation, Initializer, LossFunction, Optimizer, Tensor};
+use crate::{Activation, Initializer, LossFunction, Optimize, Optimizer, Tensor};
 
 /// A single layer in a neural network.
 #[derive(Debug)]

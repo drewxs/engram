@@ -2,7 +2,7 @@
 
 use rand::Rng;
 
-use crate::tensor::Tensor2D;
+use crate::Tensor2D;
 
 #[derive(Debug)]
 pub enum Initializer {
@@ -16,7 +16,7 @@ impl Initializer {
     /// # Examples
     ///
     /// ```
-    /// # use engram::Initializer;
+    /// # use engram::*;
     /// let xavier = Initializer::Xavier.initialize(2, 3);
     /// let kaiming = Initializer::Kaiming.initialize(5, 3);
     /// assert_eq!(xavier.len(), 2);

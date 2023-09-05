@@ -1,7 +1,7 @@
-pub mod initializer;
-pub mod layer;
-pub mod mlp;
-pub mod regularization;
+mod initializer;
+mod layer;
+mod mlp;
+mod regularization;
 
 pub use initializer::*;
 pub use layer::*;

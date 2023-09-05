@@ -3,7 +3,7 @@
 /// # Examples
 ///
 /// ```
-/// # use engram::activation::sigmoid;
+/// # use engram::*;
 /// assert_eq!(sigmoid(0.0), 0.5, "sigmoid(0.0)");
 /// assert_eq!(sigmoid(1.0), 0.7310585786300049, "sigmoid(1.0)");
 /// ```
@@ -16,7 +16,7 @@ pub fn sigmoid(x: f64) -> f64 {
 /// # Examples
 ///
 /// ```
-/// # use engram::activation::d_sigmoid;
+/// # use engram::*;
 /// assert_eq!(d_sigmoid(0.0), 0.25, "d_sigmoid(0.0)");
 /// assert_eq!(d_sigmoid(1.0), 0.19661193324148185, "d_sigmoid(1.0)");
 /// ```

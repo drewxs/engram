@@ -11,7 +11,7 @@ use std::{
 /// # Examples
 ///
 /// ```
-/// use engram::mean;
+/// # use engram::*;
 /// let values = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
 /// assert_eq!(mean(&values), 3.5);
 /// ```
@@ -28,7 +28,7 @@ pub fn mean<T: Into<f64> + Copy>(data: &[T]) -> f64 {
 /// # Examples
 ///
 /// ```
-/// use engram::median;
+/// # use engram::*;
 /// let values = vec![1.0, 9.0, 2.5, 3.0, 2.0, 8.0];
 /// assert_eq!(median(&values), Some(2.75));
 /// ```
@@ -53,7 +53,7 @@ pub fn median<T: Into<f64> + Copy>(data: &[T]) -> Option<f64> {
 /// # Examples
 ///
 /// ```
-/// use engram::mode;
+/// # use engram::*;
 /// let values = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 9];
 /// assert_eq!(mode(&values), Some(9));
 /// ```
@@ -75,7 +75,7 @@ pub fn mode<T: Copy + Eq + Hash>(data: &[T]) -> Option<T> {
 /// # Examples
 ///
 /// ```
-/// use engram::var;
+/// # use engram::*;
 /// let values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
 /// assert_eq!(var(&values), 2.5);
 /// ```
@@ -91,7 +91,7 @@ pub fn var<T: Into<f64> + Copy + Add + Sub>(data: &[T]) -> f64 {
 /// # Examples
 ///
 /// ```
-/// use engram::pop_var;
+/// # use engram::*;
 /// let values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
 /// assert_eq!(pop_var(&values), 2.0);
 /// ```
@@ -107,7 +107,7 @@ pub fn pop_var<T: Into<f64> + Copy + Add + Sub>(data: &[T]) -> f64 {
 /// # Examples
 ///
 /// ```
-/// use engram::std;
+/// # use engram::*;
 /// let values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
 /// assert_eq!(std(&values), 1.5811388300841898);
 /// ```
@@ -120,7 +120,7 @@ pub fn std<T: Into<f64> + Copy + Add + Sub>(data: &[T]) -> f64 {
 /// # Examples
 ///
 /// ```
-/// use engram::pop_std;
+/// # use engram::*;
 /// let values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
 /// assert_eq!(pop_std(&values), 1.4142135623730951);
 /// ```
@@ -133,7 +133,7 @@ pub fn pop_std<T: Into<f64> + Copy + Add + Sub>(data: &[T]) -> f64 {
 /// # Examples
 ///
 /// ```
-/// use engram::mean_std_err;
+/// # use engram::*;
 /// let values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
 /// assert_eq!(mean_std_err(&values), 0.7071067811865476);
 /// ```
@@ -147,7 +147,7 @@ pub fn mean_std_err<T: Into<f64> + Copy + Add + Sub>(data: &[T]) -> f64 {
 /// # Examples
 ///
 /// ```
-/// use engram::mean_ci;
+/// # use engram::*;
 /// let values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
 /// assert_eq!(mean_ci(&values, 0.95).unwrap(), (2.32824855787278, 3.67175144212722));
 /// ```

@@ -1,3 +1,3 @@
-pub mod logistic;
+mod logistic;
 
 pub use logistic::*;

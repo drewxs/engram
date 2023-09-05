@@ -3,7 +3,7 @@
 /// # Examples
 ///
 /// ```
-/// # use engram::activation::leaky_relu;
+/// # use engram::*;
 /// assert_eq!(leaky_relu(0.0), 0.0, "leaky_relu(0.0)");
 /// assert_eq!(leaky_relu(-10.0), -0.1, "leaky_relu(-10.0)");
 /// ```
@@ -16,7 +16,7 @@ pub fn leaky_relu(x: f64) -> f64 {
 /// # Examples
 ///
 /// ```
-/// # use engram::activation::d_leaky_relu;
+/// # use engram::*;
 /// assert_eq!(d_leaky_relu(0.0), 0.01, "d_leaky_relu(0.0)");
 /// assert_eq!(d_leaky_relu(-10.0), 0.01, "d_leaky_relu(-10.0)");
 /// ```

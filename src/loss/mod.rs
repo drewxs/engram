@@ -1,7 +1,7 @@
 //! Loss functions.
 
-pub mod bce;
-pub mod mse;
+mod bce;
+mod mse;
 
 pub use bce::*;
 pub use mse::*;

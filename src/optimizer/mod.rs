@@ -4,8 +4,8 @@
 //! adjusting the weights of the network based on the gradients of the loss function with
 //! respect to the weights.
 
-pub mod adagrad;
-pub mod sgd;
+mod adagrad;
+mod sgd;
 
 pub use adagrad::Adagrad;
 pub use sgd::SGD;

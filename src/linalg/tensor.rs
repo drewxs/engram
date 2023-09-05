@@ -5,7 +5,7 @@
 
 use std::{collections::HashMap, fmt};
 
-use crate::{initializer::Initializer, Activation};
+use crate::{Activation, Initializer};
 
 /// A one-dimensional matrix of floating point values.
 pub type Tensor1D = Vec<f64>;
@@ -28,7 +28,7 @@ impl Tensor {
     ///
     /// # Examples
     /// ```
-    /// # use engram::Tensor;
+    /// # use engram::*;
     /// let tensor = Tensor::zeros(2, 3);
     /// let tensor_b = Tensor::zeros(3, 2);
     /// assert_eq!(tensor.data, vec![vec![0.0, 0.0, 0.0], vec![0.0, 0.0, 0.0]]);
@@ -47,7 +47,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::Tensor;
+    /// # use engram::*;
     /// let other = Tensor::zeros(2, 3);
     /// let tensor = Tensor::zeros_like(&other);
     /// assert_eq!(tensor.data, vec![vec![0.0, 0.0, 0.0], vec![0.0, 0.0, 0.0]]);
@@ -60,7 +60,7 @@ impl Tensor {
     ///
     /// # Examples
     /// ```
-    /// # use engram::Tensor;
+    /// # use engram::*;
     /// let tensor = Tensor::ones(2, 3);
     /// let tensor_b = Tensor::ones(3, 2);
     /// assert_eq!(tensor.data, vec![vec![1.0, 1.0, 1.0], vec![1.0, 1.0, 1.0]]);
@@ -79,7 +79,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::Tensor;
+    /// # use engram::*;
     /// let other = Tensor::ones(2, 3);
     /// let tensor = Tensor::ones_like(&other);
     /// assert_eq!(tensor.data, vec![vec![1.0, 1.0, 1.0], vec![1.0, 1.0, 1.0]]);
@@ -93,7 +93,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let tensor = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
     /// assert_eq!(tensor.data, vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]]);
     /// ```
@@ -110,7 +110,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::{Initializer, Tensor};
+    /// # use engram::*;
     /// let tensor = Tensor::initialize(2, 3, &Initializer::Xavier);
     /// assert_eq!(tensor.data.len(), 2);
     /// assert_eq!(tensor.data[0].len(), 3);
@@ -127,7 +127,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::Tensor;
+    /// # use engram::*;
     /// let tensor = Tensor::zeros(2, 3);
     /// let tensor_b = Tensor::zeros(3, 2);
     /// assert_eq!(tensor.shape(), (2, 3));
@@ -142,7 +142,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::Tensor;
+    /// # use engram::*;
     /// let tensor = Tensor::zeros(2, 3);
     /// let tensor_b = Tensor::zeros(5, 4);
     /// assert_eq!(tensor.size(), 6);
@@ -157,7 +157,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let tensor = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
     /// assert_eq!(tensor.first(), 1.0);
     /// ```
@@ -170,7 +170,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let mut tensor = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
     /// let mut iter = tensor.iter_rows();
     /// assert_eq!(iter.next(), Some(&vec![1.0, 2.0, 3.0]));
@@ -186,7 +186,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let mut tensor = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
     /// let mut iter = tensor.iter_rows_mut();
     /// assert_eq!(iter.next(), Some(&mut vec![1.0, 2.0, 3.0]));
@@ -202,7 +202,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
     /// let b = tensor![[7.0, 8.0], [9.0, 10.0], [11.0, 12.0]];
     /// let c = a.matmul(&b);
@@ -229,7 +229,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 0.0, 0.0], [0.0, 5.0, 0.0], [0.0, 0.0, 2.0]];
     /// let b = tensor![[7.0, 8.0], [9.0, 10.0], [11.0, 12.0]];
     /// let c = a.sparse_matmul(&b);
@@ -259,7 +259,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
     /// a.matmul_assign(&b);
@@ -286,7 +286,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
     /// let c = a.mul(&b);
@@ -309,7 +309,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
     /// a.mul_assign(&b);
@@ -330,7 +330,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = a.mul_scalar(5.0);
     /// assert_eq!(b.data, vec![vec![5.0, 10.0], vec![15.0, 20.0]]);
@@ -350,7 +350,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// a.mul_scalar_assign(5.0);
     /// assert_eq!(a.data, vec![vec![5.0, 10.0], vec![15.0, 20.0]]);
@@ -368,7 +368,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 8.0], [30.0, 8.0]];
     /// let c = a.div(&b);
@@ -391,7 +391,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 8.0], [30.0, 8.0]];
     /// a.div_assign(&b);
@@ -412,7 +412,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = a.div_scalar(5.0);
     /// assert_eq!(b.data, vec![vec![0.2, 0.4], vec![0.6, 0.8]]);
@@ -432,7 +432,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// a.div_scalar_assign(5.0);
     /// assert_eq!(a.data, vec![vec![0.2, 0.4], vec![0.6, 0.8]]);
@@ -450,7 +450,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
     /// let c = a.add(&b);
@@ -473,7 +473,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
     /// a.add_assign(&b);
@@ -494,7 +494,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = a.add_scalar(5.0);
     /// assert_eq!(b.data, vec![vec![6.0, 7.0], vec![8.0, 9.0]]);
@@ -514,7 +514,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// a.add_scalar_assign(5.0);
     /// assert_eq!(a.data, vec![vec![6.0, 7.0], vec![8.0, 9.0]]);
@@ -532,7 +532,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
     /// let c = a.sub(&b);
@@ -554,7 +554,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
     /// a.sub_assign(&b);
@@ -575,7 +575,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = a.sub_scalar(5.0);
     /// assert_eq!(b.data, vec![vec![-4.0, -3.0], vec![-2.0, -1.0]]);
@@ -595,7 +595,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// a.sub_scalar_assign(5.0);
     /// assert_eq!(a.data, vec![vec![-4.0, -3.0], vec![-2.0, -1.0]]);
@@ -613,7 +613,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = a.mapv(&|x| x * 2.0);
     /// assert_eq!(b.data, vec![vec![2.0, 4.0], vec![6.0, 8.0]]);
@@ -637,7 +637,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// a.mapv_assign(&|x| x * 2.0);
     /// assert_eq!(a.data, vec![vec![2.0, 4.0], vec![6.0, 8.0]]);
@@ -655,7 +655,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = a.square();
     /// assert_eq!(b.data, vec![vec![1.0, 4.0], vec![9.0, 16.0]]);
@@ -669,7 +669,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// a.square_assign();
     /// assert_eq!(a.data, vec![vec![1.0, 4.0], vec![9.0, 16.0]]);
@@ -683,7 +683,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 4.0], [9.0, 16.0]];
     /// let b = a.sqrt();
     /// assert_eq!(b.data, vec![vec![1.0, 2.0], vec![3.0, 4.0]]);
@@ -697,7 +697,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let mut a = tensor![[1.0, 4.0], [9.0, 16.0]];
     /// a.sqrt_assign();
     /// assert_eq!(a.data, vec![vec![1.0, 2.0], vec![3.0, 4.0]]);
@@ -711,7 +711,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = a.pow(2.0);
     /// assert_eq!(b.data, vec![vec![1.0, 4.0], vec![9.0, 16.0]]);
@@ -725,7 +725,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// a.pow_assign(2.0);
     /// assert_eq!(a.data, vec![vec![1.0, 4.0], vec![9.0, 16.0]]);
@@ -739,7 +739,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = a.ln();
     /// assert_eq!(b.data, vec![vec![0.0, 0.6931471805599453], vec![1.0986122886681098, 1.3862943611198906]]);
@@ -753,7 +753,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// a.ln_assign();
     /// assert_eq!(a.data, vec![vec![0.0, 0.6931471805599453], vec![1.0986122886681098, 1.3862943611198906]]);
@@ -767,7 +767,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [4.0, 8.0]];
     /// let b = a.log2();
     /// assert_eq!(b.data, vec![vec![0.0, 1.0], vec![2.0, 3.0]]);
@@ -781,7 +781,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [4.0, 8.0]];
     /// a.log2_assign();
     /// assert_eq!(a.data, vec![vec![0.0, 1.0], vec![2.0, 3.0]]);
@@ -795,7 +795,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = a.flatten();
     /// assert_eq!(b, vec![1.0, 2.0, 3.0, 4.0]);
@@ -813,7 +813,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0, 3.0], [3.0, 4.0, 6.0]];
     /// let b = a.transpose();
     /// assert_eq!(b.data, vec![vec![1.0, 3.0], vec![2.0, 4.0], vec![3.0, 6.0]]);
@@ -833,7 +833,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// a.transpose_assign();
     /// assert_eq!(a.data, vec![vec![1.0, 3.0], vec![2.0, 4.0]]);
@@ -853,7 +853,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[1.0, 2.0, 8.0], [3.0, 4.0, 9.0]];
     /// let c = a.broadcast_to(&b);
@@ -874,7 +874,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]];
     /// let b = tensor![[1.0, 2.0], [4.0, 5.0], [7.0, 8.0], [3.0, 6.0]];
     /// let c = a.reshape(2, 3);
@@ -904,7 +904,7 @@ impl Tensor {
     // # Examples
     //
     // ```
-    // # use engram::tensor;
+    // # use engram::*;
     // let a = tensor![[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]];
     // let b = a.resize(2, 2);
     // let c = b.resize(2, 3);
@@ -932,7 +932,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]];
     /// let b = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]];
     /// let c = a.resize_to(&b);
@@ -949,7 +949,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[-1.0, 2.0], [3.0, 4.0], [5.0, 6.0]];
     /// let b = a.clip(0.0, 4.0);
     /// assert_eq!(b.data, vec![vec![0.0, 2.0], vec![3.0, 4.0], vec![4.0, 4.0]]);
@@ -963,7 +963,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]];
     /// let b = a.slice(1, 3);
     /// assert_eq!(b.data, vec![vec![3.0, 4.0], vec![5.0, 6.0]]);
@@ -981,7 +981,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0], [2.0], [3.0]];
     /// let b = tensor![[4.0], [5.0], [6.0]];
     /// let c = a.dot(&b);
@@ -1004,7 +1004,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = a.sum();
     /// assert_eq!(b, 10.0);
@@ -1018,7 +1018,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]];
     /// let sum_cols = a.sum_axis(0);
     /// let sum_rows = a.sum_axis(1);
@@ -1052,7 +1052,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = a.mean();
     /// assert_eq!(b, 2.5);
@@ -1066,7 +1066,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = a.norm(2.0);
     /// assert_eq!(b, 5.477225575051661);
@@ -1081,7 +1081,7 @@ impl Tensor {
     ///
     /// ```
     /// # use std::collections::HashMap;
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[0.0, 2.0], [3.0, 0.0]];
     /// let b = a.non_zero_values();
     /// let expected = HashMap::from([((0, 1), 2.0), ((1, 0), 3.0)]);
@@ -1104,9 +1104,9 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::{tensor, Activation::Sigmoid};
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// let b = a.activate(&Sigmoid);
+    /// let b = a.activate(&Activation::Sigmoid);
     /// assert_eq!(b.data, vec![vec![0.7310585786300049, 0.8807970779778823], vec![0.9525741268224334, 0.9820137900379085]]);
     /// ```
     pub fn activate(&self, activation: &Activation) -> Tensor {
@@ -1118,9 +1118,9 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::{tensor, Activation::Sigmoid};
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// let b = a.gradient(&Sigmoid);
+    /// let b = a.gradient(&Activation::Sigmoid);
     /// assert_eq!(b.data, vec![vec![0.19661193324148185, 0.10499358540350662], vec![0.045176659730912, 0.017662706213291107]]);
     /// ```
     pub fn gradient(&self, activation: &Activation) -> Tensor {
@@ -1131,7 +1131,7 @@ impl Tensor {
     ///
     /// # Examples
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// a.validate_shape(&b, "op");
@@ -1150,7 +1150,7 @@ impl Tensor {
     /// # Examples
     ///
     /// ```
-    /// # use engram::tensor;
+    /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// a.validate_mul_shape(&b, "op");
@@ -1206,7 +1206,7 @@ impl fmt::Display for Tensor {
 /// # Usage
 ///
 /// ```
-/// # use engram::tensor;
+/// # use engram::*;
 /// let tensor = tensor![[1.0, 2.0], [3.0, 4.0]];
 /// assert_eq!(tensor.data, vec![vec![1.0, 2.0], vec![3.0, 4.0]]);
 /// ```
@@ -1217,6 +1217,6 @@ macro_rules! tensor {
         $(
             data.push(vec![$($x as f64),*]);
         )*
-        $crate::tensor::Tensor::from(data)
+        $crate::Tensor::from(data)
     }};
 }

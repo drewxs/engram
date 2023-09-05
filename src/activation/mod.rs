@@ -5,10 +5,10 @@ mod relu;
 mod sigmoid;
 mod tanh;
 
-use leaky_relu::*;
-use relu::*;
-use sigmoid::*;
-use tanh::*;
+pub use leaky_relu::*;
+pub use relu::*;
+pub use sigmoid::*;
+pub use tanh::*;
 
 /// An activation function.
 #[derive(Clone, Copy, Debug)]
@@ -26,10 +26,7 @@ impl Activation {
     ///
     /// ```
     /// # use engram::Activation;
-    /// Activation::Sigmoid.apply(0.0);
-    /// Activation::TanH.apply(0.0);
-    /// Activation::ReLU.apply(0.0);
-    /// Activation::LeakyReLU.apply(0.0);
+    /// Activation::Sigmoid.apply(1.0);
     /// ```
     pub fn apply(&self, x: f64) -> f64 {
         match self {
@@ -46,10 +43,7 @@ impl Activation {
     ///
     /// ```
     /// # use engram::Activation;
-    /// Activation::Sigmoid.gradient(0.0);
-    /// Activation::TanH.gradient(0.0);
-    /// Activation::ReLU.gradient(0.0);
-    /// Activation::LeakyReLU.gradient(0.0);
+    /// Activation::ReLU.gradient(1.0);
     /// ```
     pub fn gradient(&self, x: f64) -> f64 {
         match self {
