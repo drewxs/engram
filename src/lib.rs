@@ -6,7 +6,7 @@ pub mod optimizer;
 pub mod regression;
 pub mod statistics;
 
-pub use activation::Activation;
+pub use activation::*;
 pub use linalg::*;
 pub use loss::*;
 pub use neural_network::*;

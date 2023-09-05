@@ -1,14 +1,14 @@
 //! Activation functions and their derivatives
 
-pub mod leaky_relu;
-pub mod relu;
-pub mod sigmoid;
-pub mod tanh;
+mod leaky_relu;
+mod relu;
+mod sigmoid;
+mod tanh;
 
-pub use leaky_relu::*;
-pub use relu::*;
-pub use sigmoid::*;
-pub use tanh::*;
+use leaky_relu::*;
+use relu::*;
+use sigmoid::*;
+use tanh::*;
 
 /// An activation function.
 #[derive(Clone, Copy, Debug)]
