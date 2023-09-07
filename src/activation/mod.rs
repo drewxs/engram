@@ -11,7 +11,7 @@ pub use sigmoid::*;
 pub use tanh::*;
 
 /// An activation function.
-#[derive(Clone, Copy, Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Hash)]
 pub enum Activation {
     Sigmoid,
     TanH,
