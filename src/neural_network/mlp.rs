@@ -7,6 +7,7 @@ use crate::{Activation, Initializer, Layer, LossFunction, Optimizer, Tensor};
 pub struct Network {
     pub layers: Vec<Layer>,
     pub loss_function: LossFunction,
+    pub initializer: Initializer,
     pub optimizer: Optimizer,
 }
 
@@ -34,6 +35,7 @@ impl Network {
         Network {
             layers,
             loss_function,
+            initializer,
             optimizer,
         }
     }
@@ -51,7 +53,13 @@ impl Network {
     }
 
     /// Adds a layer to the network.
-    pub fn add_layer(&mut self, layer: Layer) {
+    pub fn add_layer(&mut self, size: usize, activation: Option<Activation>) {
+        let layer = Layer::new(
+            self.layers.last().unwrap().weights.cols,
+            size,
+            &self.initializer,
+            activation.unwrap_or(self.layers.last().unwrap().activation),
+        );
         self.layers.push(layer);
     }
 
