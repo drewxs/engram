@@ -13,7 +13,7 @@ pub use sgd::SGD;
 use crate::Tensor;
 
 /// Optimizer enum that allows for different optimizers to be used with neural networks.
-#[derive(Clone, Copy, Debug)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Optimizer {
     SGD {
         learning_rate: f64,
