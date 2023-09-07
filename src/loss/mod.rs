@@ -8,7 +8,7 @@ pub use mse::*;
 
 use crate::Tensor;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Hash)]
 pub enum LossFunction {
     BinaryCrossEntropy,
     MeanSquaredError,
