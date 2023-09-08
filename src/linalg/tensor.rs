@@ -808,6 +808,20 @@ impl Tensor {
         Tensor1D::from(flat_data)
     }
 
+    /// Returns a tensor with the absolute value of each element in the tensor.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::*;
+    /// let a = tensor![[-1.0, 2.0], [-3.0, 4.0]];
+    /// let b = a.abs();
+    /// assert_eq!(b.data, vec![vec![1.0, 2.0], vec![3.0, 4.0]]);
+    /// ```
+    pub fn abs(&self) -> Tensor {
+        self.mapv(&|x| x.abs())
+    }
+
     /// Returns the transpose of the tensor.
     ///
     /// # Examples
