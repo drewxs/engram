@@ -126,10 +126,10 @@ impl Network {
     ///
     /// ```
     /// # use engram::*;
-    /// let mut network = Network::default(&[3, 4, 2, 3]);
+    /// let mut network = Network::default(&[3, 4, 2, 2]);
     /// let inputs = tensor![[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9], [1.0, 1.1, 1.2]];
     /// let output = network.feed_forward(&inputs);
-    /// assert_eq!(output.shape(), (4, 3));
+    /// assert_eq!(output.shape(), (4, 2));
     /// ```
     pub fn feed_forward(&mut self, inputs: &Tensor) -> Tensor {
         let mut output = inputs.clone();
@@ -140,6 +140,21 @@ impl Network {
     }
 
     /// Performs backpropagation on the network, using the specified outputs and targets.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::*;
+    /// let mut network = Network::default(&[3, 4, 2, 3]);
+    /// let inputs = tensor![[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9], [1.0, 1.1, 1.2], [1.3, 1.4, 1.5]];
+    /// let targets = tensor![[0.2, 0.3, 0.4], [0.5, 0.6, 0.7], [0.8, 0.9, 1.0], [1.1, 1.2, 1.3], [1.4, 1.5, 1.6]];
+    /// assert_eq!(network.layers[0].inputs, None);
+    /// assert_eq!(network.layers[0].output, None);
+    /// network.feed_forward(&inputs);
+    /// network.back_propagate(&targets);
+    /// assert_ne!(network.layers[0].inputs, None);
+    /// assert_ne!(network.layers[0].output, None);
+    /// ```
     pub fn back_propagate(&mut self, targets: &Tensor) {
         let final_layer_output_shape = self.layers.last().unwrap().output.as_ref().unwrap().shape();
         if targets.shape() != final_layer_output_shape {
