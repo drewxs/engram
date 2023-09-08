@@ -97,7 +97,7 @@ impl Layer {
 
         // Compute loss
         let d_loss = loss_function
-            .loss(&output, &targets)
+            .loss(&output, &targets.resize_to(&output))
             .activate(&self.activation);
 
         let inputs = self.inputs.as_ref().unwrap();
