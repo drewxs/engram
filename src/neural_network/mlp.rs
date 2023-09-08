@@ -96,6 +96,20 @@ impl Network {
     }
 
     /// Adds a layer to the network.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::*;
+    /// let mut network = Network::default(&[6, 4, 2, 3]);
+    /// assert_eq!(network.layers.len(), 3);
+    /// network.add_layer(5, Some(Activation::ReLU));
+    /// assert_eq!(network.layers.len(), 4);
+    /// assert_eq!(network.layers[0].weights.shape(), (6, 4));
+    /// assert_eq!(network.layers[3].weights.shape(), (3, 5));
+    /// assert_eq!(network.layers[2].activation, Activation::Sigmoid);
+    /// assert_eq!(network.layers[3].activation, Activation::ReLU);
+    /// ```
     pub fn add_layer(&mut self, size: usize, activation: Option<Activation>) {
         let layer = Layer::new(
             self.layers.last().unwrap().weights.cols,
