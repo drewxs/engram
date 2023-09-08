@@ -15,6 +15,7 @@ pub struct Layer {
     pub inputs: Option<Tensor>,
     pub output: Option<Tensor>,
     pub activation: Activation,
+    pub evaluation_mode: bool,
 }
 
 impl Layer {
@@ -46,6 +47,7 @@ impl Layer {
             inputs: None,
             output: None,
             activation,
+            evaluation_mode: false,
         }
     }
 
@@ -65,8 +67,11 @@ impl Layer {
         let biases = self.biases.broadcast_to(&weighted_sum);
         let output = weighted_sum.add(&biases).activate(&self.activation);
 
-        self.inputs = Some(inputs.clone());
-        self.output = Some(output.clone());
+        if !self.evaluation_mode {
+            self.inputs = Some(inputs.clone());
+            self.output = Some(output.clone());
+        }
+
         output
     }
 
@@ -89,16 +94,16 @@ impl Layer {
         targets: &Tensor,
         loss_function: &LossFunction,
         optimizer: &mut Optimizer,
-    ) {
+    ) -> f64 {
         let output = match &self.output {
             Some(output) => output,
             None => panic!("Call to back_propagate without calling feed_forward first!"),
         };
 
         // Compute loss
-        let d_loss = loss_function
-            .loss(&output, &targets.resize_to(&output))
-            .activate(&self.activation);
+        let loss = loss_function.loss(&output, &targets.resize_to(&output));
+        let d_loss = loss.activate(&self.activation);
+        let mean_loss = loss.mean();
 
         let inputs = self.inputs.as_ref().unwrap();
         let num_samples = inputs.rows as f64;
@@ -116,5 +121,11 @@ impl Layer {
         // Update weights and biases based on gradients
         self.weights.sub_assign(&self.d_weights);
         self.biases.sub_assign(&self.d_biases);
+
+        mean_loss
+    }
+
+    pub fn set_evaluation_mode(&mut self, evaluation_mode: bool) {
+        self.evaluation_mode = evaluation_mode;
     }
 }
