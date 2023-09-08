@@ -141,6 +141,14 @@ impl Network {
 
     /// Performs backpropagation on the network, using the specified outputs and targets.
     pub fn back_propagate(&mut self, targets: &Tensor) {
+        let final_layer_output_shape = self.layers.last().unwrap().output.as_ref().unwrap().shape();
+        if targets.shape() != final_layer_output_shape {
+            panic!(
+                "Target shape {:?} does not match the final layer's output shape {:?}",
+                targets.shape(),
+                final_layer_output_shape
+            );
+        }
         for layer in self.layers.iter_mut().rev() {
             layer.back_propagate(targets, &self.loss_function, &mut self.optimizer);
         }
