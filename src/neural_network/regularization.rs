@@ -20,11 +20,13 @@
 
 use crate::Tensor;
 
-/// An enum representing the regularization methods that can be applied to a tensor.
+/// Regularization methods that can be applied to tensors.
 pub enum Regularization {
     /// L1 regularization with the given lambda value.
+    /// Also known as LASSO, used to encourage sparsity.
     L1(f64),
     /// L2 regularization with the given lambda value.
+    /// Also known as Ridge, used to encourage small weights.
     L2(f64),
 }
 

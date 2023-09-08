@@ -8,6 +8,7 @@ pub use mse::*;
 
 use crate::Tensor;
 
+/// Loss functions that can be used to train a neural network.
 #[derive(Debug, Clone, Copy, PartialEq, Hash)]
 pub enum LossFunction {
     BinaryCrossEntropy,

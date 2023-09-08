@@ -1,4 +1,4 @@
-//! Stochastic Gradient Descent (SGD)
+//! Stochastic Gradient Descent (SGD).
 //!
 //! A basic optimizer that updates the weights based on the gradients of the loss function
 //! with respect to the weights multiplied by a learning rate.

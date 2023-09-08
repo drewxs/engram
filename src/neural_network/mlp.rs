@@ -1,3 +1,5 @@
+//! Multi-layer perceptron (MLP) neural network.
+//!
 //! A generic feed forward neural network (FNN), also known as a multi-layer perceptron (MLP).
 //! Typically used for classification and regression tasks.
 
@@ -5,9 +7,13 @@ use crate::{Activation, Initializer, Layer, LossFunction, Optimizer, Tensor};
 
 #[derive(Debug)]
 pub struct Network {
+    /// The layers in the network.
     pub layers: Vec<Layer>,
+    /// The loss function used to train the network.
     pub loss_function: LossFunction,
+    /// The initializer used to initialize the weights and biases in the network.
     pub initializer: Initializer,
+    /// The optimizer used to optimize the weights and biases in the network.
     pub optimizer: Optimizer,
 }
 

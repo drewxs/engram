@@ -15,9 +15,9 @@ use crate::Tensor;
 /// Optimizer enum that allows for different optimizers to be used with neural networks.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Optimizer {
-    SGD {
-        learning_rate: f64,
-    },
+    /// Stochastic Gradient Descent (SGD) optimizer.
+    SGD { learning_rate: f64 },
+    /// An adaptive gradient descent optimizer.
     Adagrad {
         learning_rate: f64,
         epsilon: f64,

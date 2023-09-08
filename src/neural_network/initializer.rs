@@ -4,9 +4,16 @@ use rand::Rng;
 
 use crate::Tensor2D;
 
+/// Initialization methods for weight matrices.
 #[derive(Debug)]
 pub enum Initializer {
+    /// Xavier/Glorot initialization.
+    /// Use for Sigmoid and TanH activation functions.
+    /// Gaussian, µ = 0, σ = √[2 / (f_in + f_out)]
     Xavier,
+    /// Kaiming initialization.
+    /// Use for ReLU and LeakyReLU activation functions.
+    /// Gaussian, µ = 0, σ = √[2 / f_in]
     Kaiming,
 }
 
@@ -34,15 +41,11 @@ impl Initializer {
     }
 
     /// Xavier/Glorot initialization
-    /// Use for sigmoid and tanh activation functions
-    /// Gaussian, µ = 0, σ = √[2 / (f_in + f_out)]
     fn xavier(f_in: usize, f_out: usize) -> Tensor2D {
         Self::initialize_data(f_in, f_out, 2.0 / ((f_in + f_out) as f64).sqrt())
     }
 
     /// Kaiming initialization
-    /// Use for ReLU activation functions
-    /// Gaussian, µ = 0, σ = √[2 / f_in]
     fn kaiming(f_in: usize, f_out: usize) -> Tensor2D {
         Self::initialize_data(f_in, f_out, 2.0 / ((f_in) as f64).sqrt())
     }
