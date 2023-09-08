@@ -121,6 +121,16 @@ impl Network {
     }
 
     /// Feeds the specified input through the network, returning the output.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::*;
+    /// let mut network = Network::default(&[3, 4, 2, 3]);
+    /// let inputs = tensor![[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9], [1.0, 1.1, 1.2]];
+    /// let output = network.feed_forward(&inputs);
+    /// assert_eq!(output.shape(), (4, 3));
+    /// ```
     pub fn feed_forward(&mut self, inputs: &Tensor) -> Tensor {
         let mut output = inputs.clone();
         for layer in &mut self.layers {
