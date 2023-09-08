@@ -11,7 +11,8 @@ use crate::Tensor;
 /// let predictions = tensor![[0.9, 0.1, 0.2], [0.1, 0.9, 0.8]];
 /// let targets = tensor![[1.0, 0.0, 0.0], [0.0, 1.0, 1.0]];
 /// let loss = binary_cross_entropy(&predictions, &targets);
-/// assert_eq!(loss, tensor![[0.10536051565782628, 0.10536051565782628, 0.2231435513142097], [0.10536051565782628, 0.10536051565782628, 0.2231435513142097]]);
+/// assert_eq!(loss, tensor![[0.10536051565782628, 0.10536051565782628, 0.2231435513142097],
+///                          [0.10536051565782628, 0.10536051565782628, 0.2231435513142097]]);
 /// ```
 pub fn binary_cross_entropy(predictions: &Tensor, targets: &Tensor) -> Tensor {
     assert_eq!(
