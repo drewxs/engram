@@ -185,18 +185,20 @@ impl Network {
     ///
     /// ```
     /// # use engram::*;
-    /// let mut network = Network::new(&[2, 2, 1], Initializer::Xavier, Activation::ReLU, LossFunction::MeanSquaredError, Optimizer::SGD { learning_rate: 0.1 });
+    /// let mut network = Network::new(
+    ///     &[2, 3, 1],
+    ///     Initializer::Xavier,
+    ///     Activation::ReLU,
+    ///     LossFunction::MeanSquaredError,
+    ///     Optimizer::SGD { learning_rate: 0.1 },
+    /// );
     /// let inputs = tensor![[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]];
     /// let targets = tensor![[0.0], [1.0], [1.0], [0.0]];
     /// network.train(&inputs, &targets, 4, 100);
-    /// let output = network.predict(&[1.0, 0.0]);
-    /// let expected = 1.0;
-    /// let prediction = output.data[0][0];
-    /// println!("Predicted: {:.2}, Expected: {:.2}", prediction, expected);
-    /// // TODO: This is not working, the prediction is always 0.0 or close to it.
-    /// //       Not sure if this is a calculation error with the optimizer or loss function,
-    /// //       or just a hyperparameter tuning problem
-    /// // assert!((expected - prediction).abs() < 0.1);
+    /// for layer in network.layers {
+    ///     assert_ne!(layer.inputs, None);
+    ///     assert_ne!(layer.output, None);
+    /// }
     /// ```
     pub fn train(&mut self, inputs: &Tensor, targets: &Tensor, batch_size: usize, epochs: usize) {
         if targets.cols != self.layers.last().unwrap().weights.cols {
@@ -233,6 +235,31 @@ impl Network {
         }
     }
 
+    /// Predicts the output for the specified inputs.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::*;
+    /// let mut network = Network::new(
+    ///     &[2, 3, 3, 1],
+    ///     Initializer::Xavier,
+    ///     Activation::ReLU,
+    ///     LossFunction::MeanSquaredError,
+    ///     Optimizer::SGD { learning_rate: 0.1 },
+    /// );
+    /// let inputs = tensor![[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]];
+    /// let targets = tensor![[0.0], [1.0], [1.0], [0.0]];
+    /// network.train(&inputs, &targets, 4, 100);
+    /// let output = network.predict(&[1.0, 0.0]);
+    /// let expected = 1.0;
+    /// let prediction = output.data[0][0];
+    /// println!("Predicted: {:.2}, Expected: {:.2}", prediction, expected);
+    /// // TODO: This is not working, the prediction is always 0.0 or close to it.
+    /// //       Not sure if this is a calculation error with the optimizer or loss function,
+    /// //       or just a hyperparameter tuning problem
+    /// // assert!((expected - prediction).abs() < 0.1);
+    /// ```
     pub fn predict(&mut self, inputs: &[f64]) -> Tensor {
         self.set_evaluation_mode(true);
 
@@ -242,6 +269,22 @@ impl Network {
         output
     }
 
+    /// Sets the evaluation mode for the network.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::*;
+    /// let mut network = Network::new(
+    ///     &[2, 3, 1],
+    ///     Initializer::Xavier,
+    ///     Activation::ReLU,
+    ///     LossFunction::MeanSquaredError,
+    ///     Optimizer::SGD { learning_rate: 0.1 },
+    /// );
+    /// assert_eq!(network.layers[0].evaluation_mode, false);
+    /// assert_eq!(network.layers[1].evaluation_mode, false);
+    /// ```
     fn set_evaluation_mode(&mut self, evaluation_mode: bool) {
         for layer in &mut self.layers {
             layer.set_evaluation_mode(evaluation_mode);
