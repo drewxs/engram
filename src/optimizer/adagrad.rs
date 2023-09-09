@@ -11,17 +11,17 @@ use crate::{Optimize, Tensor};
 #[derive(Clone, Debug)]
 pub struct Adagrad {
     learning_rate: f64,
-    epsilon: f64,
     accumulators: Tensor,
     weight_decay: Option<f64>,
+    epsilon: Option<f64>,
 }
 
 impl Adagrad {
     pub fn new(
         learning_rate: f64,
-        epsilon: f64,
-        weight_decay: Option<f64>,
         shape: (usize, usize),
+        weight_decay: Option<f64>,
+        epsilon: Option<f64>,
     ) -> Adagrad {
         Adagrad {
             learning_rate,
@@ -39,7 +39,8 @@ impl Optimize for Adagrad {
         }
 
         self.accumulators.add_assign(&gradients.square());
-        self.accumulators.add_scalar_assign(self.epsilon);
+        self.accumulators
+            .add_scalar_assign(self.epsilon.unwrap_or(1e-8));
 
         weights.sub_assign(
             &gradients

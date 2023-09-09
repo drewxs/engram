@@ -20,9 +20,9 @@ pub enum Optimizer {
     /// An adaptive gradient descent optimizer.
     Adagrad {
         learning_rate: f64,
-        epsilon: f64,
-        weight_decay: Option<f64>,
         shape: (usize, usize),
+        weight_decay: Option<f64>,
+        epsilon: Option<f64>,
     },
 }
 
@@ -39,12 +39,12 @@ impl Optimize for Optimizer {
             }
             Optimizer::Adagrad {
                 learning_rate,
-                epsilon,
                 weight_decay,
+                epsilon,
                 ..
             } => {
                 let mut optimizer =
-                    Adagrad::new(*learning_rate, *epsilon, *weight_decay, weights.shape());
+                    Adagrad::new(*learning_rate, weights.shape(), *weight_decay, *epsilon);
                 optimizer.step(weights, gradients);
             }
         }

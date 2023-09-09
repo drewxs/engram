@@ -31,9 +31,9 @@ impl Network {
     ///     LossFunction::MeanSquaredError,
     ///     Optimizer::Adagrad {
     ///         learning_rate: 0.1,
-    ///         epsilon: 1e-8,
-    ///         weight_decay: Some(0.01),
     ///         shape: (3, 1),
+    ///         weight_decay: Some(0.01),
+    ///         epsilon: Some(1e-8),
     ///     },
     /// );
     /// assert_eq!(network.layers.len(), 2);
@@ -43,9 +43,9 @@ impl Network {
     /// assert_eq!(network.loss_function, LossFunction::MeanSquaredError);
     /// assert_eq!(network.optimizer, Optimizer::Adagrad {
     ///    learning_rate: 0.1,
-    ///    epsilon: 1e-8,
-    ///    weight_decay: Some(0.01),
     ///    shape: (3, 1),
+    ///    weight_decay: Some(0.01),
+    ///    epsilon: Some(1e-8),
     /// })
     /// ```
     pub fn new(
