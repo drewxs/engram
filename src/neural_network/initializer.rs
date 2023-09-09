@@ -5,7 +5,7 @@ use rand::Rng;
 use crate::Tensor2D;
 
 /// Initialization methods for weight matrices.
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Initializer {
     /// Xavier/Glorot initialization.
     /// Use for Sigmoid and TanH activation functions.
