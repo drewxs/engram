@@ -101,26 +101,19 @@ impl Layer {
         };
 
         // Compute loss
-        let loss = loss_function.loss(&output, &targets.resize_to(&output));
-        let d_loss = loss.activate(&self.activation);
+        let loss = loss_function.loss(&output, &targets);
         let mean_loss = loss.mean();
 
         let inputs = self.inputs.as_ref().unwrap();
         let num_samples = inputs.rows as f64;
 
         // Compute gradients for weights and biases
-        self.d_weights = inputs.transpose().matmul(&d_loss).div_scalar(num_samples);
-        self.d_biases = d_loss
-            .sum_axis(1)
-            .div_scalar(num_samples)
-            .resize_to(&self.biases);
-
-        optimizer.step(&mut self.weights, &mut self.d_weights);
-        optimizer.step(&mut self.biases, &mut self.d_biases);
+        self.d_weights = inputs.transpose().matmul(&loss).div_scalar(num_samples);
+        self.d_biases = loss.sum_axis(0).div_scalar(num_samples);
 
         // Update weights and biases based on gradients
-        self.weights.sub_assign(&self.d_weights);
-        self.biases.sub_assign(&self.d_biases);
+        optimizer.step(&mut self.weights, &mut self.d_weights);
+        optimizer.step(&mut self.biases, &mut self.d_biases);
 
         mean_loss
     }
