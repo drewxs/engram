@@ -31,6 +31,21 @@ pub trait Optimize {
 }
 
 impl Optimize for Optimizer {
+    /// Updates the weights based on the gradients of the loss function
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::*;
+    ///
+    /// let mut optimizer = Optimizer::SGD { learning_rate: 0.1 };
+    /// let mut weights = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
+    /// let mut gradients = weights.gradient(&Activation::ReLU);
+    ///
+    /// optimizer.step(&mut weights, &mut gradients);
+    ///
+    /// # assert_eq!(weights, tensor![[0.9, 1.9, 2.9], [3.9, 4.9, 5.9]]);
+    /// ```
     fn step(&mut self, weights: &mut Tensor, gradients: &mut Tensor) {
         match self {
             Optimizer::SGD { learning_rate } => {
