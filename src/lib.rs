@@ -1,5 +1,3 @@
-mod prelude;
-
 mod activation;
 mod linalg;
 mod loss;
@@ -15,3 +13,5 @@ pub use neural_network::*;
 pub use optimizer::*;
 pub use regression::*;
 pub use statistics::*;
+
+pub mod prelude;
