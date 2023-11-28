@@ -3,7 +3,7 @@
 //! This module provides a Layer struct for representing a single layer in a neural network,
 //! along with methods for feeding inputs through the layer and performing backpropagation.
 
-use crate::{Activation, Initializer, LossFunction, Optimize, Optimizer, Tensor};
+use crate::{Activation, Initializer, Loss, Optimize, Optimizer, Tensor};
 
 /// A single layer in a neural network.
 #[derive(Debug)]
@@ -116,7 +116,7 @@ impl Layer {
     pub fn back_propagate(
         &mut self,
         targets: &Tensor,
-        loss_function: &LossFunction,
+        loss_function: &Loss,
         optimizer: &mut Optimizer,
     ) -> f64 {
         let output = match &self.output {

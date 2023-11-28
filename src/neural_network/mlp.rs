@@ -3,14 +3,14 @@
 //! A generic feed forward neural network (FNN), also known as a multi-layer perceptron (MLP).
 //! Typically used for classification and regression tasks.
 
-use crate::{Activation, Initializer, Layer, LossFunction, Optimizer, Tensor};
+use crate::{Activation, Initializer, Layer, Loss, Optimizer, Tensor};
 
 #[derive(Debug)]
 pub struct Network {
     /// The layers in the network.
     pub layers: Vec<Layer>,
     /// The loss function used to train the network.
-    pub loss_function: LossFunction,
+    pub loss_function: Loss,
     /// The initializer used to initialize the weights and biases in the network.
     pub initializer: Initializer,
     /// The optimizer used to optimize the weights and biases in the network.
@@ -29,7 +29,7 @@ impl Network {
     ///     &[6, 4, 1],
     ///     Initializer::Xavier,
     ///     Activation::ReLU,
-    ///     LossFunction::MeanSquaredError,
+    ///     Loss::MeanSquaredError,
     ///     Optimizer::Adagrad {
     ///         learning_rate: 0.1,
     ///         shape: (3, 1),
@@ -42,7 +42,7 @@ impl Network {
     /// assert_eq!(network.layers[0].weights.shape(), (6, 4));
     /// assert_eq!(network.layers[1].weights.shape(), (4, 1));
     /// assert_eq!(network.layers[0].activation, Activation::ReLU);
-    /// assert_eq!(network.loss_function, LossFunction::MeanSquaredError);
+    /// assert_eq!(network.loss_function, Loss::MeanSquaredError);
     /// assert_eq!(network.optimizer, Optimizer::Adagrad {
     ///    learning_rate: 0.1,
     ///    shape: (3, 1),
@@ -54,7 +54,7 @@ impl Network {
         layer_sizes: &[usize],
         initializer: Initializer,
         activation: Activation,
-        loss_function: LossFunction,
+        loss_function: Loss,
         optimizer: Optimizer,
     ) -> Network {
         let mut layers = Vec::new();
@@ -92,7 +92,7 @@ impl Network {
     /// assert_eq!(network.layers[1].weights.shape(), (4, 2));
     /// assert_eq!(network.layers[2].weights.shape(), (2, 3));
     /// assert_eq!(network.layers[0].activation, Activation::Sigmoid);
-    /// assert_eq!(network.loss_function, LossFunction::BinaryCrossEntropy);
+    /// assert_eq!(network.loss_function, Loss::MeanSquaredError);
     /// assert_eq!(network.optimizer, Optimizer::SGD { learning_rate: 0.1 })
     /// ```
     pub fn default(layer_sizes: &[usize]) -> Network {
@@ -100,7 +100,7 @@ impl Network {
             layer_sizes,
             Initializer::Xavier,
             Activation::Sigmoid,
-            LossFunction::BinaryCrossEntropy,
+            Loss::MeanSquaredError,
             Optimizer::SGD { learning_rate: 0.1 },
         )
     }
@@ -228,7 +228,7 @@ impl Network {
     ///     &[2, 3, 1],
     ///     Initializer::Xavier,
     ///     Activation::ReLU,
-    ///     LossFunction::MeanSquaredError,
+    ///     Loss::MeanSquaredError,
     ///     Optimizer::SGD { learning_rate: 0.1 },
     /// );
     ///
@@ -323,7 +323,7 @@ mod tests {
             &[1, 1],
             Initializer::Constant(1.),
             Activation::ReLU,
-            LossFunction::MeanSquaredError,
+            Loss::MeanSquaredError,
             Optimizer::SGD { learning_rate: 0.1 },
         );
         // The outputs are just 1 times the input plus 1, so the goal is for the
@@ -348,7 +348,7 @@ mod tests {
             &[1, 1],
             Initializer::Constant(0.),
             Activation::ReLU,
-            LossFunction::MeanSquaredError,
+            Loss::MeanSquaredError,
             Optimizer::SGD { learning_rate: 0.1 },
         );
         // The outputs are just 1 times the input plus 0.

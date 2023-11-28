@@ -2,7 +2,7 @@
 //!
 //! Allows creating a network using a builder pattern.
 
-use crate::{Activation, Initializer, Layer, LossFunction, Network, Optimizer};
+use crate::{Activation, Initializer, Layer, Loss, Network, Optimizer};
 
 /// A builder for creating a `Network`.
 ///
@@ -12,20 +12,20 @@ use crate::{Activation, Initializer, Layer, LossFunction, Network, Optimizer};
 /// # use engram::*;
 /// let network = Sequential::new(&[2, 3, 1])
 ///    .activation(Activation::ReLU)
-///    .loss_function(LossFunction::MeanSquaredError)
+///    .loss_function(Loss::MeanSquaredError)
 ///    .optimizer(Optimizer::SGD { learning_rate: 0.1 })
 ///    .build();
 /// assert_eq!(network.layers[0].weights.shape(), (2, 3));
 /// assert_eq!(network.layers[1].weights.shape(), (3, 1));
 /// assert_eq!(network.layers[0].activation, Activation::ReLU);
-/// assert_eq!(network.loss_function, LossFunction::MeanSquaredError);
+/// assert_eq!(network.loss_function, Loss::MeanSquaredError);
 /// assert_eq!(network.optimizer, Optimizer::SGD { learning_rate: 0.1 })
 /// ```
 pub struct Sequential {
     layer_sizes: Vec<usize>,
     initializer: Option<Initializer>,
     activation: Option<Activation>,
-    loss_function: Option<LossFunction>,
+    loss_function: Option<Loss>,
     optimizer: Option<Optimizer>,
 }
 
@@ -84,10 +84,10 @@ impl Sequential {
     ///
     /// ```
     /// # use engram::*;
-    /// let network = Sequential::new(&[2, 3, 1]).loss_function(LossFunction::MeanSquaredError).build();
-    /// assert_eq!(network.loss_function, LossFunction::MeanSquaredError);
+    /// let network = Sequential::new(&[2, 3, 1]).loss_function(Loss::MeanSquaredError).build();
+    /// assert_eq!(network.loss_function, Loss::MeanSquaredError);
     /// ```
-    pub fn loss_function(mut self, loss_function: LossFunction) -> Self {
+    pub fn loss_function(mut self, loss_function: Loss) -> Self {
         self.loss_function = Some(loss_function);
         self
     }
@@ -116,15 +116,13 @@ impl Sequential {
     /// assert_eq!(network.layers[0].weights.shape(), (2, 3));
     /// assert_eq!(network.layers[1].weights.shape(), (3, 1));
     /// assert_eq!(network.layers[0].activation, Activation::Sigmoid);
-    /// assert_eq!(network.loss_function, LossFunction::BinaryCrossEntropy);
+    /// assert_eq!(network.loss_function, Loss::MeanSquaredError);
     /// assert_eq!(network.optimizer, Optimizer::SGD { learning_rate: 0.1 })
     /// ```
     pub fn build(self) -> Network {
         let initializer = self.initializer.unwrap_or(Initializer::Xavier);
         let activation = self.activation.unwrap_or(Activation::Sigmoid);
-        let loss_function = self
-            .loss_function
-            .unwrap_or(LossFunction::BinaryCrossEntropy);
+        let loss_function = self.loss_function.unwrap_or(Loss::MeanSquaredError);
         let optimizer = self
             .optimizer
             .unwrap_or(Optimizer::SGD { learning_rate: 0.1 });
