@@ -10,8 +10,6 @@ use crate::{Activation, Initializer, Loss, Optimize, Optimizer, Tensor};
 pub struct Layer {
     pub weights: Tensor,
     pub biases: Tensor,
-    pub d_weights: Tensor,
-    pub d_biases: Tensor,
     pub inputs: Option<Tensor>,
     pub output: Option<Tensor>,
     pub activation: Activation,
@@ -29,9 +27,7 @@ impl Layer {
     /// let layer = Layer::new(2, 3, &Initializer::Xavier, Activation::Sigmoid);
     ///
     /// assert_eq!(layer.weights.shape(), (2, 3));
-    /// assert_eq!(layer.biases.shape(), (2, 1));
-    /// assert_eq!(layer.d_weights.shape(), (2, 3));
-    /// assert_eq!(layer.d_biases.shape(), (2, 1));
+    /// assert_eq!(layer.biases.shape(), (3, 1));
     /// assert!(layer.output.is_none());
     /// ```
     pub fn new(
@@ -42,9 +38,7 @@ impl Layer {
     ) -> Layer {
         Layer {
             weights: Tensor::initialize(f_in, f_out, initializer),
-            biases: Tensor::initialize(f_in, 1, initializer),
-            d_weights: Tensor::zeros(f_in, f_out),
-            d_biases: Tensor::zeros(f_in, 1),
+            biases: Tensor::initialize(f_out, 1, initializer),
             inputs: None,
             output: None,
             activation,
@@ -58,16 +52,15 @@ impl Layer {
     /// ```
     /// # use engram::*;
     ///
-    /// let mut layer = Layer::new(3, 2, &Initializer::Xavier, Activation::Sigmoid);
+    /// let mut layer = Layer::new(3, 4, &Initializer::Xavier, Activation::Sigmoid);
     /// let inputs = tensor![[1.0, 2.0, 7.0], [3.0, 4.0, 9.0], [5.0, 6.0, 9.0], [1.0, 2.0, 3.0]];
     /// let output = layer.feed_forward(&inputs);
     ///
-    /// assert_eq!(output.shape(), (4, 2));
+    /// assert_eq!(output.shape(), (4, 4));
     /// ```
     pub fn feed_forward(&self, inputs: &Tensor) -> Tensor {
-        let weighted_sum = inputs.matmul(&self.weights);
-        let biases = self.biases.broadcast_to(&weighted_sum);
-        let output = weighted_sum.add(&biases).activate(&self.activation);
+        let output = inputs.matmul(&self.weights);
+        let output = output.add(&self.biases).activate(&self.activation);
 
         output
     }
@@ -81,16 +74,15 @@ impl Layer {
     /// ```
     /// # use engram::*;
     ///
-    /// let mut layer = Layer::new(3, 2, &Initializer::Xavier, Activation::Sigmoid);
+    /// let mut layer = Layer::new(3, 4, &Initializer::Xavier, Activation::Sigmoid);
     /// let inputs = tensor![[1.0, 2.0, 7.0], [3.0, 4.0, 9.0], [5.0, 6.0, 9.0], [1.0, 2.0, 3.0]];
-    /// let output = layer.feed_forward_mut(&inputs);
+    /// layer.feed_forward_mut(&inputs);
     ///
-    /// assert_eq!(output.shape(), (4, 2));
+    /// assert_eq!(layer.output.unwrap().shape(), (4, 4));
     /// ```
     pub fn feed_forward_mut(&mut self, inputs: &Tensor) {
-        let weighted_sum = inputs.matmul(&self.weights);
-        let biases = self.biases.broadcast_to(&weighted_sum);
-        let output = weighted_sum.add(&biases).activate(&self.activation);
+        let output = inputs.matmul(&self.weights);
+        let output = output.add(&self.biases).activate(&self.activation);
 
         self.inputs = Some(inputs.clone());
         self.output = Some(output);
@@ -105,13 +97,14 @@ impl Layer {
     ///
     /// let mut layer = Layer::new(3, 2, &Initializer::Xavier, Activation::Sigmoid);
     /// let inputs = tensor![[1.0, 2.0, 7.0], [3.0, 4.0, 9.0], [5.0, 6.0, 9.0], [1.0, 2.0, 3.0]];
-    /// let output = layer.feed_forward(&inputs);
-    /// let targets = tensor![[1.0, 3.0], [2.0, 4.0], [3.0, 5.0], [4.0, 6.0]];
+    /// let targets = tensor![[0.0, 1.0], [1.0, 0.0], [0.0, 1.0]];
     ///
-    /// layer.back_propagate(&targets, &LossFunction::BinaryCrossEntropy, &mut Optimizer::SGD { learning_rate: 0.1 });
+    /// layer.feed_forward_mut(&inputs);
     ///
-    /// assert_eq!(layer.d_weights.shape(), (3, 2));
-    /// assert_eq!(layer.d_biases.shape(), (3, 1));
+    /// let mean_loss = layer.back_propagate(&targets, &Loss::MeanSquaredError, &mut Optimizer::SGD { learning_rate: 0.1 });
+    /// let predicted_loss = 0.6;
+    ///
+    /// assert!((mean_loss - predicted_loss).abs() < 0.1);
     /// ```
     pub fn back_propagate(
         &mut self,
@@ -119,26 +112,17 @@ impl Layer {
         loss_function: &Loss,
         optimizer: &mut Optimizer,
     ) -> f64 {
-        let output = match &self.output {
-            Some(output) => output,
-            None => panic!("Call to back_propagate without calling feed_forward first!"),
-        };
+        let predictions = self
+            .output
+            .as_ref()
+            .expect("Call to back_propagate without calling feed_forward first!");
 
-        // Compute loss
-        let loss = loss_function.loss(&output, &targets);
-        let mean_loss = loss.mean();
+        let loss = loss_function.loss(&predictions, &targets);
+        let mut gradient = loss_function.gradient(&predictions, &targets);
 
-        let inputs = self.inputs.as_ref().unwrap();
-        let num_samples = inputs.rows as f64;
+        optimizer.step(&mut self.weights, &mut gradient.clone());
+        optimizer.step(&mut self.biases, &mut gradient);
 
-        // Compute gradients for weights and biases
-        self.d_weights = inputs.transpose().matmul(&loss).div_scalar(num_samples);
-        self.d_biases = loss.sum_axis(0).div_scalar(num_samples);
-
-        // Update weights and biases based on gradients
-        optimizer.step(&mut self.weights, &mut self.d_weights);
-        optimizer.step(&mut self.biases, &mut self.d_biases);
-
-        mean_loss
+        loss.mean()
     }
 }
