@@ -28,10 +28,10 @@ impl Tensor {
     /// ```
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// a.transpose_assign();
+    /// a.transpose_mut();
     /// assert_eq!(a.data, vec![vec![1.0, 3.0], vec![2.0, 4.0]]);
     /// ```
-    pub fn transpose_assign(&mut self) {
+    pub fn transpose_mut(&mut self) {
         let mut res = Tensor::zeros(self.rows, self.cols);
         for i in 0..self.rows {
             for j in 0..self.cols {

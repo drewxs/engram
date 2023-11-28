@@ -36,11 +36,11 @@ impl Tensor {
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
-    /// a.matmul_assign(&b);
+    /// a.matmul_mut(&b);
     /// assert_eq!(a.data, vec![vec![19.0, 22.0], vec![43.0, 50.0]]);
     /// ```
-    pub fn matmul_assign(&mut self, other: &Tensor) {
-        self.validate_mul_shape(other, "matmul_assign");
+    pub fn matmul_mut(&mut self, other: &Tensor) {
+        self.validate_mul_shape(other, "matmul_mut");
 
         let mut res = Tensor::zeros(self.rows, other.cols);
         for i in 0..self.rows {
@@ -86,10 +86,10 @@ impl Tensor {
     /// ```
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// a.mapv_assign(&|x| x * 2.0);
+    /// a.mapv_mut(&|x| x * 2.0);
     /// assert_eq!(a.data, vec![vec![2.0, 4.0], vec![6.0, 8.0]]);
     /// ```
-    pub fn mapv_assign(&mut self, function: &dyn Fn(f64) -> f64) {
+    pub fn mapv_mut(&mut self, function: &dyn Fn(f64) -> f64) {
         self.data = (self.data)
             .clone()
             .into_iter()
@@ -118,11 +118,11 @@ impl Tensor {
     /// ```
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// a.square_assign();
+    /// a.square_mut();
     /// assert_eq!(a.data, vec![vec![1.0, 4.0], vec![9.0, 16.0]]);
     /// ```
-    pub fn square_assign(&mut self) {
-        self.mapv_assign(&|x| x * x);
+    pub fn square_mut(&mut self) {
+        self.mapv_mut(&|x| x * x);
     }
 
     /// Returns the square root of each element in the tensor.
@@ -146,11 +146,11 @@ impl Tensor {
     /// ```
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 4.0], [9.0, 16.0]];
-    /// a.sqrt_assign();
+    /// a.sqrt_mut();
     /// assert_eq!(a.data, vec![vec![1.0, 2.0], vec![3.0, 4.0]]);
     /// ```
-    pub fn sqrt_assign(&mut self) {
-        self.mapv_assign(&|x| x.sqrt());
+    pub fn sqrt_mut(&mut self) {
+        self.mapv_mut(&|x| x.sqrt());
     }
 
     /// Returns each element in the tensor raised to the given exponent.
@@ -174,11 +174,11 @@ impl Tensor {
     /// ```
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// a.pow_assign(2.0);
+    /// a.pow_mut(2.0);
     /// assert_eq!(a.data, vec![vec![1.0, 4.0], vec![9.0, 16.0]]);
     /// ```
-    pub fn pow_assign(&mut self, exponent: f64) {
-        self.mapv_assign(&|x| x.powf(exponent));
+    pub fn pow_mut(&mut self, exponent: f64) {
+        self.mapv_mut(&|x| x.powf(exponent));
     }
 
     /// Returns each element in the tensor applied with the natural logarithm.
@@ -202,11 +202,11 @@ impl Tensor {
     /// ```
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// a.ln_assign();
+    /// a.ln_mut();
     /// assert_eq!(a.data, vec![vec![0.0, 0.6931471805599453], vec![1.0986122886681098, 1.3862943611198906]]);
     /// ```
-    pub fn ln_assign(&mut self) {
-        self.mapv_assign(&|x| x.ln());
+    pub fn ln_mut(&mut self) {
+        self.mapv_mut(&|x| x.ln());
     }
 
     /// Returns each element in the tensor applied with the base 2 logarithm.
@@ -230,11 +230,11 @@ impl Tensor {
     /// ```
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [4.0, 8.0]];
-    /// a.log2_assign();
+    /// a.log2_mut();
     /// assert_eq!(a.data, vec![vec![0.0, 1.0], vec![2.0, 3.0]]);
     /// ```
-    pub fn log2_assign(&mut self) {
-        self.mapv_assign(&|x| x.log2());
+    pub fn log2_mut(&mut self) {
+        self.mapv_mut(&|x| x.log2());
     }
 
     /// Returns a tensor with the absolute value of each element in the tensor.

@@ -32,11 +32,11 @@ impl Tensor {
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
-    /// a.add_assign(&b);
+    /// a.add_mut(&b);
     /// assert_eq!(a.data, vec![vec![6.0, 8.0], vec![10.0, 12.0]]);
     /// ```
-    pub fn add_assign(&mut self, other: &Tensor) {
-        self.validate_shape(other, "add_assign");
+    pub fn add_mut(&mut self, other: &Tensor) {
+        self.validate_shape(other, "add_mut");
 
         for i in 0..self.rows {
             for j in 0..self.cols {
@@ -72,10 +72,10 @@ impl Tensor {
     /// ```
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// a.add_scalar_assign(5.0);
+    /// a.add_scalar_mut(5.0);
     /// assert_eq!(a.data, vec![vec![6.0, 7.0], vec![8.0, 9.0]]);
     /// ```
-    pub fn add_scalar_assign(&mut self, scalar: f64) {
+    pub fn add_scalar_mut(&mut self, scalar: f64) {
         for i in 0..self.rows {
             for j in 0..self.cols {
                 self.data[i][j] += scalar;
@@ -113,11 +113,11 @@ impl Tensor {
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
-    /// a.sub_assign(&b);
+    /// a.sub_mut(&b);
     /// assert_eq!(a.data, vec![vec![-4.0, -4.0], vec![-4.0, -4.0]]);
     /// ```
-    pub fn sub_assign(&mut self, other: &Tensor) {
-        self.validate_shape(other, "sub_assign");
+    pub fn sub_mut(&mut self, other: &Tensor) {
+        self.validate_shape(other, "sub_mut");
 
         for i in 0..self.rows {
             for j in 0..self.cols {
@@ -153,10 +153,10 @@ impl Tensor {
     /// ```
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// a.sub_scalar_assign(5.0);
+    /// a.sub_scalar_mut(5.0);
     /// assert_eq!(a.data, vec![vec![-4.0, -3.0], vec![-2.0, -1.0]]);
     /// ```
-    pub fn sub_scalar_assign(&mut self, scalar: f64) {
+    pub fn sub_scalar_mut(&mut self, scalar: f64) {
         for i in 0..self.rows {
             for j in 0..self.cols {
                 self.data[i][j] -= scalar;
@@ -195,11 +195,11 @@ impl Tensor {
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
-    /// a.mul_assign(&b);
+    /// a.mul_mut(&b);
     /// assert_eq!(a.data, vec![vec![5.0, 12.0], vec![21.0, 32.0]]);
     /// ```
-    pub fn mul_assign(&mut self, other: &Tensor) {
-        self.validate_mul_shape(other, "mul_assign");
+    pub fn mul_mut(&mut self, other: &Tensor) {
+        self.validate_mul_shape(other, "mul_mut");
 
         for i in 0..self.rows {
             for j in 0..self.cols {
@@ -235,10 +235,10 @@ impl Tensor {
     /// ```
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// a.mul_scalar_assign(5.0);
+    /// a.mul_scalar_mut(5.0);
     /// assert_eq!(a.data, vec![vec![5.0, 10.0], vec![15.0, 20.0]]);
     /// ```
-    pub fn mul_scalar_assign(&mut self, scalar: f64) {
+    pub fn mul_scalar_mut(&mut self, scalar: f64) {
         for i in 0..self.rows {
             for j in 0..self.cols {
                 self.data[i][j] *= scalar;
@@ -277,11 +277,11 @@ impl Tensor {
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 8.0], [30.0, 8.0]];
-    /// a.div_assign(&b);
+    /// a.div_mut(&b);
     /// assert_eq!(a.data, vec![vec![0.2, 0.25], vec![0.1, 0.5]]);
     /// ```
-    pub fn div_assign(&mut self, other: &Tensor) {
-        self.validate_shape(other, "div_assign");
+    pub fn div_mut(&mut self, other: &Tensor) {
+        self.validate_shape(other, "div_mut");
 
         for i in 0..self.rows {
             for j in 0..self.cols {
@@ -317,10 +317,10 @@ impl Tensor {
     /// ```
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// a.div_scalar_assign(5.0);
+    /// a.div_scalar_mut(5.0);
     /// assert_eq!(a.data, vec![vec![0.2, 0.4], vec![0.6, 0.8]]);
     /// ```
-    pub fn div_scalar_assign(&mut self, scalar: f64) {
+    pub fn div_scalar_mut(&mut self, scalar: f64) {
         for i in 0..self.rows {
             for j in 0..self.cols {
                 self.data[i][j] /= scalar;

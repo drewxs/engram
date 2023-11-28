@@ -26,7 +26,9 @@ impl Layer {
     ///
     /// ```
     /// # use engram::*;
+    ///
     /// let layer = Layer::new(2, 3, &Initializer::Xavier, Activation::Sigmoid);
+    ///
     /// assert_eq!(layer.weights.shape(), (2, 3));
     /// assert_eq!(layer.biases.shape(), (2, 1));
     /// assert_eq!(layer.d_weights.shape(), (2, 3));
@@ -57,9 +59,11 @@ impl Layer {
     ///
     /// ```
     /// # use engram::*;
+    ///
     /// let mut layer = Layer::new(3, 2, &Initializer::Xavier, Activation::Sigmoid);
     /// let inputs = tensor![[1.0, 2.0, 7.0], [3.0, 4.0, 9.0], [5.0, 6.0, 9.0], [1.0, 2.0, 3.0]];
     /// let output = layer.feed_forward(&inputs);
+    ///
     /// assert_eq!(output.shape(), (4, 2));
     /// ```
     pub fn feed_forward(&mut self, inputs: &Tensor) -> Tensor {
@@ -81,11 +85,14 @@ impl Layer {
     ///
     /// ```
     /// # use engram::*;
+    ///
     /// let mut layer = Layer::new(3, 2, &Initializer::Xavier, Activation::Sigmoid);
     /// let inputs = tensor![[1.0, 2.0, 7.0], [3.0, 4.0, 9.0], [5.0, 6.0, 9.0], [1.0, 2.0, 3.0]];
     /// let output = layer.feed_forward(&inputs);
     /// let targets = tensor![[1.0, 3.0], [2.0, 4.0], [3.0, 5.0], [4.0, 6.0]];
+    ///
     /// layer.back_propagate(&targets, &LossFunction::BinaryCrossEntropy, &mut Optimizer::SGD { learning_rate: 0.1 });
+    ///
     /// assert_eq!(layer.d_weights.shape(), (3, 2));
     /// assert_eq!(layer.d_biases.shape(), (3, 1));
     /// ```
