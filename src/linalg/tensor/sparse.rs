@@ -41,7 +41,7 @@ impl Tensor {
     /// # use std::collections::HashMap;
     /// # use engram::*;
     /// let a = tensor![[0.0, 2.0], [3.0, 0.0]];
-    /// let b = a.non_zero_values();
+    /// let b = a.sparse();
     /// let expected = HashMap::from([((0, 1), 2.0), ((1, 0), 3.0)]);
     /// assert_eq!(b, expected);
     /// ```
