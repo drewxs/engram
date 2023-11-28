@@ -15,7 +15,6 @@ pub struct Layer {
     pub inputs: Option<Tensor>,
     pub output: Option<Tensor>,
     pub activation: Activation,
-    pub evaluation_mode: bool,
 }
 
 impl Layer {
@@ -49,7 +48,6 @@ impl Layer {
             inputs: None,
             output: None,
             activation,
-            evaluation_mode: false,
         }
     }
 
@@ -66,17 +64,36 @@ impl Layer {
     ///
     /// assert_eq!(output.shape(), (4, 2));
     /// ```
-    pub fn feed_forward(&mut self, inputs: &Tensor) -> Tensor {
+    pub fn feed_forward(&self, inputs: &Tensor) -> Tensor {
         let weighted_sum = inputs.matmul(&self.weights);
         let biases = self.biases.broadcast_to(&weighted_sum);
         let output = weighted_sum.add(&biases).activate(&self.activation);
 
-        if !self.evaluation_mode {
-            self.inputs = Some(inputs.clone());
-            self.output = Some(output.clone());
-        }
-
         output
+    }
+
+    /// Feeds the input through the layer, updating the layer's inputs and output.
+    /// This method is used when training the network.
+    /// If you are only evaluating the network, use `feed_forward` instead.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::*;
+    ///
+    /// let mut layer = Layer::new(3, 2, &Initializer::Xavier, Activation::Sigmoid);
+    /// let inputs = tensor![[1.0, 2.0, 7.0], [3.0, 4.0, 9.0], [5.0, 6.0, 9.0], [1.0, 2.0, 3.0]];
+    /// let output = layer.feed_forward_mut(&inputs);
+    ///
+    /// assert_eq!(output.shape(), (4, 2));
+    /// ```
+    pub fn feed_forward_mut(&mut self, inputs: &Tensor) {
+        let weighted_sum = inputs.matmul(&self.weights);
+        let biases = self.biases.broadcast_to(&weighted_sum);
+        let output = weighted_sum.add(&biases).activate(&self.activation);
+
+        self.inputs = Some(inputs.clone());
+        self.output = Some(output);
     }
 
     /// Performs backpropagation on the layer based on the provided targets.
@@ -123,9 +140,5 @@ impl Layer {
         optimizer.step(&mut self.biases, &mut self.d_biases);
 
         mean_loss
-    }
-
-    pub fn set_evaluation_mode(&mut self, evaluation_mode: bool) {
-        self.evaluation_mode = evaluation_mode;
     }
 }

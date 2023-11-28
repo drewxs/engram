@@ -24,6 +24,7 @@ impl Network {
     ///
     /// ```
     /// # use engram::*;
+    ///
     /// let network = Network::new(
     ///     &[6, 4, 1],
     ///     Initializer::Xavier,
@@ -36,6 +37,7 @@ impl Network {
     ///         epsilon: Some(1e-8),
     ///     },
     /// );
+    ///
     /// assert_eq!(network.layers.len(), 2);
     /// assert_eq!(network.layers[0].weights.shape(), (6, 4));
     /// assert_eq!(network.layers[1].weights.shape(), (4, 1));
@@ -82,7 +84,9 @@ impl Network {
     ///
     /// ```
     /// # use engram::*;
+    ///
     /// let network = Network::default(&[6, 4, 2, 3]);
+    ///
     /// assert_eq!(network.layers.len(), 3);
     /// assert_eq!(network.layers[0].weights.shape(), (6, 4));
     /// assert_eq!(network.layers[1].weights.shape(), (4, 2));
@@ -107,9 +111,13 @@ impl Network {
     ///
     /// ```
     /// # use engram::*;
+    ///
     /// let mut network = Network::default(&[6, 4, 2, 3]);
+    ///
     /// assert_eq!(network.layers.len(), 3);
+    ///
     /// network.add_layer(5, Some(Activation::ReLU));
+    ///
     /// assert_eq!(network.layers.len(), 4);
     /// assert_eq!(network.layers[0].weights.shape(), (6, 4));
     /// assert_eq!(network.layers[3].weights.shape(), (3, 5));
@@ -132,9 +140,11 @@ impl Network {
     ///
     /// ```
     /// # use engram::*;
+    ///
     /// let mut network = Network::default(&[3, 4, 2, 2]);
     /// let inputs = tensor![[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9], [1.0, 1.1, 1.2]];
     /// let output = network.feed_forward(&inputs);
+    ///
     /// assert_eq!(output.shape(), (4, 2));
     /// ```
     pub fn feed_forward(&mut self, inputs: &Tensor) -> Tensor {
@@ -146,19 +156,46 @@ impl Network {
         output
     }
 
+    /// Feeds the specified input through the network, updating the layer's inputs and output.
+    /// This method is used when training the network.
+    /// If you are only evaluating the network, use `feed_forward` instead.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::*;
+    ///
+    /// let mut network = Network::default(&[3, 4, 2, 2]);
+    /// let inputs = tensor![[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9], [1.0, 1.1, 1.2]];
+    /// network.feed_forward_mut(&inputs);
+    ///
+    /// assert_ne!(network.layers[0].inputs, None);
+    /// ```
+    pub fn feed_forward_mut(&mut self, inputs: &Tensor) {
+        for layer in &mut self.layers {
+            layer.feed_forward_mut(&inputs);
+            println!("Output: {:?}", layer.output.as_ref().unwrap().data);
+        }
+    }
+
     /// Performs backpropagation on the network, using the specified outputs and targets.
     ///
     /// # Examples
     ///
     /// ```
     /// # use engram::*;
+    ///
     /// let mut network = Network::default(&[3, 4, 2, 3]);
+    ///
     /// let inputs = tensor![[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9], [1.0, 1.1, 1.2], [1.3, 1.4, 1.5]];
     /// let targets = tensor![[0.2, 0.3, 0.4], [0.5, 0.6, 0.7], [0.8, 0.9, 1.0], [1.1, 1.2, 1.3], [1.4, 1.5, 1.6]];
+    ///
     /// assert_eq!(network.layers[0].inputs, None);
     /// assert_eq!(network.layers[0].output, None);
+    ///
     /// network.feed_forward(&inputs);
     /// network.back_propagate(&targets);
+    ///
     /// assert_ne!(network.layers[0].inputs, None);
     /// assert_ne!(network.layers[0].output, None);
     /// ```
@@ -186,6 +223,7 @@ impl Network {
     ///
     /// ```
     /// # use engram::*;
+    ///
     /// let mut network = Network::new(
     ///     &[2, 3, 1],
     ///     Initializer::Xavier,
@@ -193,9 +231,11 @@ impl Network {
     ///     LossFunction::MeanSquaredError,
     ///     Optimizer::SGD { learning_rate: 0.1 },
     /// );
+    ///
     /// let inputs = tensor![[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]];
     /// let targets = tensor![[0.0], [1.0], [1.0], [0.0]];
     /// network.train(&inputs, &targets, 4, 100);
+    ///
     /// for layer in network.layers {
     ///     assert_ne!(layer.inputs, None);
     ///     assert_ne!(layer.output, None);
@@ -205,12 +245,10 @@ impl Network {
         if targets.cols != self.layers.last().unwrap().weights.cols {
             panic!(
                 "Target cols {:?} does not match the final layer's output cols {:?}",
-                targets.shape(),
-                self.layers.last().unwrap().weights.shape()
+                targets.cols,
+                self.layers.last().unwrap().weights.cols
             );
         }
-
-        self.set_evaluation_mode(false);
 
         let num_batches = (inputs.rows as f64 / batch_size as f64).ceil() as usize;
 
@@ -223,7 +261,7 @@ impl Network {
                 let inputs_batch = &inputs.slice(batch_start, batch_end);
                 let targets_batch = &targets.slice(batch_start, batch_end);
 
-                self.feed_forward(&inputs_batch);
+                self.feed_forward_mut(&inputs_batch);
                 let loss = self.back_propagate(&targets_batch);
 
                 total_loss += loss;
@@ -242,6 +280,7 @@ impl Network {
     ///
     /// ```
     /// # use engram::*;
+    ///
     /// let mut network = Network::new(
     ///     &[2, 3, 3, 1],
     ///     Initializer::Xavier,
@@ -249,12 +288,16 @@ impl Network {
     ///     LossFunction::MeanSquaredError,
     ///     Optimizer::SGD { learning_rate: 0.1 },
     /// );
+    ///
     /// let inputs = tensor![[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]];
     /// let targets = tensor![[0.0], [1.0], [1.0], [0.0]];
+    ///
     /// network.train(&inputs, &targets, 4, 100);
+    ///
     /// let output = network.predict(&[1.0, 0.0]);
     /// let expected = 1.0;
     /// let prediction = output.data[0][0];
+    ///
     /// println!("Predicted: {:.2}, Expected: {:.2}", prediction, expected);
     /// // TODO: This is not working, the prediction is always 0.0 or close to it.
     /// //       Not sure if this is a calculation error with the optimizer or loss function,
@@ -262,34 +305,10 @@ impl Network {
     /// // assert!((expected - prediction).abs() < 0.1);
     /// ```
     pub fn predict(&mut self, inputs: &[f64]) -> Tensor {
-        self.set_evaluation_mode(true);
-
         let inputs = Tensor::from(vec![inputs.to_vec()]);
         let output = self.feed_forward(&inputs);
 
         output
-    }
-
-    /// Sets the evaluation mode for the network.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use engram::*;
-    /// let mut network = Network::new(
-    ///     &[2, 3, 1],
-    ///     Initializer::Xavier,
-    ///     Activation::ReLU,
-    ///     LossFunction::MeanSquaredError,
-    ///     Optimizer::SGD { learning_rate: 0.1 },
-    /// );
-    /// assert_eq!(network.layers[0].evaluation_mode, false);
-    /// assert_eq!(network.layers[1].evaluation_mode, false);
-    /// ```
-    fn set_evaluation_mode(&mut self, evaluation_mode: bool) {
-        for layer in &mut self.layers {
-            layer.set_evaluation_mode(evaluation_mode);
-        }
     }
 }
 
@@ -298,7 +317,7 @@ mod tests {
     use crate::*;
 
     #[test]
-    fn test_correct_constant_network() {
+    fn test_1x1_constant_network() {
         // Test a simple network with a 1x1 layer and a 1x1 output.
         let mut network = Network::new(
             &[1, 1],
@@ -309,13 +328,14 @@ mod tests {
         );
         // The outputs are just 1 times the input plus 1, so the goal is for the
         // network to learn the weights [[1.0]] and bias [1.0].
-        let inputs = tensor![[0.0], [1.0], [2.0], [3.0]];
-        let targets = tensor![[1.0], [2.0], [3.0], [4.0]];
+        let inputs = tensor![[0.], [1.], [2.], [3.]];
+        let targets = tensor![[1.], [2.], [3.], [4.]];
 
         network.train(&inputs, &targets, 4, 10);
-        let output = network.predict(&[4.0]);
-        let expected = 5.0;
+        let output = network.predict(&[4.]);
+        let expected = 5.;
         let prediction = output.data[0][0];
+
         println!("Predicted: {:.2}, Expected: {:.2}", prediction, expected);
         assert!((expected - prediction).abs() < 0.1);
     }
