@@ -13,7 +13,7 @@ impl Tensor {
     /// assert_eq!(c.data, vec![vec![58.0, 64.0], vec![139.0, 154.0]]);
     /// ```
     pub fn matmul(&self, other: &Tensor) -> Tensor {
-        self.validate_mul_shape(other, "matmul");
+        self.validate_matmul_compatible(other, "matmul");
 
         let mut res = Tensor::zeros(self.rows, other.cols);
         for i in 0..self.rows {
@@ -40,7 +40,7 @@ impl Tensor {
     /// assert_eq!(a.data, vec![vec![19.0, 22.0], vec![43.0, 50.0]]);
     /// ```
     pub fn matmul_mut(&mut self, other: &Tensor) {
-        self.validate_mul_shape(other, "matmul_mut");
+        self.validate_matmul_compatible(other, "matmul_mut");
 
         let mut res = Tensor::zeros(self.rows, other.cols);
         for i in 0..self.rows {
@@ -263,7 +263,7 @@ impl Tensor {
     /// assert_eq!(c, 32.0);
     /// ```
     pub fn dot(&self, other: &Tensor) -> f64 {
-        self.validate_shape(other, "dot");
+        self.validate_same_shape(other, "dot");
 
         let flat_self = self.flatten();
         let flat_other = other.flatten();
