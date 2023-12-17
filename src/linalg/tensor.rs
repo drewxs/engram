@@ -6,6 +6,7 @@
 mod access;
 mod computation;
 mod creation;
+mod decomposition;
 mod display;
 mod eq;
 mod from;
