@@ -1,6 +1,19 @@
 use crate::Tensor;
 
 impl Tensor {
+    /// Returns true if the tensor is the same shape as another tensor.
+    ///
+    /// # Examples
+    /// ```
+    /// # use engram::*;
+    /// let t1 = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let t2 = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// assert!(t1.is_same_shape(&t2));
+    /// ```
+    pub fn is_same_shape(&self, other: &Tensor) -> bool {
+        self.shape() == other.shape()
+    }
+
     /// Validates that the shape of the tensor is the same as the shape of another tensor.
     ///
     /// # Examples
@@ -11,12 +24,25 @@ impl Tensor {
     /// t1.validate_same_shape(&t2, "op");
     /// ```
     pub fn validate_same_shape(&self, other: &Tensor, op: &str) {
-        if self.shape() != other.shape() {
+        if !self.is_same_shape(other) {
             panic!(
                 "Tensor.{} invoked with invalid dimensions ({}x{} and {}x{})",
                 op, self.rows, self.cols, other.rows, other.cols
             );
         }
+    }
+
+    /// Returns true if columns of the tensor are the same as the rows of another tensor.
+    ///
+    /// # Examples
+    /// ```
+    /// # use engram::*;
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// assert!(a.is_matmul_compatible(&b));
+    /// ```
+    pub fn is_matmul_compatible(&self, other: &Tensor) -> bool {
+        self.cols == other.rows
     }
 
     /// Validates that the columns of the tensor are the same as the rows of another tensor.
@@ -30,12 +56,24 @@ impl Tensor {
     /// a.validate_matmul_compatible(&b, "op");
     /// ```
     pub fn validate_matmul_compatible(&self, other: &Tensor, op: &str) {
-        if self.cols != other.rows {
+        if !self.is_matmul_compatible(other) {
             panic!(
                 "Tensor.{} invoked with invalid dimensions ({}x{} and {}x{})",
                 op, self.rows, self.cols, other.rows, other.cols
             );
         }
+    }
+
+    /// Returns true if the tensor is square.
+    ///
+    /// # Examples
+    /// ```
+    /// # use engram::*;
+    /// let t = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// assert!(t.is_square());
+    /// ```
+    pub fn is_square(&self) -> bool {
+        self.rows == self.cols
     }
 
     /// Validates that the tensor is square.
@@ -48,7 +86,7 @@ impl Tensor {
     /// t.validate_square("op");
     /// ```
     pub fn validate_square(&self, op: &str) {
-        if self.rows != self.cols {
+        if !self.is_square() {
             panic!(
                 "Tensor.{} invoked with invalid dimensions ({}x{})",
                 op, self.rows, self.cols
