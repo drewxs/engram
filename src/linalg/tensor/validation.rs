@@ -113,4 +113,47 @@ impl Tensor {
             }
         }
     }
+
+    /// Returns true if the tensor is positive definite.
+    ///
+    /// # Examples
+    /// ```
+    /// # use engram::*;
+    /// let t = tensor![[4.0, 12.0, -16.0], [12.0, 37.0, -43.0], [-16.0, -43.0, 98.0]];
+    /// assert!(t.is_positive_definite());
+    /// ```
+    pub fn is_positive_definite(&self) -> bool {
+        if self.rows != self.cols {
+            return false;
+        }
+
+        let n = self.rows;
+
+        // Try to compute Cholesky decomposition
+        if let Some(chol) = self.cholesky() {
+            // Check if the diagonal elements of Cholesky matrix are positive
+            for i in 0..n {
+                if chol.data[i][i] <= 0.0 {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        false
+    }
+
+    /// Validates that the tensor is positive definite.
+    ///
+    /// # Examples
+    /// ```
+    /// # use engram::*;
+    /// let t = tensor![[4.0, 12.0, -16.0], [12.0, 37.0, -43.0], [-16.0, -43.0, 98.0]];
+    /// t.validate_positive_definite("op");
+    /// ```
+    pub fn validate_positive_definite(&self, op: &str) {
+        if !self.is_positive_definite() {
+            panic!("Tensor.{} invoked with non-positive definite matrix", op);
+        }
+    }
 }
