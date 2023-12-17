@@ -71,7 +71,7 @@ impl Tensor {
     ///
     /// ```
     /// # use engram::*;
-    /// let tensor = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
+    /// let tensor = Tensor::from(vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]]);
     /// assert_eq!(tensor.data, vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]]);
     /// ```
     pub fn from(data: Tensor2D) -> Tensor {
