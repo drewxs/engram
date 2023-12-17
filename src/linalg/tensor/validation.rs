@@ -55,4 +55,24 @@ impl Tensor {
             );
         }
     }
+
+    /// Validates that the tensor is symmetric.
+    ///
+    /// # Examples
+    /// ```
+    /// # use engram::*;
+    /// let t = tensor![[1.0, 2.0, 3.0], [2.0, 1.0, 2.0], [3.0, 2.0, 1]];
+    /// t.validate_symmetric("op");
+    /// ```
+    pub fn validate_symmetric(&self, op: &str) {
+        self.validate_square(op);
+
+        for i in 0..self.rows {
+            for j in 0..self.cols {
+                if self.data[i][j] != self.data[j][i] {
+                    panic!("Tensor.{} invoked with non-symmetric matrix", op);
+                }
+            }
+        }
+    }
 }
