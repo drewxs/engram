@@ -1,7 +1,9 @@
 use crate::Tensor;
 
 impl Tensor {
-    /// Returns the Cholesky decomposition of the tensor.
+    /// Cholesky decomposition of a symmetric, positive-definite matrix.
+    /// Returns the product of the lower triangular matrix and its conjugate transpose.
+    /// Returns None if the input matrix is not not square or positive-definite.
     ///
     /// # Examples
     /// ```
@@ -11,7 +13,9 @@ impl Tensor {
     /// assert_eq!(t2, tensor![[2.0, 0.0, 0.0], [6.0, 1.0, 0.0], [-8.0, 5.0, 3.0]]);
     /// ```
     pub fn cholesky(&self) -> Option<Self> {
-        self.validate_square("cholesky");
+        if !self.is_square() {
+            return None;
+        }
 
         let mut result = Tensor::zeros(self.rows, self.cols);
 
