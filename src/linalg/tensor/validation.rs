@@ -94,7 +94,31 @@ impl Tensor {
         }
     }
 
-    /// Validates that the tensor is symmetric.
+    /// Returns true if the tensor is symmetric, i.e. a square matrix with equal elements across the diagonal.
+    ///
+    /// # Examples
+    /// ```
+    /// # use engram::*;
+    /// let t = tensor![[1.0, 2.0, 3.0], [2.0, 1.0, 2.0], [3.0, 2.0, 1]];
+    /// assert(t.is_symmetric());
+    /// ```
+    pub fn is_symmetric(&self) -> bool {
+        if !self.is_square() {
+            return false;
+        }
+
+        for i in 0..self.rows {
+            for j in 0..self.cols {
+                if self.data[i][j] != self.data[j][i] {
+                    return false;
+                }
+            }
+        }
+
+        true
+    }
+
+    /// Validates that the tensor is symmetric, i.e. a square matrix with equal elements across the diagonal.
     ///
     /// # Examples
     /// ```
@@ -103,18 +127,12 @@ impl Tensor {
     /// t.validate_symmetric("op");
     /// ```
     pub fn validate_symmetric(&self, op: &str) {
-        self.validate_square(op);
-
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                if self.data[i][j] != self.data[j][i] {
-                    panic!("Tensor.{} invoked with non-symmetric matrix", op);
-                }
-            }
+        if !self.is_symmetric() {
+            panic!("Tensor.{} invoked with non-symmetric matrix", op);
         }
     }
 
-    /// Returns true if the tensor is positive definite.
+    /// Returns true if the tensor is positive definite, i.e. symmetric and all eigenvalues are positive.
     ///
     /// # Examples
     /// ```
@@ -123,7 +141,7 @@ impl Tensor {
     /// assert!(t.is_positive_definite());
     /// ```
     pub fn is_positive_definite(&self) -> bool {
-        if self.rows != self.cols {
+        if !self.is_square() {
             return false;
         }
 
@@ -143,7 +161,7 @@ impl Tensor {
         false
     }
 
-    /// Validates that the tensor is positive definite.
+    /// Validates that the tensor is positive definite, i.e. symmetric and all eigenvalues are positive.
     ///
     /// # Examples
     /// ```
