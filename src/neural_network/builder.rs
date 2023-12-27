@@ -1,4 +1,4 @@
-//! Sequential neural network builder.
+//! Neural network builder.
 //!
 //! Allows creating a network using a builder pattern.
 
@@ -10,7 +10,7 @@ use crate::{Activation, Initializer, Layer, Loss, Network, Optimizer};
 ///
 /// ```
 /// # use engram::*;
-/// let network = Sequential::new(&[2, 3, 1])
+/// let network = NetworkBuilder::new(&[2, 3, 1])
 ///    .activation(Activation::ReLU)
 ///    .loss_function(Loss::MeanSquaredError)
 ///    .optimizer(Optimizer::SGD { learning_rate: 0.1 })
@@ -30,13 +30,13 @@ pub struct NetworkBuilder {
 }
 
 impl NetworkBuilder {
-    /// Creates a new `Sequential` with the specified layer sizes.
+    /// Creates a new `NetworkBuilder` with the specified layer sizes.
     ///
     /// # Examples
     ///
     /// ```
     /// # use engram::*;
-    /// let network = Sequential::new(&[2, 3, 1]).build();
+    /// let network = NetworkBuilder::new(&[2, 3, 1]).build();
     /// assert_eq!(network.layers[0].weights.shape(), (2, 3));
     /// assert_eq!(network.layers[1].weights.shape(), (3, 1));
     /// ```
@@ -56,7 +56,7 @@ impl NetworkBuilder {
     ///
     /// ```
     /// # use engram::*;
-    /// let network = Sequential::new(&[2, 3, 1]).initializer(Initializer::Xavier).build();
+    /// let network = NetworkBuilder::new(&[2, 3, 1]).initializer(Initializer::Xavier).build();
     /// assert_eq!(network.initializer, Initializer::Xavier);
     /// ```
     pub fn initializer(mut self, initializer: Initializer) -> Self {
@@ -70,7 +70,7 @@ impl NetworkBuilder {
     ///
     /// ```
     /// # use engram::*;
-    /// let network = Sequential::new(&[2, 3, 1]).activation(Activation::ReLU).build();
+    /// let network = NetworkBuilder::new(&[2, 3, 1]).activation(Activation::ReLU).build();
     /// assert_eq!(network.layers[0].activation, Activation::ReLU);
     /// ```
     pub fn activation(mut self, activation: Activation) -> Self {
@@ -84,7 +84,7 @@ impl NetworkBuilder {
     ///
     /// ```
     /// # use engram::*;
-    /// let network = Sequential::new(&[2, 3, 1]).loss_function(Loss::MeanSquaredError).build();
+    /// let network = NetworkBuilder::new(&[2, 3, 1]).loss_function(Loss::MeanSquaredError).build();
     /// assert_eq!(network.loss_function, Loss::MeanSquaredError);
     /// ```
     pub fn loss_function(mut self, loss_function: Loss) -> Self {
@@ -98,7 +98,7 @@ impl NetworkBuilder {
     ///
     /// ```
     /// # use engram::*;
-    /// let network = Sequential::new(&[2, 3, 1]).optimizer(Optimizer::SGD { learning_rate: 0.01 }).build();
+    /// let network = NetworkBuilder::new(&[2, 3, 1]).optimizer(Optimizer::SGD { learning_rate: 0.01 }).build();
     /// assert_eq!(network.optimizer, Optimizer::SGD { learning_rate: 0.01 });
     /// ```
     pub fn optimizer(mut self, optimizer: Optimizer) -> Self {
@@ -112,7 +112,7 @@ impl NetworkBuilder {
     ///
     /// ```
     /// # use engram::*;
-    /// let network = Sequential::new(&[2, 3, 1]).build();
+    /// let network = NetworkBuilder::new(&[2, 3, 1]).build();
     /// assert_eq!(network.layers[0].weights.shape(), (2, 3));
     /// assert_eq!(network.layers[1].weights.shape(), (3, 1));
     /// assert_eq!(network.layers[0].activation, Activation::Sigmoid);
