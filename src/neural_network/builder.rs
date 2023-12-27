@@ -21,7 +21,7 @@ use crate::{Activation, Initializer, Layer, Loss, Network, Optimizer};
 /// assert_eq!(network.loss_function, Loss::MeanSquaredError);
 /// assert_eq!(network.optimizer, Optimizer::SGD { learning_rate: 0.1 })
 /// ```
-pub struct Sequential {
+pub struct NetworkBuilder {
     layer_sizes: Vec<usize>,
     initializer: Option<Initializer>,
     activation: Option<Activation>,
@@ -29,7 +29,7 @@ pub struct Sequential {
     optimizer: Option<Optimizer>,
 }
 
-impl Sequential {
+impl NetworkBuilder {
     /// Creates a new `Sequential` with the specified layer sizes.
     ///
     /// # Examples
@@ -41,7 +41,7 @@ impl Sequential {
     /// assert_eq!(network.layers[1].weights.shape(), (3, 1));
     /// ```
     pub fn new(layer_sizes: &[usize]) -> Self {
-        Sequential {
+        NetworkBuilder {
             layer_sizes: layer_sizes.to_vec(),
             initializer: None,
             activation: None,
