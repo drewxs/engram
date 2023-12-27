@@ -1,4 +1,4 @@
-use crate::Tensor;
+use crate::{linalg, Tensor};
 
 impl Tensor {
     /// Returns true if the tensor is the same shape as another tensor.
@@ -148,7 +148,7 @@ impl Tensor {
         let n = self.rows;
 
         // Try to compute Cholesky decomposition
-        if let Some(chol) = self.cholesky() {
+        if let Some(chol) = linalg::cholesky(&self) {
             // Check if the diagonal elements of Cholesky matrix are positive
             for i in 0..n {
                 if chol.data[i][i] <= 0.0 {
