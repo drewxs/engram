@@ -59,9 +59,7 @@ pub fn lu(tensor: &Tensor) -> Option<(Tensor, Tensor)> {
         return None;
     }
 
-    let n = tensor.data.len();
-
-    let mut l = Tensor::identity(n);
+    let mut l = Tensor::identity(tensor.rows);
     let mut u = tensor.clone();
 
     for i in 0..tensor.rows - 1 {
