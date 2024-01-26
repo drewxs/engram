@@ -1,5 +1,5 @@
 use crate::{
-    linalg::dot,
+    linalg::{dot, magnitude},
     utils::{intersection, union},
 };
 
@@ -42,5 +42,29 @@ pub fn jaccard_index(a: &[bool], b: &[bool]) -> f64 {
         0.0
     } else {
         intersection as f64 / union as f64
+    }
+}
+
+/// Compute the Tanimoto Coefficient for continuous vectors.
+/// A measure of similarity for real-valued vectors that generalizes the Jaccard index.
+/// Formula: dot(a, b) / (|a|^2 + |b|^2 - dot(a, b))
+///
+/// # Examples
+///
+/// ```
+/// # use engram::metrics::tanimoto_coefficient;
+/// let a = [1.0, 2.0, 3.0];
+/// let b = [1.3, 2.1, 3.0];
+/// let c = [1.5, 2.4, 4.0];
+/// assert_eq!(tanimoto_coefficient(&a, &b), 0.9931506849315067);
+/// assert_eq!(tanimoto_coefficient(&a, &c), 0.9284627092846273);
+/// ```
+pub fn tanimoto_coefficient(a: &[f64], b: &[f64]) -> f64 {
+    let dot = dot(a, b);
+    let denominator = magnitude(a) + magnitude(b) - dot;
+    if denominator == 0.0 {
+        0.0
+    } else {
+        dot / denominator
     }
 }
