@@ -11,3 +11,16 @@
 pub fn dot(a: &[f64], b: &[f64]) -> f64 {
     a.iter().zip(b.iter()).fold(0.0, |acc, (x, y)| acc + x * y)
 }
+
+/// Magnitude of a vector.
+///
+/// # Examples
+///
+/// ```
+/// # use engram::linalg::magnitude;
+/// let a = [1.0, 2.0, 3.0];
+/// assert_eq!(magnitude(&a), 3.7416573867739413);
+/// ```
+pub fn magnitude(a: &[f64]) -> f64 {
+    a.iter().fold(0.0, |acc, x| acc + x * x)
+}
