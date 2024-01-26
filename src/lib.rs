@@ -1,6 +1,7 @@
 pub mod activation;
 pub mod linalg;
 pub mod loss;
+pub mod metrics;
 pub mod neural_network;
 pub mod optimizer;
 pub mod regression;
