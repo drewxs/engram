@@ -1,4 +1,4 @@
-use crate::{Initializer, Tensor, Tensor2D};
+use crate::{Initializer, Tensor};
 
 impl Tensor {
     /// Creates a new `Tensor` of 0s with the specified number of rows and columns.
@@ -79,23 +79,6 @@ impl Tensor {
     /// ```
     pub fn ones_like(other: &Tensor) -> Tensor {
         Tensor::ones(other.rows, other.cols)
-    }
-
-    /// Creates a new `Tensor` from a two-dimensional vector of floating point values.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use engram::*;
-    /// let t = Tensor::from(vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]]);
-    /// assert_eq!(t.data, vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]]);
-    /// ```
-    pub fn from(data: Tensor2D) -> Tensor {
-        Tensor {
-            rows: data.len(),
-            cols: data[0].len(),
-            data,
-        }
     }
 
     /// Creates a new `Tensor` with the specified number of rows and columns, initialized using the provided initializer.
