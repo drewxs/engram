@@ -1,9 +1,11 @@
-use crate::Tensor;
+use crate::{Tensor, Tensor2D};
 
-impl From<Vec<Vec<f64>>> for Tensor {
-    fn from(data: Vec<Vec<f64>>) -> Self {
-        let rows = data.len();
-        let cols = data[0].len();
-        Tensor { rows, cols, data }
+impl From<Tensor2D> for Tensor {
+    fn from(data: Tensor2D) -> Self {
+        Tensor {
+            rows: data.len(),
+            cols: data[0].len(),
+            data,
+        }
     }
 }
