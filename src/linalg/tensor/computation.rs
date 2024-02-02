@@ -364,6 +364,20 @@ impl Tensor {
         self.mapv(&|x| activation.apply(x))
     }
 
+    /// Mutates the tensor in-place with each element in the tensor activated by the given activation function.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::*;
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// a.activate_mut(&Activation::Sigmoid);
+    /// assert_eq!(a.data, vec![vec![0.7310585786300049, 0.8807970779778823], vec![0.9525741268224334, 0.9820137900379085]]);
+    /// ```
+    pub fn activate_mut(&mut self, activation: &Activation) {
+        self.mapv_mut(&|x| activation.apply(x));
+    }
+
     /// Returns a new tensor with each element in the tensor activated by the derivative of the given activation function.
     ///
     /// # Examples
