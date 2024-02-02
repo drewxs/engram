@@ -7,12 +7,10 @@ use crate::Tensor2D;
 /// Initialization methods for weight matrices.
 #[derive(Debug, PartialEq)]
 pub enum Initializer {
-    /// Xavier/Glorot initialization.
-    /// Use for Sigmoid and TanH activation functions.
+    /// Xavier (Glorot) initialization.
     /// Gaussian, µ = 0, σ = √[2 / (f_in + f_out)]
     Xavier,
-    /// Kaiming initialization.
-    /// Use for ReLU and LeakyReLU activation functions.
+    /// Kaiming (He) initialization.
     /// Gaussian, µ = 0, σ = √[2 / f_in]
     Kaiming,
     Constant(f64),
