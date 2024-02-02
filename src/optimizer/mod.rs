@@ -27,7 +27,7 @@ pub enum Optimizer {
 }
 
 pub trait Optimize {
-    fn step(&mut self, weights: &mut Tensor, gradients: &mut Tensor);
+    fn step(&mut self, weights: &mut Tensor, gradients: &Tensor);
 }
 
 impl Optimize for Optimizer {
@@ -46,7 +46,7 @@ impl Optimize for Optimizer {
     ///
     /// # assert_eq!(weights, tensor![[0.9, 1.9, 2.9], [3.9, 4.9, 5.9]]);
     /// ```
-    fn step(&mut self, weights: &mut Tensor, gradients: &mut Tensor) {
+    fn step(&mut self, weights: &mut Tensor, gradients: &Tensor) {
         match self {
             Optimizer::SGD { learning_rate } => {
                 let mut optimizer = SGD::new(*learning_rate);

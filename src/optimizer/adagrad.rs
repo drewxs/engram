@@ -33,7 +33,8 @@ impl Adagrad {
 }
 
 impl Optimize for Adagrad {
-    fn step(&mut self, weights: &mut Tensor, gradients: &mut Tensor) {
+    fn step(&mut self, weights: &mut Tensor, gradients: &Tensor) {
+        let mut gradients = gradients.clone();
         if let Some(wd) = self.weight_decay {
             gradients.sub_mut(&weights.mul_scalar(wd));
         }
