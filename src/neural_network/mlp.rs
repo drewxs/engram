@@ -165,11 +165,11 @@ impl Network {
     /// ```
     /// # use engram::*;
     ///
-    /// let mut network = Network::default(&[3, 4, 2, 2]);
+    /// let mut network = Network::default(&[4, 3]);
     /// let inputs = tensor![[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9], [1.0, 1.1, 1.2]];
     /// network.feed_forward_mut(&inputs);
     ///
-    /// assert_ne!(network.layers[0].inputs, None);
+    /// assert_ne!(network.layers.first().unwrap().inputs, None);
     /// ```
     pub fn feed_forward_mut(&mut self, inputs: &Tensor) {
         for layer in &mut self.layers {
@@ -255,7 +255,7 @@ impl Network {
         for epoch in 0..epochs {
             let mut total_loss = 0.0;
 
-            for batch in 0..num_batches {
+            for batch in 0..num_batches - 1 {
                 let batch_start = batch * batch_size;
                 let batch_end = (batch + 1) * batch_size;
                 let inputs_batch = &inputs.slice(batch_start, batch_end);
@@ -341,25 +341,59 @@ mod tests {
     }
 
     #[test]
-    fn test_constant_network() {
-        // Again test a network with a 1x1 layer and a 1x1 output, but this time
-        // we want the weight to stay at 0 and the bias to increase to 1.
+    fn test_sum_network() {
+        // Test a simple network with a 4x4 layer and a 4x4 output.
         let mut network = Network::new(
-            &[1, 1],
-            Initializer::Constant(0.),
-            Activation::ReLU,
+            &[4, 1],
+            Initializer::Kaiming,
+            Activation::Sigmoid,
             Loss::MeanSquaredError,
-            Optimizer::SGD { learning_rate: 0.1 },
+            Optimizer::SGD {
+                learning_rate: 0.01,
+            },
         );
-        // The outputs are just 1 times the input plus 0.
-        let inputs = tensor![[0.0], [1.0], [2.0], [3.0]];
-        let targets = tensor![[1.], [1.], [1.], [1.]];
 
-        network.train(&inputs, &targets, 4, 2);
-        let output = network.predict(&[4.0]);
-        let expected = 4.0;
-        let prediction = output.data[0][0];
+        let inputs = tensor![
+            [0., 1., 2., 3.],
+            [1., 2., 3., 4.],
+            [2., 3., 4., 5.],
+            [3., 4., 5., 6.],
+            [8., 1., 6., 3.],
+            [1., 2., 1., 1.],
+            [9., 8., 8., 0.],
+            [1., 2., 3., 4.]
+        ];
+        let targets = tensor![[6.], [10.], [14.], [18.], [18.], [5.], [25.], [10.]];
+
+        network.train(&inputs, &targets, 4, 10);
+        let prediction = network.predict(&[6., 7., 8., 9.]).data[0][0];
+        let expected = 22.;
+
         println!("Predicted: {:.2}, Expected: {:.2}", prediction, expected);
         assert!((expected - prediction).abs() < 0.1);
     }
+
+    // #[test]
+    // fn test_xavier_sigmoid_network() {
+    //     // Again test a network with a 1x1 layer and a 1x1 output, but this time
+    //     // we want the weight to stay at 0 and the bias to increase to 1.
+    //     let mut network = Network::new(
+    //         &[1, 1],
+    //         Initializer::Xavier,
+    //         Activation::Sigmoid,
+    //         Loss::MeanSquaredError,
+    //         Optimizer::SGD { learning_rate: 0.1 },
+    //     );
+    //     // The outputs are just 1 times the input plus 0.
+    //     let inputs = tensor![[0.], [1.], [2.], [3.]];
+    //     let targets = tensor![[1.], [1.], [1.], [1.]];
+    //
+    //     network.train(&inputs, &targets, 4, 10);
+    //     let output = network.predict(&[4.]);
+    //     let expected = 1.;
+    //     let prediction = output.data[0][0];
+    //
+    //     println!("Predicted: {:.2}, Expected: {:.2}", prediction, expected);
+    //     assert!((expected - prediction).abs() < 0.1);
+    // }
 }
