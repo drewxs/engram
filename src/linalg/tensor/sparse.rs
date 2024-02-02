@@ -15,7 +15,7 @@ impl Tensor {
     /// assert_eq!(c.data, vec![vec![7.0, 8.0], vec![45.0, 50.0], vec![22.0, 24.0]]);
     /// ```
     pub fn sparse_matmul(&self, other: &Tensor) -> Tensor {
-        self.validate_matmul_compatible(other, "matmul");
+        self.validate_matmul_compatible(other);
 
         let sparse_self = self.sparse();
         let sparse_other = other.sparse();
