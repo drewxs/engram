@@ -32,12 +32,14 @@ impl Tensor {
     /// assert_eq!(a.data, vec![vec![1.0, 3.0], vec![2.0, 4.0]]);
     /// ```
     pub fn transpose_mut(&mut self) {
-        let mut res = Tensor::zeros(self.rows, self.cols);
+        let mut res = Tensor::zeros(self.cols, self.rows);
         for i in 0..self.rows {
             for j in 0..self.cols {
                 res.data[j][i] = self.data[i][j];
             }
         }
+        self.rows = res.rows;
+        self.cols = res.cols;
         self.data = res.data;
     }
 
