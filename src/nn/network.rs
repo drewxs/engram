@@ -58,15 +58,15 @@ impl NeuralNetwork {
                 NetworkLayer::FeedForward(l) => {
                     let (d_input, mut d_weight, mut d_bias) = l.backward(input, &gradient);
                     if let Some(reg) = &self.regularization {
-                        d_weight.add_mut(&reg.grad(&l.weights));
-                        d_bias.add_mut(&reg.grad(&l.biases));
+                        d_weight += reg.grad(&l.weights);
+                        d_bias += reg.grad(&l.biases);
                     }
                     (d_input, d_weight, d_bias)
                 }
             };
 
             if let Some(reg) = &self.regularization {
-                d_weight.add_mut(&reg.grad(&d_weight))
+                d_weight += reg.grad(&d_weight);
             }
 
             gradients.push((d_weight, d_bias));

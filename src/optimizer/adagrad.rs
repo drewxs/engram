@@ -36,18 +36,12 @@ impl Optimize for Adagrad {
     fn step(&mut self, weights: &mut Tensor, gradients: &Tensor) {
         let mut gradients = gradients.clone();
         if let Some(wd) = self.weight_decay {
-            gradients.sub_mut(&weights.mul_scalar(wd));
+            gradients -= &*weights * wd;
         }
 
-        self.accumulators.add_mut(&gradients.square());
-        self.accumulators
-            .add_scalar_mut(self.epsilon.unwrap_or(1e-8));
+        self.accumulators += gradients.square() + self.epsilon.unwrap_or(1e-8);
 
-        weights.sub_mut(
-            &gradients
-                .div(&(self.accumulators.mapv(&f64::sqrt)))
-                .mul_scalar(self.learning_rate),
-        );
+        *weights -= gradients.div(&(self.accumulators.mapv(&f64::sqrt))) * (self.learning_rate);
     }
 }
 

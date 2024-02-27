@@ -18,7 +18,7 @@ impl SGD {
 
 impl Optimize for SGD {
     fn step(&mut self, weights: &mut Tensor, gradients: &Tensor) {
-        weights.sub_mut(&gradients.mul_scalar(self.learning_rate));
+        *weights -= gradients * self.learning_rate;
     }
 }
 

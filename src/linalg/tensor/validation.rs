@@ -72,7 +72,7 @@ impl Tensor {
     /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// a.validate_matmul_compatible(&b, "op");
+    /// a.validate_matmul_compatible(&b);
     /// ```
     pub fn validate_matmul_compatible(&self, other: &Tensor) {
         self.validate_2(other, self.is_matmul_compatible(other), "matmul");
