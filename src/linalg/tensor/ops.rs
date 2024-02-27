@@ -307,158 +307,118 @@ impl Tensor {
     }
 }
 
-impl Add for Tensor {
-    type Output = Tensor;
-
-    fn add(self, other: Tensor) -> Tensor {
-        (&self).add(&other)
-    }
-}
-impl Add<Tensor> for &Tensor {
-    type Output = Tensor;
-
-    fn add(self, other: Tensor) -> Tensor {
-        (&self).add(&other)
-    }
-}
 impl Add<&Tensor> for &Tensor {
     type Output = Tensor;
-
-    fn add(self, other: &Tensor) -> Tensor {
-        (&self).add(other)
+    fn add(self, rhs: &Tensor) -> Tensor {
+        self.add(rhs)
     }
 }
 impl Add<f64> for Tensor {
     type Output = Tensor;
-
-    fn add(self, other: f64) -> Tensor {
-        self.add_scalar(other)
+    fn add(self, rhs: f64) -> Tensor {
+        self.add_scalar(rhs)
     }
 }
-impl AddAssign<&Tensor> for &mut Tensor {
-    fn add_assign(&mut self, other: &Tensor) {
-        self.add_mut(other);
-    }
-}
-impl AddAssign<f64> for &mut Tensor {
-    fn add_assign(&mut self, other: f64) {
-        self.add_scalar_mut(other);
-    }
-}
-
-impl Sub for Tensor {
+impl Add<f64> for &Tensor {
     type Output = Tensor;
-
-    fn sub(self, other: Tensor) -> Tensor {
-        (&self).sub(&other)
+    fn add(self, rhs: f64) -> Tensor {
+        self.add_scalar(rhs)
     }
 }
-impl Sub<Tensor> for &Tensor {
-    type Output = Tensor;
-
-    fn sub(self, other: Tensor) -> Tensor {
-        (&self).sub(&other)
+impl AddAssign<Tensor> for Tensor {
+    fn add_assign(&mut self, rhs: Tensor) {
+        self.add_mut(&rhs);
     }
 }
+impl AddAssign<f64> for Tensor {
+    fn add_assign(&mut self, rhs: f64) {
+        self.add_scalar_mut(rhs);
+    }
+}
+
 impl Sub<&Tensor> for &Tensor {
     type Output = Tensor;
-
-    fn sub(self, other: &Tensor) -> Tensor {
-        (&self).sub(other)
+    fn sub(self, rhs: &Tensor) -> Tensor {
+        self.sub(rhs)
+    }
+}
+impl Sub<f64> for &Tensor {
+    type Output = Tensor;
+    fn sub(self, rhs: f64) -> Tensor {
+        self.sub_scalar(rhs)
     }
 }
 impl Sub<f64> for Tensor {
     type Output = Tensor;
+    fn sub(self, rhs: f64) -> Tensor {
+        self.sub_scalar(rhs)
+    }
+}
+impl SubAssign<Tensor> for Tensor {
+    fn sub_assign(&mut self, rhs: Tensor) {
+        self.sub_mut(&rhs);
+    }
+}
+impl SubAssign<f64> for Tensor {
+    fn sub_assign(&mut self, rhs: f64) {
+        self.sub_scalar_mut(rhs);
+    }
+}
 
-    fn sub(self, other: f64) -> Tensor {
-        self.sub_scalar(other)
-    }
-}
-impl SubAssign<&Tensor> for &mut Tensor {
-    fn sub_assign(&mut self, other: &Tensor) {
-        self.sub_mut(other);
-    }
-}
-impl SubAssign<f64> for &mut Tensor {
-    fn sub_assign(&mut self, other: f64) {
-        self.sub_scalar_mut(other);
-    }
-}
-
-impl Mul for Tensor {
-    type Output = Tensor;
-
-    fn mul(self, other: Tensor) -> Tensor {
-        (&self).mul(&other)
-    }
-}
-impl Mul<Tensor> for &Tensor {
-    type Output = Tensor;
-
-    fn mul(self, other: Tensor) -> Tensor {
-        (&self).mul(&other)
-    }
-}
 impl Mul<&Tensor> for &Tensor {
     type Output = Tensor;
-
-    fn mul(self, other: &Tensor) -> Tensor {
-        (&self).mul(other)
+    fn mul(self, rhs: &Tensor) -> Tensor {
+        self.mul(rhs)
+    }
+}
+impl Mul<f64> for &Tensor {
+    type Output = Tensor;
+    fn mul(self, rhs: f64) -> Tensor {
+        self.mul_scalar(rhs)
     }
 }
 impl Mul<f64> for Tensor {
     type Output = Tensor;
+    fn mul(self, rhs: f64) -> Tensor {
+        self.mul_scalar(rhs)
+    }
+}
+impl MulAssign<Tensor> for Tensor {
+    fn mul_assign(&mut self, rhs: Tensor) {
+        self.mul_mut(&rhs);
+    }
+}
+impl MulAssign<f64> for Tensor {
+    fn mul_assign(&mut self, rhs: f64) {
+        self.mul_scalar_mut(rhs);
+    }
+}
 
-    fn mul(self, other: f64) -> Tensor {
-        self.mul_scalar(other)
-    }
-}
-impl MulAssign<&Tensor> for &mut Tensor {
-    fn mul_assign(&mut self, other: &Tensor) {
-        self.mul_mut(other);
-    }
-}
-impl MulAssign<f64> for &mut Tensor {
-    fn mul_assign(&mut self, other: f64) {
-        self.mul_scalar_mut(other);
-    }
-}
-
-impl Div for Tensor {
-    type Output = Tensor;
-
-    fn div(self, other: Tensor) -> Tensor {
-        (&self).div(&other)
-    }
-}
-impl Div<Tensor> for &Tensor {
-    type Output = Tensor;
-
-    fn div(self, other: Tensor) -> Tensor {
-        (&self).div(&other)
-    }
-}
 impl Div<&Tensor> for &Tensor {
     type Output = Tensor;
-
-    fn div(self, other: &Tensor) -> Tensor {
-        (&self).div(other)
+    fn div(self, rhs: &Tensor) -> Tensor {
+        self.div(rhs)
+    }
+}
+impl Div<f64> for &Tensor {
+    type Output = Tensor;
+    fn div(self, rhs: f64) -> Tensor {
+        self.div_scalar(rhs)
     }
 }
 impl Div<f64> for Tensor {
     type Output = Tensor;
-
-    fn div(self, other: f64) -> Tensor {
-        self.div_scalar(other)
+    fn div(self, rhs: f64) -> Tensor {
+        self.div_scalar(rhs)
     }
 }
-impl DivAssign<&Tensor> for &mut Tensor {
-    fn div_assign(&mut self, other: &Tensor) {
-        self.div_mut(other);
+impl DivAssign<Tensor> for Tensor {
+    fn div_assign(&mut self, rhs: Tensor) {
+        self.div_mut(&rhs);
     }
 }
-impl DivAssign<f64> for &mut Tensor {
-    fn div_assign(&mut self, other: f64) {
-        self.div_scalar_mut(other);
+impl DivAssign<f64> for Tensor {
+    fn div_assign(&mut self, rhs: f64) {
+        self.div_scalar_mut(rhs);
     }
 }
