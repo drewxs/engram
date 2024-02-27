@@ -16,17 +16,7 @@ impl Tensor {
     /// ```
     pub fn add(&self, other: &Tensor) -> Tensor {
         let mut res = self.clone();
-        for i in 0..self.rows {
-            if i >= other.rows {
-                break;
-            }
-            for j in 0..self.cols {
-                if j >= other.cols {
-                    break;
-                }
-                res.data[i][j] += other.data[i][j];
-            }
-        }
+        res.add_mut(other);
         res
     }
 
@@ -67,11 +57,7 @@ impl Tensor {
     /// ```
     pub fn add_scalar(&self, scalar: f64) -> Tensor {
         let mut res = self.clone();
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                res.data[i][j] += scalar;
-            }
-        }
+        res.add_scalar_mut(scalar);
         res
     }
 
@@ -105,17 +91,7 @@ impl Tensor {
     /// assert_eq!(c.data, vec![vec![-4.0, -4.0], vec![-4.0, -4.0]]);
     pub fn sub(&self, other: &Tensor) -> Tensor {
         let mut res = self.clone();
-        for i in 0..self.rows {
-            if i >= other.rows {
-                break;
-            }
-            for j in 0..self.cols {
-                if j >= other.cols {
-                    break;
-                }
-                res.data[i][j] -= other.data[i][j];
-            }
-        }
+        res.sub_mut(other);
         res
     }
 
@@ -156,11 +132,7 @@ impl Tensor {
     /// ```
     pub fn sub_scalar(&self, scalar: f64) -> Tensor {
         let mut res = self.clone();
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                res.data[i][j] -= scalar;
-            }
-        }
+        res.sub_scalar_mut(scalar);
         res
     }
 
@@ -195,17 +167,7 @@ impl Tensor {
     /// ```
     pub fn mul(&self, other: &Tensor) -> Tensor {
         let mut res = self.clone();
-        for i in 0..self.rows {
-            if i >= other.rows {
-                break;
-            }
-            for j in 0..self.cols {
-                if j >= other.cols {
-                    break;
-                }
-                res.data[i][j] *= other.data[i][j];
-            }
-        }
+        res.mul_mut(other);
         res
     }
 
@@ -246,11 +208,7 @@ impl Tensor {
     /// ```
     pub fn mul_scalar(&self, scalar: f64) -> Tensor {
         let mut res = self.clone();
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                res.data[i][j] *= scalar;
-            }
-        }
+        res.mul_scalar_mut(scalar);
         res
     }
 
@@ -285,17 +243,7 @@ impl Tensor {
     /// ```
     pub fn div(&self, other: &Tensor) -> Tensor {
         let mut res = self.clone();
-        for i in 0..self.rows {
-            if i >= other.rows {
-                break;
-            }
-            for j in 0..self.cols {
-                if j >= other.cols {
-                    break;
-                }
-                res.data[i][j] /= other.data[i][j];
-            }
-        }
+        res.div_mut(other);
         res
     }
 
@@ -336,11 +284,7 @@ impl Tensor {
     /// ```
     pub fn div_scalar(&self, scalar: f64) -> Tensor {
         let mut res = self.clone();
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                res.data[i][j] /= scalar;
-            }
-        }
+        res.div_scalar_mut(scalar);
         res
     }
 
