@@ -28,33 +28,6 @@ impl Tensor {
         res
     }
 
-    /// Performs matrix multiplication between two tensors in-place.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use engram::*;
-    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
-    /// a.matmul_mut(&b);
-    /// assert_eq!(a.data, vec![vec![19.0, 22.0], vec![43.0, 50.0]]);
-    /// ```
-    pub fn matmul_mut(&mut self, other: &Tensor) {
-        self.validate_matmul_compatible(other);
-
-        let mut res = Tensor::zeros(self.rows, other.cols);
-        for i in 0..self.rows {
-            for j in 0..other.cols {
-                let mut sum = 0.0;
-                for k in 0..self.cols {
-                    sum += self.data[i][k] * other.data[k][j];
-                }
-                res.data[i][j] = sum;
-            }
-        }
-        *self = res;
-    }
-
     /// Applies a function to each element in the tensor.
     ///
     /// # Examples
