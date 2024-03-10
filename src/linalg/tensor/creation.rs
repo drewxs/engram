@@ -16,6 +16,7 @@ impl Tensor {
             rows,
             cols,
             data: vec![vec![0.0; cols]; rows],
+            grad: None,
         }
     }
 
@@ -64,6 +65,7 @@ impl Tensor {
             rows,
             cols,
             data: vec![vec![1.0; cols]; rows],
+            grad: None,
         }
     }
 

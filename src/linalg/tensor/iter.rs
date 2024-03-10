@@ -42,6 +42,11 @@ impl FromIterator<Tensor1D> for Tensor {
         }
         let rows = data.len();
         let cols = data[0].len();
-        Tensor { rows, cols, data }
+        Tensor {
+            rows,
+            cols,
+            data,
+            grad: None,
+        }
     }
 }

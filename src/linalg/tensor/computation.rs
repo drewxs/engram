@@ -49,6 +49,7 @@ impl Tensor {
             rows: self.rows,
             cols: self.cols,
             data,
+            grad: self.grad.clone(),
         }
     }
 

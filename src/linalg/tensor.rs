@@ -14,21 +14,24 @@ mod macros;
 mod manipulation;
 mod ops;
 mod sparse;
+mod state;
 mod transformation;
 mod validation;
 
-/// A one-dimensional matrix of floating point values.
+/// A one-dimensional tensor of floating point values.
 pub type Tensor1D = Vec<f64>;
-/// A two-dimensional matrix of floating point values.
+/// A two-dimensional tensor of floating point values.
 pub type Tensor2D = Vec<Tensor1D>;
 
-/// A matrix of floating point values, represented as a two-dimensional vector.
+/// A tensor of floating point values.
 #[derive(Clone, Debug)]
 pub struct Tensor {
-    /// The number of rows in the matrix.
+    /// The number of rows in the tensor.
     pub rows: usize,
-    /// The number of columns in the matrix.
+    /// The number of columns in the tensor.
     pub cols: usize,
-    /// The data in the matrix, represented as a two-dimensional vector.
+    /// The data in the tensor, represented as a two-dimensional vector.
     pub data: Tensor2D,
+    /// Gradient of the tensor.
+    pub grad: Option<Tensor2D>,
 }

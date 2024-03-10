@@ -123,6 +123,7 @@ impl Tensor {
             rows: end - start,
             cols: self.cols,
             data: self.data[start..end].to_vec(),
+            grad: None,
         }
     }
 }
