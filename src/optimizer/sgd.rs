@@ -6,14 +6,7 @@ use crate::{Optimize, Tensor};
 /// with respect to the weights multiplied by a learning rate.
 #[derive(Clone, Debug)]
 pub struct SGD {
-    learning_rate: f64,
-}
-
-impl SGD {
-    /// Creates a new SGD optimizer with the specified parameters.
-    pub fn new(learning_rate: f64) -> SGD {
-        SGD { learning_rate }
-    }
+    pub learning_rate: f64,
 }
 
 impl Optimize for SGD {
@@ -28,7 +21,7 @@ mod tests {
 
     #[test]
     fn test_sgd() {
-        let mut sgd = SGD::new(0.1);
+        let mut sgd = SGD { learning_rate: 0.1 };
         let mut weights = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
         let mut gradients = weights.gradient(&Activation::ReLU);
 

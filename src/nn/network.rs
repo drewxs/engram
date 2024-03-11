@@ -1,4 +1,4 @@
-use crate::{Loss, Optimize, Optimizer, Regularization, Tensor};
+use crate::{Loss, Optimizer, Regularization, Tensor, SGD};
 
 use super::layer::Layer;
 
@@ -24,10 +24,8 @@ impl NeuralNetwork {
 
     pub fn default() -> Self {
         NeuralNetwork::new(
-            Optimizer::SGD {
-                learning_rate: 0.01,
-            },
-            None,
+            Optimizer::SGD(SGD { learning_rate: 0.1 }),
+            Some(Regularization::L2(0.01)),
         )
     }
 

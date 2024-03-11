@@ -9,10 +9,10 @@ use crate::{Optimize, Tensor};
 /// Includes an option to apply weight decay regularization to the gradients.
 #[derive(Clone, Debug)]
 pub struct Adagrad {
-    learning_rate: f64,
-    accumulators: Tensor,
-    weight_decay: Option<f64>,
-    epsilon: Option<f64>,
+    pub learning_rate: f64,
+    pub accumulators: Tensor,
+    pub weight_decay: Option<f64>,
+    pub epsilon: Option<f64>,
 }
 
 impl Adagrad {
