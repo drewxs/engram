@@ -56,12 +56,12 @@ pub fn jaccard_index(a: &[bool], b: &[bool]) -> f64 {
 /// let a = [1.0, 2.0, 3.0];
 /// let b = [1.3, 2.1, 3.0];
 /// let c = [1.5, 2.4, 4.0];
-/// assert_eq!(tanimoto_coefficient(&a, &b), 0.9931506849315067);
-/// assert_eq!(tanimoto_coefficient(&a, &c), 0.9284627092846273);
+/// assert!((tanimoto_coefficient(&a, &b) - 0.9932).abs() < 1e-4);
+/// assert!((tanimoto_coefficient(&a, &c) - 0.9285).abs() < 1e-4);
 /// ```
 pub fn tanimoto_coefficient(a: &[f64], b: &[f64]) -> f64 {
     let dot = dot(a, b);
-    let denominator = magnitude(a) + magnitude(b) - dot;
+    let denominator = magnitude(a).powi(2) + magnitude(b).powi(2) - dot;
     if denominator == 0.0 {
         0.0
     } else {

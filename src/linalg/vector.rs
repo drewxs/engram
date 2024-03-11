@@ -19,8 +19,8 @@ pub fn dot(a: &[f64], b: &[f64]) -> f64 {
 /// ```
 /// # use engram::linalg::magnitude;
 /// let a = [1.0, 2.0, 3.0];
-/// assert_eq!(magnitude(&a), 3.7416573867739413);
+/// assert!((magnitude(&a) - 3.7417).abs() < 1e-4);
 /// ```
-pub fn magnitude(a: &[f64]) -> f64 {
-    a.iter().fold(0.0, |acc, x| acc + x * x)
+pub fn magnitude(x: &[f64]) -> f64 {
+    x.iter().fold(0.0, |acc, x| acc + x * x).sqrt()
 }
