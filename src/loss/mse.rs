@@ -19,5 +19,7 @@ pub fn mse(predictions: &Tensor, targets: &Tensor) -> Tensor {
 }
 
 pub fn d_mse(predictions: &Tensor, targets: &Tensor) -> Tensor {
-    predictions.sub(targets).mul_scalar(2.0)
+    predictions
+        .sub(targets)
+        .mul_scalar(2.0 / predictions.rows as f64)
 }
