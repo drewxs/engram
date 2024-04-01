@@ -15,11 +15,9 @@ use crate::Tensor;
 ///                          [0.16000000000000028, 0.0899999999999999, 0.009999999999999929]]);
 /// ```
 pub fn mse(predictions: &Tensor, targets: &Tensor) -> Tensor {
-    predictions.sub(targets).square()
+    (predictions - targets).square()
 }
 
 pub fn d_mse(predictions: &Tensor, targets: &Tensor) -> Tensor {
-    predictions
-        .sub(targets)
-        .mul_scalar(2.0 / predictions.rows as f64)
+    predictions - targets * 2.0 / predictions.rows as f64
 }

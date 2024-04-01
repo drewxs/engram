@@ -25,12 +25,12 @@ pub fn bce(predictions: &Tensor, targets: &Tensor) -> Tensor {
     let predictions = predictions.clip(epsilon, 1.0 - epsilon);
     let ones = Tensor::ones_like(&predictions);
     let predictions_complement = ones.sub(&predictions);
-    let targets_complement = ones.sub(&targets);
+    let targets_complement = ones.sub(targets);
 
     let loss = targets
         .mul(&predictions.ln())
         .add(&targets_complement.mul(&predictions_complement.ln()))
-        .mul_scalar(-1.0);
+        .mul(-1.0);
 
     loss
 }
@@ -46,7 +46,7 @@ pub fn d_bce(predictions: &Tensor, targets: &Tensor) -> Tensor {
     let predictions = predictions.clip(epsilon, 1.0 - epsilon);
     let ones = Tensor::ones_like(&predictions);
     let predictions_complement = ones.sub(&predictions);
-    let targets_complement = ones.sub(&targets);
+    let targets_complement = ones.sub(targets);
 
     let gradient = targets
         .div(&predictions)
