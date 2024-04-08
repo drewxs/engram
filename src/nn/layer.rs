@@ -12,6 +12,16 @@ pub struct Layer {
 }
 
 impl Layer {
+    /// Create a new layer with the given number of input and output features.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use engram::*;
+    /// let layer = Layer::new(3, 2, Initializer::Xavier, Activation::ReLU);
+    /// assert_eq!(layer.weights.shape(), (2, 3));
+    /// assert_eq!(layer.biases.shape(), (2, 1));
+    /// ```
     pub fn new(
         f_in: usize,
         f_out: usize,
@@ -29,8 +39,19 @@ impl Layer {
         }
     }
 
+    /// Create a new layer with the given number of input and output features,
+    /// using Xavier initialization and ReLU activation as defaults.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use engram::*;
+    /// let layer = Layer::default(4, 7);
+    /// assert_eq!(layer.weights.shape(), (7, 4));
+    /// assert_eq!(layer.biases.shape(), (7, 1));
+    /// ```
     pub fn default(f_in: usize, f_out: usize) -> Layer {
-        Layer::new(f_in, f_out, Initializer::Xavier, Activation::Sigmoid)
+        Layer::new(f_in, f_out, Initializer::Xavier, Activation::ReLU)
     }
 
     /// Forward pass through the layer, returning the output.
