@@ -66,9 +66,10 @@ impl Layer {
     /// assert_eq!(output.shape(), (1, 2));
     /// ```
     pub fn forward(&mut self, input: &Tensor) -> Tensor {
-        let output = input
-            .matmul(&self.weights.transpose())
+        let output = input.matmul(&self.weights.transpose());
+        let output = output
             .add(&self.biases)
+            .resize(output.rows, output.cols)
             .activate(&self.activation);
 
         self.input = Some(input.clone());
