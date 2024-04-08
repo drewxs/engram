@@ -11,14 +11,14 @@ use crate::Tensor;
 /// let t2 = linalg::cholesky(&t1).unwrap();
 /// assert_eq!(t2, tensor![[2.0, 0.0, 0.0], [6.0, 1.0, 0.0], [-8.0, 5.0, 3.0]]);
 /// ```
-pub fn cholesky(tensor: &Tensor) -> Option<Tensor> {
-    if !tensor.is_square() {
+pub fn cholesky(t: &Tensor) -> Option<Tensor> {
+    if t.rows != t.cols {
         return None;
     }
 
-    let mut result = Tensor::zeros(tensor.rows, tensor.cols);
+    let mut result = Tensor::zeros(t.rows, t.cols);
 
-    for i in 0..tensor.rows {
+    for i in 0..t.rows {
         for j in 0..(i + 1) {
             let mut sum = 0.0;
 
@@ -26,13 +26,13 @@ pub fn cholesky(tensor: &Tensor) -> Option<Tensor> {
                 for k in 0..j {
                     sum += result.data[j][k] * result.data[j][k];
                 }
-                result.data[j][j] = (tensor.data[j][j] - sum).sqrt();
+                result.data[j][j] = (t.data[j][j] - sum).sqrt();
             } else {
                 for k in 0..j {
                     sum += result.data[i][k] * result.data[j][k];
                 }
                 if result.data[j][j] > f64::EPSILON {
-                    result.data[i][j] = (tensor.data[i][j] - sum) / result.data[j][j];
+                    result.data[i][j] = (t.data[i][j] - sum) / result.data[j][j];
                 } else {
                     return None;
                 }
@@ -54,20 +54,20 @@ pub fn cholesky(tensor: &Tensor) -> Option<Tensor> {
 /// assert_eq!(l, tensor![[1.0, 0.0, 0.0], [-0.5, 1.0, 0.0], [0.0, -0.6666666666666666, 1.0]]);
 /// assert_eq!(u, tensor![[2.0, -1.0, 0.0], [0.0, 1.5, -1.0], [0.0, 0.0, 1.3333333333333335]]);
 /// ```
-pub fn lu(tensor: &Tensor) -> Option<(Tensor, Tensor)> {
-    if !tensor.is_square() {
+pub fn lu(t: &Tensor) -> Option<(Tensor, Tensor)> {
+    if t.rows != t.cols {
         return None;
     }
 
-    let mut l = Tensor::identity(tensor.rows);
-    let mut u = tensor.clone();
+    let mut l = Tensor::identity(t.rows);
+    let mut u = t.clone();
 
-    for i in 0..tensor.rows - 1 {
-        for j in i + 1..tensor.rows {
+    for i in 0..t.rows - 1 {
+        for j in i + 1..t.rows {
             let factor = u.data[j][i] / u.data[i][i];
             l.data[j][i] = factor;
 
-            for k in i..tensor.cols {
+            for k in i..t.cols {
                 u.data[j][k] -= factor * u.data[i][k];
             }
         }
