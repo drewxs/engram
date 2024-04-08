@@ -44,19 +44,40 @@ impl Tensor {
     // assert_eq!(c.data, vec![vec![1.0, 2.0, 0.0], vec![3.0, 4.0, 0.0]]);
     // ```
     pub fn resize(&self, rows: usize, cols: usize) -> Tensor {
-        let mut result = Tensor::zeros(rows, cols);
+        let mut res = self.clone();
+        res.resize_mut(rows, cols);
+        res
+    }
 
-        for i in 0..rows {
-            for j in 0..cols {
-                result.data[i][j] = if i < self.rows && j < self.cols {
-                    self.data[i][j]
-                } else {
-                    0.0
-                };
+    // Returns a resized version of the tensor with the given rows and cols inplace.
+    //
+    // # Examples
+    //
+    // ```
+    // # use engram::*;
+    // let a = tensor![[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]];
+    // let b = a.resize(2, 2);
+    // let c = b.resize(2, 3);
+    // assert_eq!(b.data, vec![vec![1.0, 2.0], vec![3.0, 4.0]]);
+    // assert_eq!(c.data, vec![vec![1.0, 2.0, 0.0], vec![3.0, 4.0, 0.0]]);
+    // ```
+    pub fn resize_mut(&mut self, rows: usize, cols: usize) {
+        if rows > self.rows || cols > self.cols {
+            for row in &mut self.data {
+                row.resize(cols, 0.0);
+            }
+            while self.data.len() < rows {
+                self.data.push(vec![0.0; cols]);
+            }
+        } else {
+            self.data.truncate(rows);
+            for row in &mut self.data {
+                row.truncate(cols);
             }
         }
 
-        result
+        self.rows = rows;
+        self.cols = cols;
     }
 
     /// Returns a flattened version of the tensor data.
