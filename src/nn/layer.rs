@@ -102,7 +102,7 @@ impl Layer {
             .expect("Input not set before backward pass!");
 
         let loss = loss_fn.loss(&predictions, &target);
-        let d_loss = loss_fn.gradient(&predictions, &target);
+        let d_loss = loss_fn.grad(&predictions, &target);
 
         let d_activation = predictions.activate(&self.activation);
         let d_output = &d_activation * &d_loss;

@@ -53,7 +53,7 @@ mod tests {
     fn test_adagrad() {
         let mut adagrad = Adagrad::new(0.1, (2, 3), None, Some(1e-8));
         let mut weights = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
-        let mut gradients = weights.gradient(&Activation::ReLU);
+        let mut gradients = weights.grad(&Activation::ReLU);
 
         adagrad.step(&mut weights, &mut gradients);
 

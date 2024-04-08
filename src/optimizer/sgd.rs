@@ -23,7 +23,7 @@ mod tests {
     fn test_sgd() {
         let mut sgd = SGD { learning_rate: 0.1 };
         let mut weights = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
-        let mut gradients = weights.gradient(&Activation::ReLU);
+        let mut gradients = weights.grad(&Activation::ReLU);
 
         sgd.step(&mut weights, &mut gradients);
 

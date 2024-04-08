@@ -43,9 +43,9 @@ impl Activation {
     ///
     /// ```
     /// # use engram::Activation;
-    /// Activation::ReLU.gradient(1.0);
+    /// Activation::ReLU.grad(1.0);
     /// ```
-    pub fn gradient(&self, x: f64) -> f64 {
+    pub fn grad(&self, x: f64) -> f64 {
         match self {
             Self::Sigmoid => d_sigmoid(x),
             Self::TanH => d_tanh(x),

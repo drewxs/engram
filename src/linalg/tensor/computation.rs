@@ -358,11 +358,13 @@ impl Tensor {
     ///
     /// ```
     /// # use engram::*;
-    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// let b = a.gradient(&Activation::Sigmoid);
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.grad(&Activation::Sigmoid);
     /// assert_eq!(b.data, vec![vec![0.19661193324148185, 0.10499358540350662], vec![0.045176659730912, 0.017662706213291107]]);
     /// ```
-    pub fn gradient(&self, activation: &Activation) -> Tensor {
-        self.mapv(&|x| activation.gradient(x))
+    pub fn grad(&mut self, activation: &Activation) -> Tensor {
+        let res = self.mapv(&|x| activation.grad(x));
+        self.set_grad(res.data.clone());
+        res
     }
 }

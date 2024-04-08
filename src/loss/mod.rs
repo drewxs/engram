@@ -25,7 +25,7 @@ impl Loss {
         }
     }
 
-    pub fn gradient(&self, predictions: &Tensor, targets: &Tensor) -> Tensor {
+    pub fn grad(&self, predictions: &Tensor, targets: &Tensor) -> Tensor {
         match self {
             Loss::BCE => d_bce(predictions, targets),
             Loss::MSE => d_mse(predictions, targets),
