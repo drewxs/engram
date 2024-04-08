@@ -66,5 +66,7 @@ jobs:
             ~/.cargo/registry/cache
             target
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
-      - name: Tests
+      - name: Documentation tests
+        run: cargo test --doc
+      - name: Unit tests
         run: cargo test
