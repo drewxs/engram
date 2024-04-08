@@ -78,6 +78,35 @@ impl Tensor {
         self.validate_2(other, self.is_matmul_compatible(other), "matmul");
     }
 
+    /// Returns true if the tensor is broadcast compatible with another tensor.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::*;
+    /// let a = tensor![[1.0], [2.0], [3.0], [4.0]];
+    /// let b = tensor![[1.0, 2.0, 3.0, 4.0]];
+    /// assert!(a.is_broadcast_compatible(&b));
+    /// ```
+    pub fn is_broadcast_compatible(&self, other: &Tensor) -> bool {
+        (self.rows == other.rows || self.rows == 1 || other.rows == 1)
+            && (self.cols == other.cols || self.cols == 1 || other.cols == 1)
+    }
+
+    /// Validates that the tensor is broadcast compatible with another tensor.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::*;
+    /// let a = tensor![[1.0, 2.0]];
+    /// let b = tensor![[1.0], [2.0]];
+    /// a.validate_broadcast_compatible(&b);
+    /// ```
+    pub fn validate_broadcast_compatible(&self, other: &Tensor) {
+        self.validate_2(other, self.is_broadcast_compatible(other), "broadcast");
+    }
+
     /// Returns true if the tensor is square.
     ///
     /// # Examples
