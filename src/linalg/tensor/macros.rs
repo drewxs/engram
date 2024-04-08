@@ -16,4 +16,9 @@ macro_rules! tensor {
         )*
         $crate::Tensor::from(data)
     }};
+
+    ( $( $x:expr ),* $(,)? ) => {{
+        let data = vec![vec![$($x as f64),*]];
+        $crate::Tensor::from(data)
+    }};
 }

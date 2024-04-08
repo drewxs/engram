@@ -61,7 +61,7 @@ impl Layer {
     /// ```
     /// # use engram::*;
     /// let mut layer = Layer::default(3, 2);
-    /// let input = tensor![[1.0, 2.0, 3.0]];
+    /// let input = tensor![1.0, 2.0, 3.0];
     /// let output = layer.forward(&input);
     /// assert_eq!(output.shape(), (1, 2));
     /// ```
@@ -85,11 +85,10 @@ impl Layer {
     /// ```
     /// # use engram::*;
     /// let mut layer = Layer::default(3, 2);
-    /// let input = tensor![[1.0, 2.0, 3.0]];
+    /// let input = tensor![1.0, 2.0, 3.0];
     /// let output = layer.forward(&input);
-    /// let target = tensor![[1.0, 0.0]];
+    /// let target = tensor![1.0, 0.0];
     /// let loss = layer.backward(&target, &Loss::MSE);
-    /// dbg!(loss);
     /// assert!(loss > 0.0);
     /// ```
     pub fn backward(&mut self, target: &Tensor, loss_fn: &Loss) -> f64 {

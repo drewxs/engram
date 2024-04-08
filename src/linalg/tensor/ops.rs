@@ -281,7 +281,7 @@ impl Tensor {
     /// ```
     /// # use engram::*;
     /// let t1 = tensor![[1.0], [2.0]];
-    /// let t2 = tensor![[3.0, 4.0]];
+    /// let t2 = tensor![3.0, 4.0];
     /// let t3 = t1.broadcast_and_apply(&t2, |a, b| a + b);
     /// assert_eq!(t3.data, vec![vec![4.0, 5.0], vec![5.0, 6.0]]);
     /// ```
@@ -301,7 +301,7 @@ impl Tensor {
     /// ```
     /// # use engram::*;
     /// let mut t1 = tensor![[1.0], [2.0]];
-    /// let t2 = tensor![[3.0, 4.0]];
+    /// let t2 = tensor![3.0, 4.0];
     /// t1.broadcast_and_apply_mut(&t2, |a, b| a + b);
     /// assert_eq!(t1.data, vec![vec![4.0, 5.0], vec![5.0, 6.0]]);
     /// ```

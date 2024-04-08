@@ -150,13 +150,13 @@ mod tests {
 
         println!("Avg loss: {}", avg_loss);
 
-        let x = tensor![[1., 0.]];
+        let x = tensor![1., 0.];
         let y_true = 1.;
         let y_pred = nn.predict(&x);
         println!("Predicted: {:.4}, Expected: {:.4}", y_pred, y_true);
         assert!((y_pred - y_true).abs() < 0.1);
 
-        let x = tensor![[1., 1.]];
+        let x = tensor![1., 1.];
         let y_true = 0.;
         let y_pred = nn.predict(&x);
         println!("Predicted: {:.4}, Expected: {:.4}", y_pred, y_true);
@@ -179,7 +179,7 @@ mod tests {
 
         nn.train(&inputs, &targets, &loss_fn, epochs);
 
-        let x = tensor![[5.]];
+        let x = tensor![5.];
         let y_true = 6.;
         let y_pred = nn.predict(&x);
 
