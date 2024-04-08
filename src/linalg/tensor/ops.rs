@@ -20,9 +20,7 @@ impl Tensor {
     /// assert_eq!(c.data, vec![vec![6.0, 8.0], vec![10.0, 12.0]]);
     /// ```
     fn add_tensor(&self, other: &Tensor) -> Tensor {
-        let mut res = self.clone();
-        res.add_mut(other);
-        res
+        self.broadcast_and_apply(other, |a, b| a + b)
     }
 
     /// Adds two tensors element-wise in-place.
@@ -37,13 +35,7 @@ impl Tensor {
     /// assert_eq!(a.data, vec![vec![6.0, 8.0], vec![10.0, 12.0]]);
     /// ```
     fn add_mut(&mut self, other: &Tensor) {
-        self.validate_same_shape(other, "add");
-
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                self.data[i][j] += other.data[i][j];
-            }
-        }
+        self.broadcast_and_apply_mut(other, |a, b| a + b);
     }
 
     /// Adds a scalar to a tensor element-wise.
@@ -57,9 +49,7 @@ impl Tensor {
     /// assert_eq!(b.data, vec![vec![6.0, 7.0], vec![8.0, 9.0]]);
     /// ```
     fn add_scalar(&self, scalar: f64) -> Tensor {
-        let mut res = self.clone();
-        res.add_scalar_mut(scalar);
-        res
+        self.apply(|x| x + scalar)
     }
 
     /// Adds a scalar to a tensor element-wise in-place.
@@ -73,11 +63,7 @@ impl Tensor {
     /// assert_eq!(a.data, vec![vec![6.0, 7.0], vec![8.0, 9.0]]);
     /// ```
     fn add_scalar_mut(&mut self, scalar: f64) {
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                self.data[i][j] += scalar;
-            }
-        }
+        self.apply_mut(|x| x + scalar);
     }
 
     /// Performs `self - rhs`.
@@ -96,9 +82,7 @@ impl Tensor {
     /// let c = a - b;
     /// assert_eq!(c.data, vec![vec![-4.0, -4.0], vec![-4.0, -4.0]]);
     fn sub_tensor(&self, other: &Tensor) -> Tensor {
-        let mut res = self.clone();
-        res.sub_mut(other);
-        res
+        self.broadcast_and_apply(other, |a, b| a - b)
     }
 
     /// Subtracts two tensors element-wise in-place.
@@ -113,13 +97,7 @@ impl Tensor {
     /// assert_eq!(a.data, vec![vec![-4.0, -4.0], vec![-4.0, -4.0]]);
     /// ```
     fn sub_mut(&mut self, other: &Tensor) {
-        self.validate_same_shape(other, "sub");
-
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                self.data[i][j] -= other.data[i][j];
-            }
-        }
+        self.broadcast_and_apply_mut(other, |a, b| a - b)
     }
 
     /// Subtracts a scalar from a tensor element-wise.
@@ -133,9 +111,7 @@ impl Tensor {
     /// assert_eq!(b.data, vec![vec![-4.0, -3.0], vec![-2.0, -1.0]]);
     /// ```
     fn sub_scalar(&self, scalar: f64) -> Tensor {
-        let mut res = self.clone();
-        res.sub_scalar_mut(scalar);
-        res
+        self.apply(|x| x - scalar)
     }
 
     /// Subtracts a scalar from a tensor element-wise in-place.
@@ -149,11 +125,7 @@ impl Tensor {
     /// assert_eq!(a.data, vec![vec![-4.0, -3.0], vec![-2.0, -1.0]]);
     /// ```
     fn sub_scalar_mut(&mut self, scalar: f64) {
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                self.data[i][j] -= scalar;
-            }
-        }
+        self.apply_mut(|x| x - scalar);
     }
 
     /// Performs `self * rhs`.
@@ -173,9 +145,7 @@ impl Tensor {
     /// assert_eq!(c.data, vec![vec![5.0, 12.0], vec![21.0, 32.0]]);
     /// ```
     fn mul_tensor(&self, other: &Tensor) -> Tensor {
-        let mut res = self.clone();
-        res.mul_mut(other);
-        res
+        self.broadcast_and_apply(other, |a, b| a * b)
     }
 
     /// Multiplies two tensors element-wise in-place.
@@ -190,13 +160,7 @@ impl Tensor {
     /// assert_eq!(a.data, vec![vec![5.0, 12.0], vec![21.0, 32.0]]);
     /// ```
     fn mul_mut(&mut self, other: &Tensor) {
-        self.validate_same_shape(other, "mul");
-
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                self.data[i][j] *= other.data[i][j];
-            }
-        }
+        self.broadcast_and_apply_mut(other, |a, b| a * b);
     }
 
     /// Multiplies a tensor by a scalar.
@@ -210,9 +174,7 @@ impl Tensor {
     /// assert_eq!(b.data, vec![vec![5.0, 10.0], vec![15.0, 20.0]]);
     /// ```
     fn mul_scalar(&self, scalar: f64) -> Tensor {
-        let mut res = self.clone();
-        res.mul_scalar_mut(scalar);
-        res
+        self.apply(|x| x * scalar)
     }
 
     /// Multiplies a tensor by a scalar in-place.
@@ -226,11 +188,7 @@ impl Tensor {
     /// assert_eq!(a.data, vec![vec![5.0, 10.0], vec![15.0, 20.0]]);
     /// ```
     fn mul_scalar_mut(&mut self, scalar: f64) {
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                self.data[i][j] *= scalar;
-            }
-        }
+        self.apply_mut(|x| x * scalar);
     }
 
     /// Performs `self / rhs`.
@@ -250,9 +208,7 @@ impl Tensor {
     /// assert_eq!(c.data, vec![vec![0.2, 0.25], vec![0.1, 0.5]]);
     /// ```
     fn div_tensor(&self, other: &Tensor) -> Tensor {
-        let mut res = self.clone();
-        res.div_mut(other);
-        res
+        self.broadcast_and_apply(other, |a, b| a / b)
     }
 
     /// Divides two tensors element-wise in-place.
@@ -267,13 +223,7 @@ impl Tensor {
     /// assert_eq!(a.data, vec![vec![0.2, 0.25], vec![0.1, 0.5]]);
     /// ```
     fn div_mut(&mut self, other: &Tensor) {
-        self.validate_same_shape(other, "div");
-
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                self.data[i][j] /= other.data[i][j];
-            }
-        }
+        self.broadcast_and_apply_mut(other, |a, b| a / b);
     }
 
     /// Divides a tensor by a scalar.
@@ -287,9 +237,7 @@ impl Tensor {
     /// assert_eq!(b.data, vec![vec![0.2, 0.4], vec![0.6, 0.8]]);
     /// ```
     fn div_scalar(&self, scalar: f64) -> Tensor {
-        let mut res = self.clone();
-        res.div_scalar_mut(scalar);
-        res
+        self.apply(|x| x / scalar)
     }
 
     /// Divides a tensor by a scalar in-place.
@@ -303,11 +251,94 @@ impl Tensor {
     /// assert_eq!(a.data, vec![vec![0.2, 0.4], vec![0.6, 0.8]]);
     /// ```
     fn div_scalar_mut(&mut self, scalar: f64) {
+        self.apply_mut(|x| x / scalar);
+    }
+
+    fn apply<F>(&self, op: F) -> Tensor
+    where
+        F: Fn(f64) -> f64,
+    {
+        let mut res = self.clone();
+        res.apply_mut(op);
+        res
+    }
+
+    fn apply_mut<F>(&mut self, op: F)
+    where
+        F: Fn(f64) -> f64,
+    {
         for i in 0..self.rows {
             for j in 0..self.cols {
-                self.data[i][j] /= scalar;
+                self.data[i][j] = op(self.data[i][j]);
             }
         }
+    }
+
+    /// Broadcasts two tensors and applies a function element-wise.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::*;
+    /// let t1 = tensor![[1.0], [2.0]];
+    /// let t2 = tensor![[3.0, 4.0]];
+    /// let t3 = t1.broadcast_and_apply(&t2, |a, b| a + b);
+    /// assert_eq!(t3.data, vec![vec![4.0, 5.0], vec![5.0, 6.0]]);
+    /// ```
+    pub fn broadcast_and_apply<F>(&self, other: &Tensor, op: F) -> Tensor
+    where
+        F: Fn(f64, f64) -> f64,
+    {
+        let mut res = self.clone();
+        res.broadcast_and_apply_mut(other, op);
+        res
+    }
+
+    /// Broadcasts two tensors and applies a function element-wise in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::*;
+    /// let mut t1 = tensor![[1.0], [2.0]];
+    /// let t2 = tensor![[3.0, 4.0]];
+    /// t1.broadcast_and_apply_mut(&t2, |a, b| a + b);
+    /// assert_eq!(t1.data, vec![vec![4.0, 5.0], vec![5.0, 6.0]]);
+    /// ```
+    pub fn broadcast_and_apply_mut<F>(&mut self, other: &Tensor, op: F)
+    where
+        F: Fn(f64, f64) -> f64,
+    {
+        self.validate_broadcast_compatible(other);
+
+        let new_rows = self.rows.max(other.rows);
+        let new_cols = self.cols.max(other.cols);
+
+        let mut result = Tensor::zeros(new_rows, new_cols);
+
+        for i in 0..new_rows {
+            for j in 0..new_cols {
+                let self_value = if self.rows == 1 {
+                    self.data[0][j % self.cols]
+                } else if self.cols == 1 {
+                    self.data[i % self.rows][0]
+                } else {
+                    self.data[i][j]
+                };
+
+                let other_value = if other.rows == 1 {
+                    other.data[0][j % other.cols]
+                } else if other.cols == 1 {
+                    other.data[i % other.rows][0]
+                } else {
+                    other.data[i][j]
+                };
+
+                result.data[i][j] = op(self_value, other_value);
+            }
+        }
+
+        *self = result;
     }
 }
 
