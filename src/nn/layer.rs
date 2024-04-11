@@ -1,3 +1,8 @@
+//! Create and manipulate neural network layers.
+//!
+//! This module provides a Layer struct for representing a single layer in a neural network,
+//! along with methods for feeding inputs through the layer and performing backpropagation.
+
 use crate::{linalg::Tensor, Activation, Initializer, Loss};
 
 #[derive(Debug, Clone)]
@@ -69,7 +74,7 @@ impl Layer {
         let output = input.matmul(&self.weights.transpose());
         let output = output
             .add(&self.biases)
-            .resize(output.rows, output.cols)
+            .resize(output.rows, output.cols) // resize implicit broadcast from `add`
             .activate(&self.activation);
 
         self.input = Some(input.clone());

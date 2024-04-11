@@ -1,3 +1,7 @@
+//! Neural Network module.
+//!
+//! This module provides the base building blocks for creating and training neural networks.
+
 use crate::{Dataset, Loss, Optimizer, Regularization, Tensor, SGD};
 
 use super::layer::Layer;
