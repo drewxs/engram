@@ -1,4 +1,4 @@
-use crate::{Optimize, Tensor};
+use crate::{Optimizer, Tensor};
 
 /// Stochastic Gradient Descent (SGD).
 ///
@@ -9,7 +9,7 @@ pub struct SGD {
     pub learning_rate: f64,
 }
 
-impl Optimize for SGD {
+impl Optimizer for SGD {
     fn step(&mut self, weights: &mut Tensor, gradients: &Tensor) {
         *weights -= gradients * self.learning_rate;
     }

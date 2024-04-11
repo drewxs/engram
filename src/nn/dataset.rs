@@ -78,4 +78,11 @@ impl Dataset {
 
         batches
     }
+
+    pub fn batch(&self, start: usize, end: usize) -> (Tensor, Tensor) {
+        let input_batch = self.inputs.slice(start, end);
+        let target_batch = self.targets.slice(start, end);
+
+        (input_batch, target_batch)
+    }
 }

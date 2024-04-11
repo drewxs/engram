@@ -2,69 +2,54 @@
 //!
 //! This module provides the base building blocks for creating and training neural networks.
 
-use crate::{Dataset, Loss, Optimizer, Regularization, Tensor, SGD};
+use crate::{Dataset, Loss, Optimizer, Regularization, Tensor};
 
 use super::layer::Layer;
 
-#[derive(Debug, Clone)]
-pub enum NetworkLayer {
-    FeedForward(Layer),
-}
-
-pub enum Mode {
-    Train,
-    Eval,
-}
-
-pub struct NeuralNetwork {
-    pub layers: Vec<NetworkLayer>,
-    pub optimizer: Optimizer,
+pub struct NeuralNetwork<L, O>
+where
+    L: Layer,
+    O: Optimizer,
+{
+    pub layers: Vec<L>,
+    pub optimizer: O,
     pub regularization: Option<Regularization>,
-    mode: Mode,
 }
 
-impl NeuralNetwork {
-    pub fn new(optimizer: Optimizer, regularization: Option<Regularization>) -> Self {
+impl<L, O> NeuralNetwork<L, O>
+where
+    L: Layer,
+    O: Optimizer,
+{
+    pub fn new(optimizer: O, regularization: Option<Regularization>) -> Self {
         NeuralNetwork {
             layers: Vec::new(),
             optimizer,
             regularization,
-            mode: Mode::Train,
         }
     }
 
-    pub fn default() -> Self {
-        NeuralNetwork::new(
-            Optimizer::SGD(SGD {
-                learning_rate: 0.01,
-            }),
-            Some(Regularization::L2(0.01)),
-        )
-    }
-
-    pub fn add_layer(&mut self, layer: NetworkLayer) {
+    pub fn add_layer(&mut self, layer: L) {
         self.layers.push(layer);
     }
 
     pub fn train(&mut self) {
-        self.mode = Mode::Train;
+        for layer in self.layers.iter_mut() {
+            layer.train();
+        }
     }
 
     pub fn eval(&mut self) {
-        self.mode = Mode::Eval;
+        for layer in self.layers.iter_mut() {
+            layer.eval();
+        }
     }
 
     pub fn forward(&mut self, input: &Tensor) -> Tensor {
         let mut layer_input = input.clone();
         for layer in self.layers.iter_mut() {
-            match layer {
-                NetworkLayer::FeedForward(l) => {
-                    let layer_output = l.forward(&layer_input);
-                    if let Mode::Train = self.mode {
-                        layer_input = layer_output;
-                    }
-                }
-            }
+            let layer_output = layer.forward(&layer_input);
+            layer_input = layer_output;
         }
         layer_input
     }
@@ -72,11 +57,7 @@ impl NeuralNetwork {
     pub fn backward(&mut self, target: &Tensor, loss_fn: &Loss) -> f64 {
         let mut loss = 0.0;
         for layer in self.layers.iter_mut().rev() {
-            match layer {
-                NetworkLayer::FeedForward(l) => {
-                    loss += l.backward(&target, &loss_fn);
-                }
-            };
+            loss += layer.backward(&target, &loss_fn);
         }
         loss
     }
@@ -103,37 +84,26 @@ impl NeuralNetwork {
     }
 
     pub fn regularize(&mut self) -> f64 {
-        let mut total_loss = 0.0;
-        if let Some(reg) = &self.regularization {
-            for layer in self.layers.iter_mut() {
-                match layer {
-                    NetworkLayer::FeedForward(l) => {
-                        let reg_loss = reg.loss(&l.weights);
-                        total_loss += reg_loss;
-
-                        let reg_grad = reg.grad(&l.weights);
-                        if let Some(dw) = &l.d_weights {
-                            l.d_weights = Some(dw + &reg_grad);
-                        }
-                    }
-                }
-            }
+        if self.regularization.is_none() {
+            return 0.0;
         }
-        total_loss
+        let reg = self.regularization.as_ref().unwrap();
+
+        let loss = self
+            .layers
+            .iter()
+            .fold(0.0, |acc, layer| acc + layer.regularization_loss(&reg));
+
+        for layer in self.layers.iter_mut() {
+            layer.apply_regularization(&reg);
+        }
+
+        loss
     }
 
     pub fn step(&mut self) {
         for layer in self.layers.iter_mut() {
-            match layer {
-                NetworkLayer::FeedForward(l) => {
-                    if let Some(d_weights) = &l.d_weights {
-                        self.optimizer.step(&mut l.weights, d_weights);
-                    }
-                    if let Some(d_biases) = &l.d_biases {
-                        self.optimizer.step(&mut l.biases, d_biases);
-                    }
-                }
-            }
+            layer.update_parameters(&mut self.optimizer);
         }
     }
 
@@ -149,40 +119,37 @@ mod tests {
 
     #[test]
     fn test_xor() {
-        let mut nn = NeuralNetwork::new(
-            Optimizer::SGD(SGD { learning_rate: 0.1 }),
-            Some(Regularization::L2(0.01)),
-        );
-        nn.add_layer(NetworkLayer::FeedForward(Layer::new(
+        let mut nn = NeuralNetwork::new(SGD { learning_rate: 0.1 }, Some(Regularization::L2(0.01)));
+        nn.add_layer(DenseLayer::new(
             2,
             2,
-            Initializer::Xavier,
+            Initializer::Constant(0.0),
             Activation::Sigmoid,
-        )));
-        nn.add_layer(NetworkLayer::FeedForward(Layer::new(
+        ));
+        nn.add_layer(DenseLayer::new(
             2,
             1,
-            Initializer::Xavier,
+            Initializer::Constant(0.0),
             Activation::Sigmoid,
-        )));
+        ));
 
         let inputs = tensor![[0., 0.], [0., 1.], [1., 0.], [1., 1.]];
         let targets = tensor![[0.], [1.], [1.], [0.]];
 
         let dataset = Dataset::new(inputs, targets);
         let loss_fn = Loss::MSE;
-        let epochs = 100;
+        let epochs = 1000;
         let batch_size = 1;
 
         nn.fit(&dataset, &loss_fn, epochs, batch_size);
 
-        let predictions = nn.predict(&dataset.inputs);
-        for (i, prediction) in predictions.iter_rows().enumerate() {
+        let batches = dataset.batches(batch_size);
+        for (i, (input_batch, _)) in batches.iter().enumerate() {
+            let predictions = nn.predict(&input_batch);
             let target = dataset.targets.data[i][0];
-            let predicted = if prediction[0] >= 0.5 { 1.0 } else { 0.0 };
-
-            assert_eq!(predicted, target);
+            println!("Predicted: {:?}, Target: {:.2}", predictions.data, target);
         }
+        assert_eq!(0.0, 1.0);
     }
 
     // #[test]
