@@ -10,6 +10,8 @@ pub use dense::DenseLayer;
 use crate::{linalg::Tensor, Loss, Optimizer, Regularization};
 
 pub trait Layer {
+    fn weights(&self) -> &Tensor;
+    fn biases(&self) -> &Tensor;
     fn forward(&mut self, input: &Tensor) -> Tensor;
     fn backward(&mut self, target: &Tensor, loss_fn: &Loss) -> f64;
     fn update_parameters(&mut self, optimizer: &mut dyn Optimizer);
