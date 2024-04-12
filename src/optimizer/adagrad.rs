@@ -32,6 +32,17 @@ impl Adagrad {
     }
 }
 
+impl Default for Adagrad {
+    fn default() -> Self {
+        Adagrad {
+            learning_rate: 0.01,
+            accumulators: Tensor::zeros(0, 0),
+            weight_decay: None,
+            epsilon: None,
+        }
+    }
+}
+
 impl Optimizer for Adagrad {
     fn step(&mut self, weights: &mut Tensor, gradients: &Tensor) {
         let mut gradients = gradients.clone();

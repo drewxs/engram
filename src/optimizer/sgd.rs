@@ -9,6 +9,20 @@ pub struct SGD {
     pub learning_rate: f64,
 }
 
+impl SGD {
+    pub fn new(learning_rate: f64) -> SGD {
+        SGD { learning_rate }
+    }
+}
+
+impl Default for SGD {
+    fn default() -> Self {
+        SGD {
+            learning_rate: 0.01,
+        }
+    }
+}
+
 impl Optimizer for SGD {
     fn step(&mut self, weights: &mut Tensor, gradients: &Tensor) {
         *weights -= gradients * self.learning_rate;

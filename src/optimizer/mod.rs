@@ -15,3 +15,9 @@ use crate::Tensor;
 pub trait Optimizer {
     fn step(&mut self, weights: &mut Tensor, gradients: &Tensor);
 }
+
+impl Default for Box<dyn Optimizer> {
+    fn default() -> Self {
+        Box::new(SGD::default())
+    }
+}
