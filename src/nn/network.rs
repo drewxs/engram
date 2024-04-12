@@ -19,13 +19,21 @@ where
 impl<L, O> NeuralNetwork<L, O>
 where
     L: Layer,
-    O: Optimizer,
+    O: Optimizer + Default,
 {
     pub fn new(optimizer: O, regularization: Option<Regularization>) -> Self {
         NeuralNetwork {
             layers: Vec::new(),
             optimizer,
             regularization,
+        }
+    }
+
+    pub fn default() -> Self {
+        NeuralNetwork {
+            layers: Vec::new(),
+            optimizer: O::default(),
+            regularization: None,
         }
     }
 
