@@ -1,5 +1,6 @@
-use crate::{linalg::Tensor, Activation, Initializer, Layer, Loss, Optimizer};
+use crate::{linalg::Tensor, Activation, Initializer, Layer, Loss, Optimizer, Regularization};
 
+#[derive(Clone, Debug)]
 pub struct DenseLayer {
     pub weights: Tensor,
     pub biases: Tensor,
@@ -140,11 +141,11 @@ impl Layer for DenseLayer {
         }
     }
 
-    fn regularization_loss(&self, reg: &crate::Regularization) -> f64 {
+    fn regularization_loss(&self, reg: &dyn Regularization) -> f64 {
         reg.loss(&self.weights)
     }
 
-    fn apply_regularization(&mut self, reg: &crate::Regularization) {
+    fn apply_regularization(&mut self, reg: &dyn Regularization) {
         let d_weights = reg.grad(&self.weights);
         let d_biases = reg.grad(&self.biases);
 

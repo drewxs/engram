@@ -7,17 +7,13 @@
 mod adagrad;
 mod sgd;
 
+use std::fmt::Debug;
+
 pub use adagrad::Adagrad;
 pub use sgd::SGD;
 
 use crate::Tensor;
 
-pub trait Optimizer {
+pub trait Optimizer: Debug {
     fn step(&mut self, weights: &mut Tensor, gradients: &Tensor);
-}
-
-impl Default for Box<dyn Optimizer> {
-    fn default() -> Self {
-        Box::new(SGD::default())
-    }
 }
