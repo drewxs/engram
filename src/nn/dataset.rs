@@ -3,7 +3,7 @@
 //! This is used to create datasets from input and target tensors,
 //! and to create batches from those datasets.
 //!
-//! Used in the `fit` method of `NeuralNetwork` to train on a dataset.
+//! Used in the `fit` method of a model to train on a dataset.
 //!
 //! # Examples
 //!
@@ -17,8 +17,9 @@
 //! let epochs = 1000;
 //! let batch_size = 4;
 //!
-//! let mut nn = NeuralNetwork::default();
-//! nn.fit(&dataset, &loss_fn, epochs, batch_size);
+//! let mut model = Sequential::new();
+//! // add layers...
+//! model.fit(&dataset, &loss_fn, epochs, batch_size);
 //! ```
 
 use crate::Tensor;
