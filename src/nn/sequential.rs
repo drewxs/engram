@@ -146,16 +146,14 @@ mod tests {
 
         model.fit(&dataset, &loss_fn, epochs, batch_size);
 
-        let weights = model.layers[0].weights().clone().data;
-        let biases = model.layers[0].biases().clone().data;
-        dbg!(weights, biases);
-
         let batches = dataset.batches(batch_size);
         for (i, (input_batch, _)) in batches.iter().enumerate() {
             let predictions = model.predict(&input_batch);
-            let target = dataset.targets.data[i][0];
-            println!("Predicted: {:.2?}, Target: {:.2}", predictions.data, target);
-            assert_eq!(predictions.data[0][0], target);
+            let y_pred = predictions.data[0][0];
+            let y_true = dataset.targets.data[i][0];
+
+            println!("Predicted: {:.2?}, Target: {:.2}", y_pred, y_true);
+            assert_eq!(y_pred, y_true);
         }
     }
 

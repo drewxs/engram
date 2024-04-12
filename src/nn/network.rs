@@ -140,9 +140,45 @@ mod tests {
         let batches = dataset.batches(batch_size);
         for (i, (input_batch, _)) in batches.iter().enumerate() {
             let predictions = model.predict(&input_batch);
-            let target = dataset.targets.data[i][0];
-            println!("Predicted: {:.2?}, Target: {:.2}", predictions.data, target);
-            assert_eq!(predictions.data[0][0], target);
+            let y_pred = predictions.data[0][0];
+            let y_true = dataset.targets.data[i][0];
+
+            println!("Predicted: {:.2?}, Target: {:.2}", y_pred, y_true);
+            assert_eq!(y_pred, y_true);
         }
+    }
+
+    #[test]
+    fn test_xor() {
+        let mut model = Network::new(SGD::new(0.01), L1(0.01));
+        model.layers = vec![
+            DenseLayer::new(2, 2, Initializer::Xavier, Activation::Sigmoid),
+            DenseLayer::new(2, 1, Initializer::Xavier, Activation::Sigmoid),
+        ];
+
+        let inputs = tensor![[0., 0.], [0., 1.], [1., 0.], [1., 1.]];
+        let targets = tensor![[0.], [1.], [1.], [0.]];
+
+        let dataset = Dataset::new(inputs, targets);
+        let loss_fn = Loss::MSE;
+        let epochs = 30;
+        let batch_size = 1;
+
+        model.fit(&dataset, &loss_fn, epochs, batch_size);
+
+        let batches = dataset.batches(batch_size);
+        for (i, (input_batch, _)) in batches.iter().enumerate() {
+            let predictions = model.predict(&input_batch);
+            let y_pred = (predictions.data[0][0] + 0.5).floor();
+            let y_true = dataset.targets.data[i][0];
+
+            println!(
+                "Predicted: {:.2?}, Target: {:.2}",
+                predictions.data[0][0], y_true
+            );
+            assert_eq!(y_pred, y_true, "Failed at input {:?}", input_batch.data);
+        }
+
+        // assert_eq!(true, false);
     }
 }
