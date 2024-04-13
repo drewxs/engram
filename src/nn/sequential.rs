@@ -29,6 +29,15 @@ impl Sequential {
         self.layers.push(Box::new(layer));
     }
 
+    pub fn add_layers<T>(&mut self, layers: Vec<T>)
+    where
+        T: Layer + 'static,
+    {
+        for layer in layers {
+            self.layers.push(Box::new(layer));
+        }
+    }
+
     pub fn set_optimizer<T>(&mut self, optimizer: T)
     where
         T: Optimizer + 'static,
@@ -160,25 +169,19 @@ mod tests {
     // #[test]
     // fn test_xor() {
     //     let mut model = Sequential::new();
-    //     model.add_layer(DenseLayer::new(
-    //         2,
-    //         2,
-    //         Initializer::Constant(0.0),
-    //         Activation::Sigmoid,
-    //     ));
-    //     model.add_layer(DenseLayer::new(
-    //         2,
-    //         1,
-    //         Initializer::Constant(0.0),
-    //         Activation::Sigmoid,
-    //     ));
+    //     model.set_optimizer(SGD::new(0.1));
+    //     model.set_regularization(L1(0.01));
+    //     model.add_layers(vec![
+    //         DenseLayer::new(4, 2, Initializer::Xavier, Activation::TanH),
+    //         DenseLayer::new(2, 1, Initializer::Xavier, Activation::Sigmoid),
+    //     ]);
     //
     //     let inputs = tensor![[0., 0.], [0., 1.], [1., 0.], [1., 1.]];
     //     let targets = tensor![[0.], [1.], [1.], [0.]];
     //
     //     let dataset = Dataset::new(inputs, targets);
     //     let loss_fn = Loss::MSE;
-    //     let epochs = 1000;
+    //     let epochs = 100;
     //     let batch_size = 1;
     //
     //     model.fit(&dataset, &loss_fn, epochs, batch_size);
@@ -186,9 +189,12 @@ mod tests {
     //     let batches = dataset.batches(batch_size);
     //     for (i, (input_batch, _)) in batches.iter().enumerate() {
     //         let predictions = model.predict(&input_batch);
-    //         let target = dataset.targets.data[i][0];
-    //         println!("Predicted: {:?}, Target: {:.2}", predictions.data, target);
+    //         let y_pred_raw = predictions.data[0][0];
+    //         let y_pred = (y_pred_raw + 0.5).floor();
+    //         let y_true = dataset.targets.data[i][0];
+    //
+    //         println!("Predicted: {:.2?}, Target: {:.2}", y_pred_raw, y_true);
+    //         assert_eq!(y_pred, y_true, "Failed at input {:?}", input_batch.data);
     //     }
-    //     assert_eq!(0.0, 1.0);
     // }
 }
