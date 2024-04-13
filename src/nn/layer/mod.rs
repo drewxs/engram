@@ -5,11 +5,11 @@
 
 mod dense;
 
-use std::fmt::Debug;
-
 pub use dense::DenseLayer;
 
-use crate::{linalg::Tensor, Loss, Optimizer, Regularization};
+use std::fmt::Debug;
+
+use crate::{Loss, Optimizer, Regularization, Tensor};
 
 pub trait Layer: Debug {
     fn weights(&self) -> &Tensor;

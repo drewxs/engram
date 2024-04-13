@@ -7,10 +7,10 @@
 mod adagrad;
 mod sgd;
 
-use std::fmt::Debug;
-
 pub use adagrad::Adagrad;
 pub use sgd::SGD;
+
+use std::fmt::Debug;
 
 use crate::Tensor;
 
