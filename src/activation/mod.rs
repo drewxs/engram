@@ -1,4 +1,4 @@
-//! Activation functions and their derivatives
+//! Activation functions.
 
 mod leaky_relu;
 mod relu;

@@ -1,3 +1,5 @@
+//! Neural networks.
+
 mod dataset;
 mod initializer;
 mod layer;

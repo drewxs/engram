@@ -80,6 +80,19 @@ impl Dataset {
         batches
     }
 
+    /// Get a batch of input and target tensors [start..end].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::*;
+    /// let inputs = tensor![[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]];
+    /// let targets = tensor![[0.0], [1.0], [0.0]];
+    /// let dataset = Dataset::new(inputs, targets);
+    /// let (input_batch, target_batch) = dataset.batch(0, 2);
+    /// assert_eq!(input_batch, tensor![[1.0, 2.0], [3.0, 4.0]]);
+    /// assert_eq!(target_batch, tensor![[0.0], [1.0]]);
+    /// ```
     pub fn batch(&self, start: usize, end: usize) -> (Tensor, Tensor) {
         let input_batch = self.inputs.slice(start, end);
         let target_batch = self.targets.slice(start, end);

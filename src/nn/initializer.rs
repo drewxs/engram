@@ -13,6 +13,8 @@ pub enum Initializer {
     /// Kaiming (He) initialization.
     /// Gaussian, µ = 0, σ = √[2 / f_in]
     Kaiming,
+    /// Constant initialization.
+    /// All weights are set to the given value.
     Constant(f64),
 }
 
@@ -40,12 +42,10 @@ impl Initializer {
         }
     }
 
-    /// Xavier/Glorot initialization
     fn xavier(f_in: usize, f_out: usize) -> Tensor2D {
         Self::initialize_data(f_in, f_out, 2.0 / ((f_in + f_out) as f64).sqrt())
     }
 
-    /// Kaiming initialization
     fn kaiming(f_in: usize, f_out: usize) -> Tensor2D {
         Self::initialize_data(f_in, f_out, 2.0 / ((f_in) as f64).sqrt())
     }
