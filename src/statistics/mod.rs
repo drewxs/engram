@@ -13,7 +13,8 @@ use std::{
 /// ```
 /// # use engram::statistics::*;
 /// let values = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
-/// assert_eq!(mean(&values), 3.5);
+/// let mean = mean(&values);
+/// # assert_eq!(mean, 3.5);
 /// ```
 pub fn mean<T: Into<f64> + Copy>(data: &[T]) -> f64 {
     let mut sum = 0.0;
@@ -30,7 +31,8 @@ pub fn mean<T: Into<f64> + Copy>(data: &[T]) -> f64 {
 /// ```
 /// # use engram::statistics::*;
 /// let values = vec![1.0, 9.0, 2.5, 3.0, 2.0, 8.0];
-/// assert_eq!(median(&values), Some(2.75));
+/// let median = median(&values);
+/// # assert_eq!(median, Some(2.75));
 /// ```
 pub fn median<T: Into<f64> + Copy>(data: &[T]) -> Option<f64> {
     if data.is_empty() {
@@ -55,7 +57,8 @@ pub fn median<T: Into<f64> + Copy>(data: &[T]) -> Option<f64> {
 /// ```
 /// # use engram::statistics::*;
 /// let values = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 9];
-/// assert_eq!(mode(&values), Some(9));
+/// let mode = mode(&values);
+/// # assert_eq!(mode, Some(9));
 /// ```
 pub fn mode<T: Copy + Eq + Hash>(data: &[T]) -> Option<T> {
     if data.is_empty() {
@@ -77,7 +80,8 @@ pub fn mode<T: Copy + Eq + Hash>(data: &[T]) -> Option<T> {
 /// ```
 /// # use engram::statistics::*;
 /// let values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-/// assert_eq!(var(&values), 2.5);
+/// let variance = var(&values);
+/// # assert_eq!(variance, 2.5);
 /// ```
 pub fn var<T: Into<f64> + Copy + Add + Sub>(data: &[T]) -> f64 {
     let mean = mean(data);
@@ -93,7 +97,8 @@ pub fn var<T: Into<f64> + Copy + Add + Sub>(data: &[T]) -> f64 {
 /// ```
 /// # use engram::statistics::*;
 /// let values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-/// assert_eq!(pop_var(&values), 2.0);
+/// let p_var= pop_var(&values);
+/// # assert_eq!(p_var, 2.0);
 /// ```
 pub fn pop_var<T: Into<f64> + Copy + Add + Sub>(data: &[T]) -> f64 {
     let mean = mean(data);
@@ -109,7 +114,8 @@ pub fn pop_var<T: Into<f64> + Copy + Add + Sub>(data: &[T]) -> f64 {
 /// ```
 /// # use engram::statistics::*;
 /// let values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-/// assert_eq!(std(&values), 1.5811388300841898);
+/// let std_dev = std(&values);
+/// # assert_eq!(std_dev, 1.5811388300841898);
 /// ```
 pub fn std<T: Into<f64> + Copy + Add + Sub>(data: &[T]) -> f64 {
     var(data).sqrt()
@@ -122,7 +128,8 @@ pub fn std<T: Into<f64> + Copy + Add + Sub>(data: &[T]) -> f64 {
 /// ```
 /// # use engram::statistics::*;
 /// let values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-/// assert_eq!(pop_std(&values), 1.4142135623730951);
+/// let pop_std = pop_std(&values);
+/// # assert_eq!(pop_std, 1.4142135623730951);
 /// ```
 pub fn pop_std<T: Into<f64> + Copy + Add + Sub>(data: &[T]) -> f64 {
     pop_var(data).sqrt()
@@ -135,7 +142,8 @@ pub fn pop_std<T: Into<f64> + Copy + Add + Sub>(data: &[T]) -> f64 {
 /// ```
 /// # use engram::statistics::*;
 /// let values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-/// assert_eq!(mean_std_err(&values), 0.7071067811865476);
+/// let mean_std_err = mean_std_err(&values);
+/// # assert_eq!(mean_std_err, 0.7071067811865476);
 /// ```
 pub fn mean_std_err<T: Into<f64> + Copy + Add + Sub>(data: &[T]) -> f64 {
     std(data) / (data.len() as f64).sqrt()
@@ -149,7 +157,8 @@ pub fn mean_std_err<T: Into<f64> + Copy + Add + Sub>(data: &[T]) -> f64 {
 /// ```
 /// # use engram::statistics::*;
 /// let values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-/// assert_eq!(mean_ci(&values, 0.95).unwrap(), (2.32824855787278, 3.67175144212722));
+/// let mean_ci = mean_ci(&values, 0.95).unwrap();
+/// # assert_eq!(mean_ci, (2.32824855787278, 3.67175144212722));
 /// ```
 pub fn mean_ci<T: Into<f64> + Copy + Add + Sub>(
     data: &[T],

@@ -9,9 +9,9 @@ impl Tensor {
     /// # use engram::*;
     /// let mut tensor = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
     /// let mut iter = tensor.iter_rows();
-    /// assert_eq!(iter.next(), Some(&vec![1.0, 2.0, 3.0]));
-    /// assert_eq!(iter.next(), Some(&vec![4.0, 5.0, 6.0]));
-    /// assert_eq!(iter.next(), None);
+    /// # assert_eq!(iter.next(), Some(&vec![1.0, 2.0, 3.0]));
+    /// # assert_eq!(iter.next(), Some(&vec![4.0, 5.0, 6.0]));
+    /// # assert_eq!(iter.next(), None);
     /// ```
     pub fn iter_rows(&self) -> impl Iterator<Item = &Tensor1D> {
         self.data.iter()
@@ -25,9 +25,9 @@ impl Tensor {
     /// # use engram::*;
     /// let mut tensor = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
     /// let mut iter = tensor.iter_rows_mut();
-    /// assert_eq!(iter.next(), Some(&mut vec![1.0, 2.0, 3.0]));
-    /// assert_eq!(iter.next(), Some(&mut vec![4.0, 5.0, 6.0]));
-    /// assert_eq!(iter.next(), None);
+    /// # assert_eq!(iter.next(), Some(&mut vec![1.0, 2.0, 3.0]));
+    /// # assert_eq!(iter.next(), Some(&mut vec![4.0, 5.0, 6.0]));
+    /// # assert_eq!(iter.next(), None);
     /// ```
     pub fn iter_rows_mut(&mut self) -> impl Iterator<Item = &mut Tensor1D> {
         self.data.iter_mut()

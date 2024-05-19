@@ -24,8 +24,8 @@ impl DenseLayer {
     /// ```
     /// # use engram::prelude::*;
     /// let layer = DenseLayer::new(3, 2, Initializer::Xavier, Activation::ReLU);
-    /// assert_eq!(layer.weights().shape(), (2, 3));
-    /// assert_eq!(layer.biases().shape(), (2, 1));
+    /// # assert_eq!(layer.weights().shape(), (2, 3));
+    /// # assert_eq!(layer.biases().shape(), (2, 1));
     /// ```
     pub fn new(
         f_in: usize,
@@ -53,8 +53,8 @@ impl DenseLayer {
     /// ```
     /// # use engram::prelude::*;
     /// let layer = DenseLayer::default(4, 7);
-    /// assert_eq!(layer.weights().shape(), (7, 4));
-    /// assert_eq!(layer.biases().shape(), (7, 1));
+    /// # assert_eq!(layer.weights().shape(), (7, 4));
+    /// # assert_eq!(layer.biases().shape(), (7, 1));
     /// ```
     pub fn default(f_in: usize, f_out: usize) -> Self {
         Self::new(f_in, f_out, Initializer::Xavier, Activation::ReLU)
@@ -79,7 +79,7 @@ impl Layer for DenseLayer {
     /// let mut layer = DenseLayer::default(3, 2);
     /// let input = tensor![1.0, 2.0, 3.0];
     /// let output = layer.forward(&input);
-    /// assert_eq!(output.shape(), (1, 2));
+    /// # assert_eq!(output.shape(), (1, 2));
     /// ```
     fn forward(&mut self, input: &Tensor) -> Tensor {
         let output = input.matmul(&self.weights.transpose());
@@ -107,7 +107,7 @@ impl Layer for DenseLayer {
     /// let output = layer.forward(&input);
     /// let target = tensor![1.0, 0.0];
     /// let loss = layer.backward(&target, &Loss::MSE);
-    /// assert!(loss > 0.0);
+    /// # assert!(loss > 0.0);
     /// ```
     fn backward(&mut self, target: &Tensor, loss_fn: &Loss) -> f64 {
         let predictions = self

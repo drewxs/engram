@@ -41,7 +41,7 @@ impl Dataset {
     /// let inputs = tensor![[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]];
     /// let targets = tensor![[0.0], [1.0], [0.0]];
     /// let dataset = Dataset::new(inputs, targets);
-    /// assert_eq!(dataset.inputs.data, &[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]);
+    /// # assert_eq!(dataset.inputs.data, &[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]);
     /// ```
     pub fn new(inputs: Tensor, targets: Tensor) -> Self {
         assert_eq!(
@@ -62,9 +62,9 @@ impl Dataset {
     /// let targets = tensor![[0.0], [1.0], [0.0]];
     /// let dataset = Dataset::new(inputs, targets);
     /// let batches = dataset.batches(2);
-    /// assert_eq!(batches.len(), 2);
-    /// assert_eq!(batches[0].0, tensor![[1.0, 2.0], [3.0, 4.0]]);
-    /// assert_eq!(batches[0].1, tensor![[0.0], [1.0]]);
+    /// # assert_eq!(batches.len(), 2);
+    /// # assert_eq!(batches[0].0, tensor![[1.0, 2.0], [3.0, 4.0]]);
+    /// # assert_eq!(batches[0].1, tensor![[0.0], [1.0]]);
     /// ```
     pub fn batches(&self, batch_size: usize) -> Vec<(Tensor, Tensor)> {
         let mut batches = Vec::new();
@@ -91,8 +91,8 @@ impl Dataset {
     /// let targets = tensor![[0.0], [1.0], [0.0]];
     /// let dataset = Dataset::new(inputs, targets);
     /// let (input_batch, target_batch) = dataset.batch(0, 2);
-    /// assert_eq!(input_batch, tensor![[1.0, 2.0], [3.0, 4.0]]);
-    /// assert_eq!(target_batch, tensor![[0.0], [1.0]]);
+    /// # assert_eq!(input_batch, tensor![[1.0, 2.0], [3.0, 4.0]]);
+    /// # assert_eq!(target_batch, tensor![[0.0], [1.0]]);
     /// ```
     pub fn batch(&self, start: usize, end: usize) -> (Tensor, Tensor) {
         let input_batch = self.inputs.slice(start, end);

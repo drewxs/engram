@@ -14,8 +14,10 @@ use crate::{
 /// let a = [1.0, 2.0, 3.0];
 /// let b = [1.0, 2.0, 3.0];
 /// let c = [1.0, 2.0, 4.0];
-/// assert_eq!(cosine_similarity(&a, &b), 1.0);
-/// assert_eq!(cosine_similarity(&a, &c), 0.9914601339836675);
+/// let cs_ab = cosine_similarity(&a, &b);
+/// let cs_ac = cosine_similarity(&a, &c);
+/// # assert_eq!(cs_ab, 1.0);
+/// # assert_eq!(cs_ac, 0.9914601339836675);
 /// ```
 pub fn cosine_similarity(a: &[f64], b: &[f64]) -> f64 {
     dot(a, b) / (norm_l2(a) * norm_l2(b))
@@ -31,8 +33,10 @@ pub fn cosine_similarity(a: &[f64], b: &[f64]) -> f64 {
 /// let a = [true, true, false, false];
 /// let b = [true, false, true, false];
 /// let c = [false, false, false, false];
-/// assert_eq!(jaccard_index(&a, &b), 0.3333333333333333);
-/// assert_eq!(jaccard_index(&a, &c), 0.0);
+/// let ji_ab = jaccard_index(&a, &b);
+/// let ji_ac = jaccard_index(&a, &c);
+/// # assert_eq!(ji_ab, 0.3333333333333333);
+/// # assert_eq!(ji_ac, 0.0);
 /// ```
 pub fn jaccard_index(a: &[bool], b: &[bool]) -> f64 {
     let intersection = intersection(a, b);
@@ -55,8 +59,10 @@ pub fn jaccard_index(a: &[bool], b: &[bool]) -> f64 {
 /// let a = [1.0, 2.0, 3.0];
 /// let b = [1.3, 2.1, 3.0];
 /// let c = [1.5, 2.4, 4.0];
-/// assert!((tanimoto_coefficient(&a, &b) - 0.9932).abs() < 1e-4);
-/// assert!((tanimoto_coefficient(&a, &c) - 0.9285).abs() < 1e-4);
+/// let tc_ab = tanimoto_coefficient(&a, &b);
+/// let tc_ac = tanimoto_coefficient(&a, &c);
+/// assert!((tc_ab - 0.9932).abs() < 1e-4);
+/// assert!((tc_ac - 0.9285).abs() < 1e-4);
 /// ```
 pub fn tanimoto_coefficient(a: &[f64], b: &[f64]) -> f64 {
     let dot = dot(a, b);

@@ -12,7 +12,8 @@
 /// use engram::metrics::pearson_correlation;
 /// let a = [1.0, 2.0, 3.0, 4.0, 5.0];
 /// let b = [1.0, 2.1, 2.9, 3.9, 5.1];
-/// assert_eq!(pearson_correlation(&a, &b), 0.998005980069749);
+/// let pc = pearson_correlation(&a, &b);
+/// # assert_eq!(pc, 0.998005980069749);
 /// ```
 pub fn pearson_correlation(x: &[f64], y: &[f64]) -> f64 {
     let n = x.len();

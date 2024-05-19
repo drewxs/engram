@@ -27,12 +27,12 @@ impl Initializer {
     /// # use engram::*;
     /// let xavier = Initializer::Xavier.initialize(2, 3);
     /// let kaiming = Initializer::Kaiming.initialize(5, 3);
-    /// assert_eq!(xavier.len(), 2);
-    /// assert_eq!(xavier[0].len(), 3);
-    /// assert!(xavier.iter().all(|w| w.iter().all(|x| x.abs() <= 1.0)));
-    /// assert_eq!(kaiming.len(), 5);
-    /// assert_eq!(kaiming[0].len(), 3);
-    /// assert!(kaiming.iter().all(|w| w.iter().all(|x| x.abs() <= 1.0)));
+    /// # assert_eq!(xavier.len(), 2);
+    /// # assert_eq!(xavier[0].len(), 3);
+    /// # assert!(xavier.iter().all(|w| w.iter().all(|x| x.abs() <= 1.0)));
+    /// # assert_eq!(kaiming.len(), 5);
+    /// # assert_eq!(kaiming[0].len(), 3);
+    /// # assert!(kaiming.iter().all(|w| w.iter().all(|x| x.abs() <= 1.0)));
     /// ```
     pub fn initialize(&self, f_in: usize, f_out: usize) -> Tensor2D {
         match *self {

@@ -8,8 +8,8 @@ impl Tensor {
     /// # use engram::*;
     /// let t1 = Tensor::new(2, 3, 0.0);
     /// let t2 = Tensor::new(3, 2, 0.0);
-    /// assert_eq!(t1.data, vec![vec![0.0, 0.0, 0.0], vec![0.0, 0.0, 0.0]]);
-    /// assert_eq!(t2.data, vec![vec![0.0, 0.0], vec![0.0, 0.0], vec![0.0, 0.0]]);
+    /// # assert_eq!(t1.data, vec![vec![0.0, 0.0, 0.0], vec![0.0, 0.0, 0.0]]);
+    /// # assert_eq!(t2.data, vec![vec![0.0, 0.0], vec![0.0, 0.0], vec![0.0, 0.0]]);
     /// ```
     pub fn new(rows: usize, cols: usize, value: f64) -> Tensor {
         Tensor {
@@ -28,7 +28,7 @@ impl Tensor {
     /// # use engram::*;
     /// let t1 = Tensor::new(2, 3, 0.0);
     /// let t2 = Tensor::new_like(&t1, 0.0);
-    /// assert_eq!(t2.data, vec![vec![0.0, 0.0, 0.0], vec![0.0, 0.0, 0.0]]);
+    /// # assert_eq!(t2.data, vec![vec![0.0, 0.0, 0.0], vec![0.0, 0.0, 0.0]]);
     /// ```
     pub fn new_like(other: &Tensor, value: f64) -> Tensor {
         Tensor::new(other.rows, other.cols, value)
@@ -56,7 +56,7 @@ impl Tensor {
     /// ```
     /// # use engram::*;
     /// let t = Tensor::identity(3);
-    /// assert_eq!(t.data, vec![vec![1.0, 0.0, 0.0], vec![0.0, 1.0, 0.0], vec![0.0, 0.0, 1.0]]);
+    /// # assert_eq!(t.data, vec![vec![1.0, 0.0, 0.0], vec![0.0, 1.0, 0.0], vec![0.0, 0.0, 1.0]]);
     /// ```
     pub fn identity(size: usize) -> Tensor {
         let mut res = Tensor::zeros(size, size);
@@ -73,9 +73,9 @@ impl Tensor {
     /// ```
     /// # use engram::*;
     /// let t = Tensor::initialize(2, 3, &Initializer::Xavier);
-    /// assert_eq!(t.data.len(), 2);
-    /// assert_eq!(t.data[0].len(), 3);
-    /// assert!(t.data.iter().all(|w| w.iter().all(|x| x.abs() <= 1.0)));
+    /// # assert_eq!(t.data.len(), 2);
+    /// # assert_eq!(t.data[0].len(), 3);
+    /// # assert!(t.data.iter().all(|w| w.iter().all(|x| x.abs() <= 1.0)));
     /// ```
     pub fn initialize(rows: usize, cols: usize, initializer: &Initializer) -> Tensor {
         let mut res = Tensor::zeros(rows, cols);

@@ -9,7 +9,7 @@ impl Tensor {
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// a.set_grad(vec![vec![1.0, 2.0], vec![3.0, 4.0]]);
-    /// assert_eq!(a.grad, Some(vec![vec![1.0, 2.0], vec![3.0, 4.0]]));
+    /// # assert_eq!(a.grad, Some(vec![vec![1.0, 2.0], vec![3.0, 4.0]]));
     /// ```
     pub fn set_grad(&mut self, grad: Vec<Vec<f64>>) {
         self.grad = Some(grad);
@@ -23,7 +23,7 @@ impl Tensor {
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// a.zero_grad();
-    /// assert_eq!(a.grad, Some(vec![vec![0.0, 0.0], vec![0.0, 0.0]]));
+    /// # assert_eq!(a.grad, Some(vec![vec![0.0, 0.0], vec![0.0, 0.0]]));
     /// ```
     pub fn zero_grad(&mut self) {
         match &mut self.grad {

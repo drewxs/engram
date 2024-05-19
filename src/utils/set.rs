@@ -6,7 +6,8 @@
 /// # use engram::utils::intersection;
 /// let a = [true, true, false, false];
 /// let b = [true, false, true, false];
-/// assert_eq!(intersection(&a, &b), 1);
+/// let i = intersection(&a, &b);
+/// # assert_eq!(i, 1);
 /// ```
 pub fn intersection(a: &[bool], b: &[bool]) -> usize {
     a.iter().zip(b.iter()).filter(|(&a, &b)| a && b).count()
@@ -20,7 +21,8 @@ pub fn intersection(a: &[bool], b: &[bool]) -> usize {
 /// # use engram::utils::union;
 /// let a = [true, true, false, false];
 /// let b = [true, false, true, false];
-/// assert_eq!(union(&a, &b), 3);
+/// let u = union(&a, &b);
+/// # assert_eq!(u, 3);
 /// ```
 pub fn union(a: &[bool], b: &[bool]) -> usize {
     a.iter().zip(b.iter()).filter(|(&a, &b)| a || b).count()

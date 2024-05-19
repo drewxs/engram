@@ -8,8 +8,8 @@ use crate::Tensor;
 /// ```
 /// # use engram::{linalg, tensor};
 /// let t1 = tensor![[4.0, 12.0, -16.0], [12.0, 37.0, -43.0], [-16.0, -43.0, 98.0]];
-/// let t2 = linalg::cholesky(&t1).unwrap();
-/// assert_eq!(t2, tensor![[2.0, 0.0, 0.0], [6.0, 1.0, 0.0], [-8.0, 5.0, 3.0]]);
+/// let chol = linalg::cholesky(&t1).unwrap();
+/// # assert_eq!(chol, tensor![[2.0, 0.0, 0.0], [6.0, 1.0, 0.0], [-8.0, 5.0, 3.0]]);
 /// ```
 pub fn cholesky(t: &Tensor) -> Option<Tensor> {
     if t.rows != t.cols {
@@ -51,8 +51,8 @@ pub fn cholesky(t: &Tensor) -> Option<Tensor> {
 /// # use engram::{linalg, tensor};
 /// let t = tensor![[2.0, -1.0, 0.0], [-1.0, 2.0, -1.0], [0.0, -1.0, 2.0]];
 /// let (l, u) = linalg::lu(&t).unwrap();
-/// assert_eq!(l, tensor![[1.0, 0.0, 0.0], [-0.5, 1.0, 0.0], [0.0, -0.6666666666666666, 1.0]]);
-/// assert_eq!(u, tensor![[2.0, -1.0, 0.0], [0.0, 1.5, -1.0], [0.0, 0.0, 1.3333333333333335]]);
+/// # assert_eq!(l, tensor![[1.0, 0.0, 0.0], [-0.5, 1.0, 0.0], [0.0, -0.6666666666666666, 1.0]]);
+/// # assert_eq!(u, tensor![[2.0, -1.0, 0.0], [0.0, 1.5, -1.0], [0.0, 0.0, 1.3333333333333335]]);
 /// ```
 pub fn lu(t: &Tensor) -> Option<(Tensor, Tensor)> {
     if t.rows != t.cols {

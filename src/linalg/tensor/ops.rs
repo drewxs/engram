@@ -17,7 +17,7 @@ impl Tensor {
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
     /// let c = a + b;
-    /// assert_eq!(c.data, vec![vec![6.0, 8.0], vec![10.0, 12.0]]);
+    /// # assert_eq!(c.data, vec![vec![6.0, 8.0], vec![10.0, 12.0]]);
     /// ```
     fn add_tensor(&self, other: &Tensor) -> Tensor {
         self.broadcast_and_apply(other, |a, b| a + b)
@@ -32,7 +32,7 @@ impl Tensor {
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
     /// a += b;
-    /// assert_eq!(a.data, vec![vec![6.0, 8.0], vec![10.0, 12.0]]);
+    /// # assert_eq!(a.data, vec![vec![6.0, 8.0], vec![10.0, 12.0]]);
     /// ```
     fn add_mut(&mut self, other: &Tensor) {
         self.broadcast_and_apply_mut(other, |a, b| a + b);
@@ -46,7 +46,7 @@ impl Tensor {
     /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = a + 5.0;
-    /// assert_eq!(b.data, vec![vec![6.0, 7.0], vec![8.0, 9.0]]);
+    /// # assert_eq!(b.data, vec![vec![6.0, 7.0], vec![8.0, 9.0]]);
     /// ```
     fn add_scalar(&self, scalar: f64) -> Tensor {
         self.apply(|x| x + scalar)
@@ -60,7 +60,7 @@ impl Tensor {
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// a += 5.0;
-    /// assert_eq!(a.data, vec![vec![6.0, 7.0], vec![8.0, 9.0]]);
+    /// # assert_eq!(a.data, vec![vec![6.0, 7.0], vec![8.0, 9.0]]);
     /// ```
     fn add_scalar_mut(&mut self, scalar: f64) {
         self.apply_mut(|x| x + scalar);
@@ -80,7 +80,7 @@ impl Tensor {
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
     /// let c = a - b;
-    /// assert_eq!(c.data, vec![vec![-4.0, -4.0], vec![-4.0, -4.0]]);
+    /// # assert_eq!(c.data, vec![vec![-4.0, -4.0], vec![-4.0, -4.0]]);
     fn sub_tensor(&self, other: &Tensor) -> Tensor {
         self.broadcast_and_apply(other, |a, b| a - b)
     }
@@ -94,7 +94,7 @@ impl Tensor {
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
     /// a -= b;
-    /// assert_eq!(a.data, vec![vec![-4.0, -4.0], vec![-4.0, -4.0]]);
+    /// # assert_eq!(a.data, vec![vec![-4.0, -4.0], vec![-4.0, -4.0]]);
     /// ```
     fn sub_mut(&mut self, other: &Tensor) {
         self.broadcast_and_apply_mut(other, |a, b| a - b)
@@ -108,7 +108,7 @@ impl Tensor {
     /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = a - 5.0;
-    /// assert_eq!(b.data, vec![vec![-4.0, -3.0], vec![-2.0, -1.0]]);
+    /// # assert_eq!(b.data, vec![vec![-4.0, -3.0], vec![-2.0, -1.0]]);
     /// ```
     fn sub_scalar(&self, scalar: f64) -> Tensor {
         self.apply(|x| x - scalar)
@@ -122,7 +122,7 @@ impl Tensor {
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// a -= 5.0;
-    /// assert_eq!(a.data, vec![vec![-4.0, -3.0], vec![-2.0, -1.0]]);
+    /// # assert_eq!(a.data, vec![vec![-4.0, -3.0], vec![-2.0, -1.0]]);
     /// ```
     fn sub_scalar_mut(&mut self, scalar: f64) {
         self.apply_mut(|x| x - scalar);
@@ -142,7 +142,7 @@ impl Tensor {
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
     /// let c = a * b;
-    /// assert_eq!(c.data, vec![vec![5.0, 12.0], vec![21.0, 32.0]]);
+    /// # assert_eq!(c.data, vec![vec![5.0, 12.0], vec![21.0, 32.0]]);
     /// ```
     fn mul_tensor(&self, other: &Tensor) -> Tensor {
         self.broadcast_and_apply(other, |a, b| a * b)
@@ -157,7 +157,7 @@ impl Tensor {
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
     /// a *= b;
-    /// assert_eq!(a.data, vec![vec![5.0, 12.0], vec![21.0, 32.0]]);
+    /// # assert_eq!(a.data, vec![vec![5.0, 12.0], vec![21.0, 32.0]]);
     /// ```
     fn mul_mut(&mut self, other: &Tensor) {
         self.broadcast_and_apply_mut(other, |a, b| a * b);
@@ -171,7 +171,7 @@ impl Tensor {
     /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = a * 5.0;
-    /// assert_eq!(b.data, vec![vec![5.0, 10.0], vec![15.0, 20.0]]);
+    /// # assert_eq!(b.data, vec![vec![5.0, 10.0], vec![15.0, 20.0]]);
     /// ```
     fn mul_scalar(&self, scalar: f64) -> Tensor {
         self.apply(|x| x * scalar)
@@ -185,7 +185,7 @@ impl Tensor {
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// a *= 5.0;
-    /// assert_eq!(a.data, vec![vec![5.0, 10.0], vec![15.0, 20.0]]);
+    /// # assert_eq!(a.data, vec![vec![5.0, 10.0], vec![15.0, 20.0]]);
     /// ```
     fn mul_scalar_mut(&mut self, scalar: f64) {
         self.apply_mut(|x| x * scalar);
@@ -205,7 +205,7 @@ impl Tensor {
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 8.0], [30.0, 8.0]];
     /// let c = a / b;
-    /// assert_eq!(c.data, vec![vec![0.2, 0.25], vec![0.1, 0.5]]);
+    /// # assert_eq!(c.data, vec![vec![0.2, 0.25], vec![0.1, 0.5]]);
     /// ```
     fn div_tensor(&self, other: &Tensor) -> Tensor {
         self.broadcast_and_apply(other, |a, b| a / b)
@@ -220,7 +220,7 @@ impl Tensor {
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = tensor![[5.0, 8.0], [30.0, 8.0]];
     /// a /= b;
-    /// assert_eq!(a.data, vec![vec![0.2, 0.25], vec![0.1, 0.5]]);
+    /// # assert_eq!(a.data, vec![vec![0.2, 0.25], vec![0.1, 0.5]]);
     /// ```
     fn div_mut(&mut self, other: &Tensor) {
         self.broadcast_and_apply_mut(other, |a, b| a / b);
@@ -234,7 +234,7 @@ impl Tensor {
     /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// let b = a / 5.0;
-    /// assert_eq!(b.data, vec![vec![0.2, 0.4], vec![0.6, 0.8]]);
+    /// # assert_eq!(b.data, vec![vec![0.2, 0.4], vec![0.6, 0.8]]);
     /// ```
     fn div_scalar(&self, scalar: f64) -> Tensor {
         self.apply(|x| x / scalar)
@@ -248,7 +248,7 @@ impl Tensor {
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
     /// a /= 5.0;
-    /// assert_eq!(a.data, vec![vec![0.2, 0.4], vec![0.6, 0.8]]);
+    /// # assert_eq!(a.data, vec![vec![0.2, 0.4], vec![0.6, 0.8]]);
     /// ```
     fn div_scalar_mut(&mut self, scalar: f64) {
         self.apply_mut(|x| x / scalar);
@@ -283,7 +283,7 @@ impl Tensor {
     /// let t1 = tensor![[1.0], [2.0]];
     /// let t2 = tensor![3.0, 4.0];
     /// let t3 = t1.broadcast_and_apply(&t2, |a, b| a + b);
-    /// assert_eq!(t3.data, vec![vec![4.0, 5.0], vec![5.0, 6.0]]);
+    /// # assert_eq!(t3.data, vec![vec![4.0, 5.0], vec![5.0, 6.0]]);
     /// ```
     pub fn broadcast_and_apply<F>(&self, other: &Tensor, op: F) -> Tensor
     where
@@ -303,7 +303,7 @@ impl Tensor {
     /// let mut t1 = tensor![[1.0], [2.0]];
     /// let t2 = tensor![3.0, 4.0];
     /// t1.broadcast_and_apply_mut(&t2, |a, b| a + b);
-    /// assert_eq!(t1.data, vec![vec![4.0, 5.0], vec![5.0, 6.0]]);
+    /// # assert_eq!(t1.data, vec![vec![4.0, 5.0], vec![5.0, 6.0]]);
     /// ```
     pub fn broadcast_and_apply_mut<F>(&mut self, other: &Tensor, op: F)
     where
