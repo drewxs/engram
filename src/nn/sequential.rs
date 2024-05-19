@@ -88,7 +88,7 @@ impl Sequential {
     pub fn fit(&mut self, dataset: &Dataset, loss_fn: &Loss, epochs: usize, batch_size: usize) {
         self.train();
 
-        for epoch in 0..epochs {
+        for epoch in 1..=epochs {
             let mut total_loss = 0.0;
             let batches = dataset.batches(batch_size);
 
@@ -102,7 +102,7 @@ impl Sequential {
             }
 
             let avg_loss = total_loss / dataset.inputs.rows as f64;
-            println!("Epoch {}: Average Loss = {}", epoch + 1, avg_loss);
+            println!("Epoch [{}/{}], Loss: {:.4}", epoch, epochs, avg_loss);
         }
     }
 
