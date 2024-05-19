@@ -1,3 +1,5 @@
+//! General purpose machine learning library.
+
 pub mod activation;
 pub mod linalg;
 pub mod loss;
@@ -8,12 +10,10 @@ pub mod regression;
 pub mod statistics;
 pub mod utils;
 
-pub use activation::*;
-pub use linalg::{Tensor, Tensor1D, Tensor2D};
-pub use loss::*;
-pub use nn::*;
-pub use optimizer::*;
-pub use regression::*;
-pub use statistics::*;
+pub use activation::Activation;
+pub use linalg::Tensor;
+pub use loss::Loss;
+pub use nn::{Dataset, Initializer};
+pub use optimizer::Optimizer;
 
 pub mod prelude;

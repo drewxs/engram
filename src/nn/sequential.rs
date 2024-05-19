@@ -2,7 +2,11 @@
 //!
 //! This module provides the base building blocks for creating and training sequential models.
 
-use crate::{Dataset, Layer, Loss, Optimizer, Regularization, Tensor, L1, SGD};
+use crate::{
+    nn::{Layer, Regularization, L1},
+    optimizer::{Optimizer, SGD},
+    Dataset, Loss, Tensor,
+};
 
 #[derive(Debug)]
 pub struct Sequential {

@@ -1,4 +1,8 @@
-use crate::{linalg::Tensor, Activation, Initializer, Layer, Loss, Optimizer, Regularization};
+use crate::{
+    linalg::Tensor,
+    nn::{Layer, Regularization},
+    Activation, Initializer, Loss, Optimizer,
+};
 
 #[derive(Clone, Debug)]
 pub struct DenseLayer {
@@ -18,7 +22,7 @@ impl DenseLayer {
     /// # Examples
     ///
     /// ```
-    /// # use engram::*;
+    /// # use engram::prelude::*;
     /// let layer = DenseLayer::new(3, 2, Initializer::Xavier, Activation::ReLU);
     /// assert_eq!(layer.weights().shape(), (2, 3));
     /// assert_eq!(layer.biases().shape(), (2, 1));
@@ -47,7 +51,7 @@ impl DenseLayer {
     /// # Examples
     ///
     /// ```
-    /// # use engram::*;
+    /// # use engram::prelude::*;
     /// let layer = DenseLayer::default(4, 7);
     /// assert_eq!(layer.weights().shape(), (7, 4));
     /// assert_eq!(layer.biases().shape(), (7, 1));
@@ -71,7 +75,7 @@ impl Layer for DenseLayer {
     /// # Examples
     ///
     /// ```
-    /// # use engram::*;
+    /// # use engram::prelude::*;
     /// let mut layer = DenseLayer::default(3, 2);
     /// let input = tensor![1.0, 2.0, 3.0];
     /// let output = layer.forward(&input);
@@ -97,7 +101,7 @@ impl Layer for DenseLayer {
     /// # Examples
     ///
     /// ```
-    /// # use engram::*;
+    /// # use engram::prelude::*;
     /// let mut layer = DenseLayer::default(3, 2);
     /// let input = tensor![1.0, 2.0, 3.0];
     /// let output = layer.forward(&input);

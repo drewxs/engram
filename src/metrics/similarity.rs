@@ -1,9 +1,8 @@
 use crate::{
     linalg::{dot, magnitude},
+    metrics::norm_l2,
     utils::{intersection, union},
 };
-
-use super::norm_l2;
 
 /// Compute the cosine similarity between two vectors.
 /// Formula: dot(a, b) / (|a| * |b|)

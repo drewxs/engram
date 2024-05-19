@@ -8,7 +8,8 @@
 //! # Examples
 //!
 //! ```
-//! # use engram::*;
+//! use engram::prelude::*;
+//!
 //! let inputs = tensor![[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]];
 //! let targets = tensor![[0.0], [1.0], [0.0]];
 //!

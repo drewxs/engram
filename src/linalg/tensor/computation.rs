@@ -1,4 +1,4 @@
-use crate::{Activation, Tensor, Tensor2D};
+use crate::{linalg::Tensor2D, Activation, Tensor};
 
 impl Tensor {
     /// Performs matrix multiplication between two tensors.

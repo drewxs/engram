@@ -58,7 +58,8 @@ impl Optimizer for Adagrad {
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
+    use super::*;
+    use crate::{tensor, Activation};
 
     #[test]
     fn test_adagrad() {

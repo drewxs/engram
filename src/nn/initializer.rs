@@ -2,7 +2,7 @@
 
 use rand::Rng;
 
-use crate::Tensor2D;
+use crate::linalg::Tensor2D;
 
 /// Initialization methods for weight matrices.
 #[derive(Debug, PartialEq)]

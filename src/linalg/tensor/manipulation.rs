@@ -1,4 +1,4 @@
-use crate::{Tensor, Tensor1D};
+use crate::linalg::{Tensor, Tensor1D};
 
 impl Tensor {
     /// Reshapes the tensor to a new shape.

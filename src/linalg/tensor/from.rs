@@ -1,4 +1,7 @@
-use crate::{Tensor, Tensor1D, Tensor2D};
+use crate::{
+    linalg::{Tensor1D, Tensor2D},
+    Tensor,
+};
 
 impl From<Tensor2D> for Tensor {
     fn from(data: Tensor2D) -> Self {

@@ -1,4 +1,4 @@
-use crate::{Tensor, Tensor1D};
+use crate::{linalg::Tensor1D, Tensor};
 
 impl Tensor {
     /// Returns an iterator over the rows of the tensor.

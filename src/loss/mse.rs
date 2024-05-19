@@ -7,7 +7,7 @@ use crate::Tensor;
 /// # Examples
 ///
 /// ```
-/// # use engram::*;
+/// # use engram::{tensor, loss::mse};
 /// let predictions = tensor![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
 /// let targets = tensor![[1.2, 2.4, 3.1], [4.4, 4.7, 5.9]];
 /// let loss = mse(&predictions, &targets);

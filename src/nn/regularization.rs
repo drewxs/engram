@@ -5,7 +5,7 @@
 //! # Example
 //!
 //! ```
-//! use engram::{tensor, Regularization, L1, L2};
+//! use engram::{tensor, nn::{Regularization, L1, L2}};
 //!
 //! let tensor = tensor![[1.0, 2.0], [3.0, 4.0]];
 //! let l1_reg = L1(0.1);
