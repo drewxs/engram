@@ -2,9 +2,7 @@
 
 General purpose machine learning library for Rust.
 
-## Usage
-
-WIP; check back later for updates.
+[Documentation](https://engram-rs.vercel.app/engram/index.html)
 
 ## Installation
 
