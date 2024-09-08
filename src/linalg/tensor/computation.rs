@@ -28,47 +28,98 @@ impl Tensor {
         res
     }
 
-    /// Applies a function to each element in the tensor.
+    /// Applies a function to each element by reference in the tensor.
     ///
     /// # Examples
     ///
     /// ```
     /// # use engram::*;
     /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// let b = a.mapv(&|x| x * 2.0);
+    /// let b = a.map(|x| x * 2.0);
     /// # assert_eq!(b.data, vec![vec![2.0, 4.0], vec![6.0, 8.0]]);
     /// ```
-    pub fn mapv(&self, function: &dyn Fn(f64) -> f64) -> Tensor {
-        let data = (self.data)
-            .clone()
-            .into_iter()
-            .map(|row| row.into_iter().map(|x| function(x)).collect())
-            .collect::<Tensor2D>();
-
+    pub fn map<F>(&self, f: F) -> Tensor
+    where
+        F: Fn(&f64) -> f64,
+    {
         Tensor {
             rows: self.rows,
             cols: self.cols,
-            data,
+            data: self
+                .data
+                .iter()
+                .map(|row| row.iter().map(&f).collect())
+                .collect(),
             grad: self.grad.clone(),
         }
     }
 
-    /// Applies a function to each element in the tensor in-place.
+    /// Applies a function to each element by reference in the tensor in-place.
     ///
     /// # Examples
     ///
     /// ```
     /// # use engram::*;
     /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
-    /// a.mapv_mut(&|x| x * 2.0);
+    /// a.map_mut(|x| x * 2.0);
     /// # assert_eq!(a.data, vec![vec![2.0, 4.0], vec![6.0, 8.0]]);
     /// ```
-    pub fn mapv_mut(&mut self, function: &dyn Fn(f64) -> f64) {
-        self.data = (self.data)
-            .clone()
-            .into_iter()
-            .map(|row| row.into_iter().map(|x| function(x)).collect())
-            .collect::<Tensor2D>();
+    pub fn map_mut<F>(&mut self, f: F)
+    where
+        F: Fn(&f64) -> f64,
+    {
+        self.data.iter_mut().for_each(|row| {
+            row.iter_mut().for_each(|x| {
+                *x = f(x);
+            })
+        });
+    }
+
+    /// Applies a function to each element by value in the tensor.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::*;
+    /// let a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// let b = a.mapv(|x| x * 2.0);
+    /// # assert_eq!(b.data, vec![vec![2.0, 4.0], vec![6.0, 8.0]]);
+    /// ```
+    pub fn mapv<F>(&self, f: F) -> Tensor
+    where
+        F: Fn(f64) -> f64,
+    {
+        Tensor {
+            rows: self.rows,
+            cols: self.cols,
+            data: self
+                .data
+                .iter()
+                .map(|row| row.iter().map(|x| f(*x)).collect())
+                .collect::<Tensor2D>(),
+            grad: self.grad.clone(),
+        }
+    }
+
+    /// Applies a function to each element by value in the tensor in-place.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use engram::*;
+    /// let mut a = tensor![[1.0, 2.0], [3.0, 4.0]];
+    /// a.mapv_mut(|x| x * 2.0);
+    /// # assert_eq!(a.data, vec![vec![2.0, 4.0], vec![6.0, 8.0]]);
+    /// ```
+    pub fn mapv_mut<F>(&mut self, f: F)
+    where
+        F: Fn(f64) -> f64,
+    {
+        self.data.iter_mut().for_each(|row| {
+            row.iter_mut().for_each(|x| {
+                *x = f(*x);
+            })
+        });
     }
 
     /// Returns the square of each element in the tensor.
@@ -82,7 +133,7 @@ impl Tensor {
     /// # assert_eq!(b.data, vec![vec![1.0, 4.0], vec![9.0, 16.0]]);
     /// ```
     pub fn square(&self) -> Tensor {
-        self.mapv(&|x| x * x)
+        self.map(|x| x.powi(2))
     }
 
     /// Squares each element in the tensor in-place.
@@ -96,7 +147,7 @@ impl Tensor {
     /// # assert_eq!(a.data, vec![vec![1.0, 4.0], vec![9.0, 16.0]]);
     /// ```
     pub fn square_mut(&mut self) {
-        self.mapv_mut(&|x| x * x);
+        self.map_mut(|x| x.powi(2));
     }
 
     /// Returns the square root of each element in the tensor.
@@ -110,7 +161,7 @@ impl Tensor {
     /// # assert_eq!(b.data, vec![vec![1.0, 2.0], vec![3.0, 4.0]]);
     /// ```
     pub fn sqrt(&self) -> Tensor {
-        self.mapv(&|x| x.sqrt())
+        self.map(|x| x.sqrt())
     }
 
     /// Takes the square root of each element in the tensor in-place.
@@ -124,7 +175,7 @@ impl Tensor {
     /// # assert_eq!(a.data, vec![vec![1.0, 2.0], vec![3.0, 4.0]]);
     /// ```
     pub fn sqrt_mut(&mut self) {
-        self.mapv_mut(&|x| x.sqrt());
+        self.map_mut(|x| x.sqrt());
     }
 
     /// Returns each element in the tensor raised to the given exponent.
@@ -137,8 +188,8 @@ impl Tensor {
     /// let b = a.pow(2.0);
     /// # assert_eq!(b.data, vec![vec![1.0, 4.0], vec![9.0, 16.0]]);
     /// ```
-    pub fn pow(&self, exponent: f64) -> Tensor {
-        self.mapv(&|x| x.powf(exponent))
+    pub fn pow(&self, exp: f64) -> Tensor {
+        self.map(|x| x.powf(exp))
     }
 
     /// Raises each element in the tensor to the given exponent in-place.
@@ -152,7 +203,7 @@ impl Tensor {
     /// # assert_eq!(a.data, vec![vec![1.0, 4.0], vec![9.0, 16.0]]);
     /// ```
     pub fn pow_mut(&mut self, exponent: f64) {
-        self.mapv_mut(&|x| x.powf(exponent));
+        self.map_mut(|x| x.powf(exponent));
     }
 
     /// Returns each element in the tensor applied with the natural logarithm.
@@ -166,7 +217,7 @@ impl Tensor {
     /// # assert_eq!(b.data, vec![vec![0.0, 0.6931471805599453], vec![1.0986122886681098, 1.3862943611198906]]);
     /// ```
     pub fn ln(&self) -> Tensor {
-        self.mapv(&|x| x.ln())
+        self.map(|x| x.ln())
     }
 
     /// Applies the natural logarithm to each element in the tensor in-place.
@@ -180,7 +231,7 @@ impl Tensor {
     /// # assert_eq!(a.data, vec![vec![0.0, 0.6931471805599453], vec![1.0986122886681098, 1.3862943611198906]]);
     /// ```
     pub fn ln_mut(&mut self) {
-        self.mapv_mut(&|x| x.ln());
+        self.map_mut(|x| x.ln());
     }
 
     /// Returns each element in the tensor applied with the base 2 logarithm.
@@ -194,7 +245,7 @@ impl Tensor {
     /// # assert_eq!(b.data, vec![vec![0.0, 1.0], vec![2.0, 3.0]]);
     /// ```
     pub fn log2(&self) -> Tensor {
-        self.mapv(&|x| x.log2())
+        self.map(|x| x.log2())
     }
 
     /// Applies the base 2 logarithm to each element in the tensor in-place.
@@ -208,7 +259,7 @@ impl Tensor {
     /// # assert_eq!(a.data, vec![vec![0.0, 1.0], vec![2.0, 3.0]]);
     /// ```
     pub fn log2_mut(&mut self) {
-        self.mapv_mut(&|x| x.log2());
+        self.map_mut(|x| x.log2());
     }
 
     /// Returns a tensor with the absolute value of each element in the tensor.
@@ -222,7 +273,7 @@ impl Tensor {
     /// # assert_eq!(b.data, vec![vec![1.0, 2.0], vec![3.0, 4.0]]);
     /// ```
     pub fn abs(&self) -> Tensor {
-        self.mapv(&|x| x.abs())
+        self.map(|x| x.abs())
     }
 
     /// Computes the dot product between two tensors.
@@ -321,7 +372,7 @@ impl Tensor {
     /// # assert_eq!(b, 5.477225575051661);
     /// ```
     pub fn norm(&self, p: f64) -> f64 {
-        self.mapv(&|x| x.powf(p)).sum().sqrt()
+        self.map(|x| x.powf(p)).sum().sqrt()
     }
 
     /// Returns a new tensor with each element in the tensor activated by the given activation function.
@@ -335,7 +386,7 @@ impl Tensor {
     /// # assert_eq!(b.data, vec![vec![0.7310585786300049, 0.8807970779778823], vec![0.9525741268224334, 0.9820137900379085]]);
     /// ```
     pub fn activate(&self, activation: &Activation) -> Tensor {
-        self.mapv(&|x| activation.apply(x))
+        self.mapv(|x| activation.apply(x))
     }
 
     /// Mutates the tensor in-place with each element in the tensor activated by the given activation function.
@@ -349,7 +400,7 @@ impl Tensor {
     /// # assert_eq!(a.data, vec![vec![0.7310585786300049, 0.8807970779778823], vec![0.9525741268224334, 0.9820137900379085]]);
     /// ```
     pub fn activate_mut(&mut self, activation: &Activation) {
-        self.mapv_mut(&|x| activation.apply(x));
+        self.mapv_mut(|x| activation.apply(x));
     }
 
     /// Returns a new tensor with each element in the tensor activated by the derivative of the given activation function.
@@ -363,7 +414,7 @@ impl Tensor {
     /// # assert_eq!(b.data, vec![vec![0.19661193324148185, 0.10499358540350662], vec![0.045176659730912, 0.017662706213291107]]);
     /// ```
     pub fn grad(&mut self, activation: &Activation) -> Tensor {
-        let res = self.mapv(&|x| activation.grad(x));
+        let res = self.mapv(|x| activation.grad(x));
         self.set_grad(res.data.clone());
         res
     }

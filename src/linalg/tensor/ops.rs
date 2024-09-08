@@ -19,7 +19,7 @@ impl Tensor {
     /// let c = a + b;
     /// # assert_eq!(c.data, vec![vec![6.0, 8.0], vec![10.0, 12.0]]);
     /// ```
-    fn add_tensor(&self, other: &Tensor) -> Tensor {
+    fn add_t(&self, other: &Tensor) -> Tensor {
         self.broadcast_and_apply(other, |a, b| a + b)
     }
 
@@ -34,7 +34,7 @@ impl Tensor {
     /// a += b;
     /// # assert_eq!(a.data, vec![vec![6.0, 8.0], vec![10.0, 12.0]]);
     /// ```
-    fn add_mut(&mut self, other: &Tensor) {
+    fn add_t_mut(&mut self, other: &Tensor) {
         self.broadcast_and_apply_mut(other, |a, b| a + b);
     }
 
@@ -48,7 +48,7 @@ impl Tensor {
     /// let b = a + 5.0;
     /// # assert_eq!(b.data, vec![vec![6.0, 7.0], vec![8.0, 9.0]]);
     /// ```
-    fn add_scalar(&self, scalar: f64) -> Tensor {
+    fn add_s(&self, scalar: f64) -> Tensor {
         self.apply(|x| x + scalar)
     }
 
@@ -62,7 +62,7 @@ impl Tensor {
     /// a += 5.0;
     /// # assert_eq!(a.data, vec![vec![6.0, 7.0], vec![8.0, 9.0]]);
     /// ```
-    fn add_scalar_mut(&mut self, scalar: f64) {
+    fn add_s_mut(&mut self, scalar: f64) {
         self.apply_mut(|x| x + scalar);
     }
 
@@ -81,7 +81,7 @@ impl Tensor {
     /// let b = tensor![[5.0, 6.0], [7.0, 8.0]];
     /// let c = a - b;
     /// # assert_eq!(c.data, vec![vec![-4.0, -4.0], vec![-4.0, -4.0]]);
-    fn sub_tensor(&self, other: &Tensor) -> Tensor {
+    fn sub_t(&self, other: &Tensor) -> Tensor {
         self.broadcast_and_apply(other, |a, b| a - b)
     }
 
@@ -96,7 +96,7 @@ impl Tensor {
     /// a -= b;
     /// # assert_eq!(a.data, vec![vec![-4.0, -4.0], vec![-4.0, -4.0]]);
     /// ```
-    fn sub_mut(&mut self, other: &Tensor) {
+    fn sub_t_mut(&mut self, other: &Tensor) {
         self.broadcast_and_apply_mut(other, |a, b| a - b)
     }
 
@@ -110,7 +110,7 @@ impl Tensor {
     /// let b = a - 5.0;
     /// # assert_eq!(b.data, vec![vec![-4.0, -3.0], vec![-2.0, -1.0]]);
     /// ```
-    fn sub_scalar(&self, scalar: f64) -> Tensor {
+    fn sub_s(&self, scalar: f64) -> Tensor {
         self.apply(|x| x - scalar)
     }
 
@@ -124,7 +124,7 @@ impl Tensor {
     /// a -= 5.0;
     /// # assert_eq!(a.data, vec![vec![-4.0, -3.0], vec![-2.0, -1.0]]);
     /// ```
-    fn sub_scalar_mut(&mut self, scalar: f64) {
+    fn sub_s_mut(&mut self, scalar: f64) {
         self.apply_mut(|x| x - scalar);
     }
 
@@ -144,7 +144,7 @@ impl Tensor {
     /// let c = a * b;
     /// # assert_eq!(c.data, vec![vec![5.0, 12.0], vec![21.0, 32.0]]);
     /// ```
-    fn mul_tensor(&self, other: &Tensor) -> Tensor {
+    fn mul_t(&self, other: &Tensor) -> Tensor {
         self.broadcast_and_apply(other, |a, b| a * b)
     }
 
@@ -159,7 +159,7 @@ impl Tensor {
     /// a *= b;
     /// # assert_eq!(a.data, vec![vec![5.0, 12.0], vec![21.0, 32.0]]);
     /// ```
-    fn mul_mut(&mut self, other: &Tensor) {
+    fn mul_t_mut(&mut self, other: &Tensor) {
         self.broadcast_and_apply_mut(other, |a, b| a * b);
     }
 
@@ -173,7 +173,7 @@ impl Tensor {
     /// let b = a * 5.0;
     /// # assert_eq!(b.data, vec![vec![5.0, 10.0], vec![15.0, 20.0]]);
     /// ```
-    fn mul_scalar(&self, scalar: f64) -> Tensor {
+    fn mul_s(&self, scalar: f64) -> Tensor {
         self.apply(|x| x * scalar)
     }
 
@@ -187,7 +187,7 @@ impl Tensor {
     /// a *= 5.0;
     /// # assert_eq!(a.data, vec![vec![5.0, 10.0], vec![15.0, 20.0]]);
     /// ```
-    fn mul_scalar_mut(&mut self, scalar: f64) {
+    fn mul_s_mut(&mut self, scalar: f64) {
         self.apply_mut(|x| x * scalar);
     }
 
@@ -207,7 +207,7 @@ impl Tensor {
     /// let c = a / b;
     /// # assert_eq!(c.data, vec![vec![0.2, 0.25], vec![0.1, 0.5]]);
     /// ```
-    fn div_tensor(&self, other: &Tensor) -> Tensor {
+    fn div_t(&self, other: &Tensor) -> Tensor {
         self.broadcast_and_apply(other, |a, b| a / b)
     }
 
@@ -222,7 +222,7 @@ impl Tensor {
     /// a /= b;
     /// # assert_eq!(a.data, vec![vec![0.2, 0.25], vec![0.1, 0.5]]);
     /// ```
-    fn div_mut(&mut self, other: &Tensor) {
+    fn div_t_mut(&mut self, other: &Tensor) {
         self.broadcast_and_apply_mut(other, |a, b| a / b);
     }
 
@@ -236,7 +236,7 @@ impl Tensor {
     /// let b = a / 5.0;
     /// # assert_eq!(b.data, vec![vec![0.2, 0.4], vec![0.6, 0.8]]);
     /// ```
-    fn div_scalar(&self, scalar: f64) -> Tensor {
+    fn div_s(&self, scalar: f64) -> Tensor {
         self.apply(|x| x / scalar)
     }
 
@@ -250,7 +250,7 @@ impl Tensor {
     /// a /= 5.0;
     /// # assert_eq!(a.data, vec![vec![0.2, 0.4], vec![0.6, 0.8]]);
     /// ```
-    fn div_scalar_mut(&mut self, scalar: f64) {
+    fn div_s_mut(&mut self, scalar: f64) {
         self.apply_mut(|x| x / scalar);
     }
 
@@ -351,218 +351,218 @@ pub trait Rhs {
 
 impl Rhs for &Tensor {
     fn add(&self, lhs: &Tensor) -> Tensor {
-        lhs.add_tensor(self)
+        lhs.add_t(self)
     }
     fn sub(&self, lhs: &Tensor) -> Tensor {
-        lhs.sub_tensor(self)
+        lhs.sub_t(self)
     }
     fn mul(&self, lhs: &Tensor) -> Tensor {
-        lhs.mul_tensor(self)
+        lhs.mul_t(self)
     }
     fn div(&self, lhs: &Tensor) -> Tensor {
-        lhs.div_tensor(self)
+        lhs.div_t(self)
     }
 }
 
 impl Rhs for f64 {
     fn add(&self, lhs: &Tensor) -> Tensor {
-        lhs.add_scalar(*self)
+        lhs.add_s(*self)
     }
     fn sub(&self, lhs: &Tensor) -> Tensor {
-        lhs.sub_scalar(*self)
+        lhs.sub_s(*self)
     }
     fn mul(&self, lhs: &Tensor) -> Tensor {
-        lhs.mul_scalar(*self)
+        lhs.mul_s(*self)
     }
     fn div(&self, lhs: &Tensor) -> Tensor {
-        lhs.div_scalar(*self)
+        lhs.div_s(*self)
     }
 }
 
 impl Add<Tensor> for Tensor {
     type Output = Tensor;
     fn add(self, rhs: Tensor) -> Tensor {
-        self.add(&rhs)
+        self.add_t(&rhs)
     }
 }
 impl Add<&Tensor> for Tensor {
     type Output = Tensor;
     fn add(self, rhs: &Tensor) -> Tensor {
-        (&self).add(rhs)
+        self.add_t(rhs)
     }
 }
 impl Add<Tensor> for &Tensor {
     type Output = Tensor;
     fn add(self, rhs: Tensor) -> Tensor {
-        self.add(&rhs)
+        self.add_t(&rhs)
     }
 }
 impl Add<&Tensor> for &Tensor {
     type Output = Tensor;
     fn add(self, rhs: &Tensor) -> Tensor {
-        self.add(rhs)
+        self.add_t(rhs)
     }
 }
 impl Add<f64> for Tensor {
     type Output = Tensor;
     fn add(self, rhs: f64) -> Tensor {
-        self.add_scalar(rhs)
+        self.add_s(rhs)
     }
 }
 impl Add<f64> for &Tensor {
     type Output = Tensor;
     fn add(self, rhs: f64) -> Tensor {
-        self.add_scalar(rhs)
+        self.add_s(rhs)
     }
 }
 impl AddAssign<Tensor> for Tensor {
     fn add_assign(&mut self, rhs: Tensor) {
-        self.add_mut(&rhs);
+        self.add_t_mut(&rhs);
     }
 }
 impl AddAssign<f64> for Tensor {
     fn add_assign(&mut self, rhs: f64) {
-        self.add_scalar_mut(rhs);
+        self.add_s_mut(rhs);
     }
 }
 
 impl Sub<Tensor> for Tensor {
     type Output = Tensor;
     fn sub(self, rhs: Tensor) -> Tensor {
-        self.sub(&rhs)
+        self.sub_t(&rhs)
     }
 }
 impl Sub<&Tensor> for Tensor {
     type Output = Tensor;
     fn sub(self, rhs: &Tensor) -> Tensor {
-        (&self).sub(rhs)
+        self.sub_t(rhs)
     }
 }
 impl Sub<Tensor> for &Tensor {
     type Output = Tensor;
     fn sub(self, rhs: Tensor) -> Tensor {
-        self.sub(&rhs)
+        self.sub_t(&rhs)
     }
 }
 impl Sub<&Tensor> for &Tensor {
     type Output = Tensor;
     fn sub(self, rhs: &Tensor) -> Tensor {
-        self.sub(rhs)
+        self.sub_t(rhs)
     }
 }
 impl Sub<f64> for &Tensor {
     type Output = Tensor;
     fn sub(self, rhs: f64) -> Tensor {
-        self.sub_scalar(rhs)
+        self.sub_s(rhs)
     }
 }
 impl Sub<f64> for Tensor {
     type Output = Tensor;
     fn sub(self, rhs: f64) -> Tensor {
-        self.sub_scalar(rhs)
+        self.sub_s(rhs)
     }
 }
 impl SubAssign<Tensor> for Tensor {
     fn sub_assign(&mut self, rhs: Tensor) {
-        self.sub_mut(&rhs);
+        self.sub_t_mut(&rhs);
     }
 }
 impl SubAssign<f64> for Tensor {
     fn sub_assign(&mut self, rhs: f64) {
-        self.sub_scalar_mut(rhs);
+        self.sub_s_mut(rhs);
     }
 }
 
 impl Mul<Tensor> for Tensor {
     type Output = Tensor;
     fn mul(self, rhs: Tensor) -> Tensor {
-        self.mul(&rhs)
+        self.mul_t(&rhs)
     }
 }
 impl Mul<&Tensor> for Tensor {
     type Output = Tensor;
     fn mul(self, rhs: &Tensor) -> Tensor {
-        (&self).mul(rhs)
+        self.mul_t(rhs)
     }
 }
 impl Mul<Tensor> for &Tensor {
     type Output = Tensor;
     fn mul(self, rhs: Tensor) -> Tensor {
-        self.mul(&rhs)
+        self.mul_t(&rhs)
     }
 }
 impl Mul<&Tensor> for &Tensor {
     type Output = Tensor;
     fn mul(self, rhs: &Tensor) -> Tensor {
-        self.mul(rhs)
+        self.mul_t(rhs)
     }
 }
 impl Mul<f64> for &Tensor {
     type Output = Tensor;
     fn mul(self, rhs: f64) -> Tensor {
-        self.mul_scalar(rhs)
+        self.mul_s(rhs)
     }
 }
 impl Mul<f64> for Tensor {
     type Output = Tensor;
     fn mul(self, rhs: f64) -> Tensor {
-        self.mul_scalar(rhs)
+        self.mul_s(rhs)
     }
 }
 impl MulAssign<Tensor> for Tensor {
     fn mul_assign(&mut self, rhs: Tensor) {
-        self.mul_mut(&rhs);
+        self.mul_t_mut(&rhs);
     }
 }
 impl MulAssign<f64> for Tensor {
     fn mul_assign(&mut self, rhs: f64) {
-        self.mul_scalar_mut(rhs);
+        self.mul_s_mut(rhs);
     }
 }
 
 impl Div<Tensor> for Tensor {
     type Output = Tensor;
     fn div(self, rhs: Tensor) -> Tensor {
-        self.div(&rhs)
+        self.div_t(&rhs)
     }
 }
 impl Div<&Tensor> for Tensor {
     type Output = Tensor;
     fn div(self, rhs: &Tensor) -> Tensor {
-        (&self).div(rhs)
+        self.div_t(rhs)
     }
 }
 impl Div<Tensor> for &Tensor {
     type Output = Tensor;
     fn div(self, rhs: Tensor) -> Tensor {
-        self.div(&rhs)
+        self.div_t(&rhs)
     }
 }
 impl Div<&Tensor> for &Tensor {
     type Output = Tensor;
     fn div(self, rhs: &Tensor) -> Tensor {
-        self.div(rhs)
+        self.div_t(rhs)
     }
 }
 impl Div<f64> for &Tensor {
     type Output = Tensor;
     fn div(self, rhs: f64) -> Tensor {
-        self.div_scalar(rhs)
+        self.div_s(rhs)
     }
 }
 impl Div<f64> for Tensor {
     type Output = Tensor;
     fn div(self, rhs: f64) -> Tensor {
-        self.div_scalar(rhs)
+        self.div_s(rhs)
     }
 }
 impl DivAssign<Tensor> for Tensor {
     fn div_assign(&mut self, rhs: Tensor) {
-        self.div_mut(&rhs);
+        self.div_t_mut(&rhs);
     }
 }
 impl DivAssign<f64> for Tensor {
     fn div_assign(&mut self, rhs: f64) {
-        self.div_scalar_mut(rhs);
+        self.div_s_mut(rhs);
     }
 }

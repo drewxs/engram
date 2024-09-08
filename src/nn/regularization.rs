@@ -38,7 +38,7 @@ impl Regularization for L1 {
     }
 
     fn grad(&self, tensor: &Tensor) -> Tensor {
-        let mut grad = Tensor::zeros_like(&tensor);
+        let mut grad = Tensor::zeros_like(tensor);
         for (i, row) in tensor.iter_rows().enumerate() {
             for (j, val) in row.iter().enumerate() {
                 grad.data[i][j] = val.signum() * self.0;
@@ -59,10 +59,10 @@ impl Regularization for L2 {
     }
 
     fn grad(&self, tensor: &Tensor) -> Tensor {
-        let mut grad = Tensor::zeros_like(&tensor);
+        let mut grad = Tensor::zeros_like(tensor);
         for row in grad.data.iter_mut() {
             for val in row.iter_mut() {
-                *val = 2.0 * self.0 * *val;
+                *val *= 2.0 * self.0
             }
         }
         grad

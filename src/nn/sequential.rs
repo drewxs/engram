@@ -80,7 +80,7 @@ impl Sequential {
     pub fn backward(&mut self, target: &Tensor, loss_fn: &Loss) -> f64 {
         let mut loss = 0.0;
         for layer in self.layers.iter_mut().rev() {
-            loss += layer.backward(&target, &loss_fn);
+            loss += layer.backward(target, loss_fn);
         }
         loss
     }
@@ -126,7 +126,13 @@ impl Sequential {
 
     pub fn predict(&mut self, input: &Tensor) -> Tensor {
         self.eval();
-        self.forward(&input)
+        self.forward(input)
+    }
+}
+
+impl Default for Sequential {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

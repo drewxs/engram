@@ -52,7 +52,7 @@ impl Optimizer for Adagrad {
 
         self.accumulators += gradients.square() + self.epsilon.unwrap_or(1e-8);
 
-        *weights -= gradients.div(&(self.accumulators.mapv(&f64::sqrt))) * (self.learning_rate);
+        *weights -= gradients.div(&(self.accumulators.mapv(f64::sqrt))) * (self.learning_rate);
     }
 }
 

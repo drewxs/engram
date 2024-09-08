@@ -119,8 +119,8 @@ impl Layer for DenseLayer {
             .as_ref()
             .expect("Input not set before backward pass!");
 
-        let loss = loss_fn.loss(&predictions, &target);
-        let d_loss = loss_fn.grad(&predictions, &target);
+        let loss = loss_fn.loss(predictions, target);
+        let d_loss = loss_fn.grad(predictions, target);
 
         let d_activation = predictions.activate(&self.activation);
         let d_output = &d_activation * &d_loss;
@@ -138,10 +138,10 @@ impl Layer for DenseLayer {
 
     fn update_parameters(&mut self, optimizer: &mut dyn Optimizer) {
         if let Some(d_weights) = &self.d_weights {
-            optimizer.step(&mut self.weights, &d_weights);
+            optimizer.step(&mut self.weights, d_weights);
         }
         if let Some(d_biases) = &self.d_biases {
-            optimizer.step(&mut self.biases, &d_biases);
+            optimizer.step(&mut self.biases, d_biases);
         }
     }
 

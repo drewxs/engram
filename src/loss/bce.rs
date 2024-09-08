@@ -27,12 +27,10 @@ pub fn bce(predictions: &Tensor, targets: &Tensor) -> Tensor {
     let predictions_complement = ones.sub(&predictions);
     let targets_complement = ones.sub(targets);
 
-    let loss = targets
+    targets
         .mul(&predictions.ln())
         .add(&targets_complement.mul(&predictions_complement.ln()))
-        .mul(-1.0);
-
-    loss
+        .mul(-1.0)
 }
 
 pub fn d_bce(predictions: &Tensor, targets: &Tensor) -> Tensor {
@@ -48,9 +46,7 @@ pub fn d_bce(predictions: &Tensor, targets: &Tensor) -> Tensor {
     let predictions_complement = ones.sub(&predictions);
     let targets_complement = ones.sub(targets);
 
-    let gradient = targets
+    targets
         .div(&predictions)
-        .sub(&targets_complement.div(&predictions_complement));
-
-    gradient
+        .sub(&targets_complement.div(&predictions_complement))
 }

@@ -126,7 +126,7 @@ impl Tensor {
     /// # assert_eq!(b.data, vec![vec![0.0, 2.0], vec![3.0, 4.0], vec![4.0, 4.0]]);
     /// ```
     pub fn clip(&self, min: f64, max: f64) -> Tensor {
-        self.mapv(&|x| x.max(min).min(max))
+        self.map(|x| x.max(min).min(max))
     }
 
     /// Returns a slice of the tensor.

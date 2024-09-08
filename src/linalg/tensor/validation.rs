@@ -66,7 +66,7 @@ impl Tensor {
         let n = self.rows;
 
         // Try to compute Cholesky decomposition
-        if let Some(chol) = linalg::cholesky(&self) {
+        if let Some(chol) = linalg::cholesky(self) {
             // Check if the diagonal elements of Cholesky matrix are positive
             for i in 0..n {
                 if chol.data[i][i] <= 0.0 {

@@ -1,8 +1,7 @@
 use crate::Tensor;
 
 /// Cholesky decomposition of a symmetric, positive-definite matrix.
-/// Returns the product of the lower triangular matrix and its conjugate transpose.
-/// Returns None if the input matrix is not not square or positive-definite.
+/// Returns the product of the lower triangular matrix and its conjugate transpose if the input matrix is positive-definite.
 ///
 /// # Examples
 /// ```

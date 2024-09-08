@@ -24,7 +24,7 @@ impl LogisticRegression {
         }
     }
 
-    pub fn train(&mut self, x: &Vec<Vec<f64>>, y: &Vec<f64>) {
+    pub fn train(&mut self, x: &[Vec<f64>], y: &[f64]) {
         assert_eq!(x.len(), y.len(), "x and y must have the same length");
 
         let m = x.len();
@@ -33,11 +33,11 @@ impl LogisticRegression {
         for i in 0..self.num_iterations {
             let (grad_sum, error_sum) = self.gradient_descent(x, y, m, n);
             let error_avg = error_sum / (m as f64);
-            for j in 0..n {
+            (0..n).for_each(|j| {
                 let grad = (grad_sum[j] / (m as f64))
                     + ((self.regularization_param * self.weights[j]) / (m as f64));
                 self.weights[j] -= self.learning_rate * grad;
-            }
+            });
 
             // Early stopping based on the average error
             if i > 0 && error_avg > 0.0 && error_avg > self.error_avg_last_iteration(x, y) {
@@ -48,8 +48,8 @@ impl LogisticRegression {
 
     pub fn gradient_descent(
         &self,
-        x: &Vec<Vec<f64>>,
-        y: &Vec<f64>,
+        x: &[Vec<f64>],
+        y: &[f64],
         m: usize,
         n: usize,
     ) -> (Vec<f64>, f64) {
@@ -61,20 +61,20 @@ impl LogisticRegression {
             let error = h - y[i];
             error_sum += error;
 
-            for j in 0..n {
+            (0..n).for_each(|j| {
                 grad_sum[j] += error * x[i][j];
-            }
+            });
         }
 
         (grad_sum, error_sum)
     }
 
-    pub fn predict(&self, x: &Vec<f64>) -> f64 {
+    pub fn predict(&self, x: &[f64]) -> f64 {
         let z: f64 = self.weights.iter().zip(x.iter()).map(|(w, x)| w * x).sum();
         1.0 / (1.0 + (-z).exp())
     }
 
-    fn error_avg_last_iteration(&self, x: &Vec<Vec<f64>>, y: &Vec<f64>) -> f64 {
+    fn error_avg_last_iteration(&self, x: &[Vec<f64>], y: &[f64]) -> f64 {
         let m = x.len();
         let mut error_sum = 0.0;
         for i in 0..m {
