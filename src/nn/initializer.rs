@@ -1,7 +1,5 @@
 //! Initializations for weight matrices.
 
-use rand::Rng;
-
 use crate::linalg::Tensor2D;
 
 /// Initialization methods for weight matrices.
@@ -56,8 +54,7 @@ impl Initializer {
 
     /// Initializes a 2D tensor with random values based on the specified standard deviation.
     fn initialize_data(f_in: usize, f_out: usize, std_dev: f64) -> Tensor2D {
-        let mut rng = rand::thread_rng();
-        Self::initialize_with_closure(f_in, f_out, &mut || rng.gen::<f64>() * std_dev)
+        Self::initialize_with_closure(f_in, f_out, &mut || rand::random::<f64>() * std_dev)
     }
 
     fn initialize_with_closure(

@@ -1,6 +1,6 @@
 //! Logistic regression model.
 
-use rand::Rng;
+use rand::RngExt;
 
 pub struct LogisticRegression {
     pub weights: Vec<f64>,
@@ -11,10 +11,10 @@ pub struct LogisticRegression {
 
 impl LogisticRegression {
     pub fn new(num_features: usize) -> LogisticRegression {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
         let mut weights = vec![0.0; num_features];
         for w in weights.iter_mut() {
-            *w = rng.gen_range(-0.1..0.1);
+            *w = rng.random_range(-0.1..0.1);
         }
         LogisticRegression {
             weights,
