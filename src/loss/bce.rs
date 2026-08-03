@@ -46,7 +46,5 @@ pub fn d_bce(predictions: &Tensor, targets: &Tensor) -> Tensor {
     let predictions_complement = ones.sub(&predictions);
     let targets_complement = ones.sub(targets);
 
-    targets
-        .div(&predictions)
-        .sub(&targets_complement.div(&predictions_complement))
+    (targets / predictions) - (targets_complement / predictions_complement)
 }
