@@ -8,6 +8,7 @@ General purpose machine learning library for Rust, with an API modeled on PyTorc
 - Layers, activations, losses and weight initialization in `nn`, with a functional API in `nn::functional`
 - `Sgd` and `Adam` optimizers with momentum, weight decay and gradient clipping
 - `Dataset` and `DataLoader` for batching and shuffling
+- Saving and loading weights in the safetensors format
 - Seedable random number generation for reproducible runs
 
 ## Installation

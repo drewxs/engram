@@ -1,4 +1,7 @@
-use crate::{nn::Module, Tensor};
+use crate::{
+    nn::{prefixed, Module},
+    Tensor,
+};
 
 /// Chains modules so that each one's output feeds the next.
 ///
@@ -49,8 +52,20 @@ impl Module for Sequential {
             .fold(input.clone(), |x, layer| layer.forward(&x))
     }
 
-    fn parameters(&self) -> Vec<Tensor> {
-        self.layers.iter().flat_map(|l| l.parameters()).collect()
+    fn named_parameters(&self) -> Vec<(String, Tensor)> {
+        self.layers
+            .iter()
+            .enumerate()
+            .flat_map(|(i, layer)| prefixed(&i.to_string(), layer.named_parameters()))
+            .collect()
+    }
+
+    fn named_buffers(&self) -> Vec<(String, Tensor)> {
+        self.layers
+            .iter()
+            .enumerate()
+            .flat_map(|(i, layer)| prefixed(&i.to_string(), layer.named_buffers()))
+            .collect()
     }
 
     fn set_training(&mut self, training: bool) {

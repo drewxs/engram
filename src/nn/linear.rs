@@ -45,10 +45,10 @@ impl Module for Linear {
         functional::linear(input, &self.weight, self.bias.as_ref())
     }
 
-    fn parameters(&self) -> Vec<Tensor> {
-        std::iter::once(self.weight.clone())
-            .chain(self.bias.clone())
-            .collect()
+    fn named_parameters(&self) -> Vec<(String, Tensor)> {
+        let mut parameters = vec![("weight".to_string(), self.weight.clone())];
+        parameters.extend(self.bias.clone().map(|bias| ("bias".to_string(), bias)));
+        parameters
     }
 }
 
