@@ -3,6 +3,7 @@
 //! A training step follows the PyTorch pattern: clear gradients, run the forward pass, call `backward` on the loss and then [`Optimizer::step`].
 
 mod adam;
+pub mod lr_scheduler;
 mod sgd;
 
 pub use adam::Adam;
