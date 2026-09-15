@@ -97,4 +97,26 @@ fn main() {
         loss.backward();
         optimizer.step();
     });
+
+    let cnn = nn::Sequential::new()
+        .add(nn::Conv2d::new(3, 32, 3).padding(1))
+        .add(nn::Relu)
+        .add(nn::MaxPool2d::new(2))
+        .add(nn::Conv2d::new(32, 64, 3).padding(1))
+        .add(nn::Relu)
+        .add(nn::MaxPool2d::new(2))
+        .add(nn::Flatten::default())
+        .add(nn::Linear::new(64 * 8 * 8, 10));
+    let mut cnn_optimizer = Adam::new(cnn.parameters(), 1e-3);
+    let images = Tensor::randn([32, 3, 32, 32]);
+    let labels = Tensor::from_vec((0..32).map(|i| (i % 10) as f32).collect(), [32]);
+    bench.run("cnn forward, batch 32 of 3x32x32", || {
+        drop(black_box(no_grad(|| cnn.forward(&images))))
+    });
+    bench.run("cnn train step, batch 32 of 3x32x32", || {
+        let loss = F::cross_entropy(&cnn.forward(&images), &labels);
+        cnn_optimizer.zero_grad();
+        loss.backward();
+        cnn_optimizer.step();
+    });
 }
