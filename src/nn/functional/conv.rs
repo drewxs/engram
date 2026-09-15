@@ -1,5 +1,7 @@
 //! Convolution over images.
 
+use std::ops::Range;
+
 use crate::{
     tensor::{gemm, storage},
     Tensor,
@@ -35,9 +37,9 @@ pub(crate) struct Window {
     pub(crate) input: Size2,
     pub(crate) kernel: Size2,
     pub(crate) output: Size2,
-    stride: Size2,
-    padding: Size2,
-    dilation: Size2,
+    pub(crate) stride: Size2,
+    pub(crate) padding: Size2,
+    pub(crate) dilation: Size2,
 }
 
 impl Window {
@@ -75,18 +77,26 @@ impl Window {
         }
     }
 
-    /// Returns the input row read at output row `y` and kernel row `ky`, or `None` inside the padding.
-    pub(crate) fn row(&self, y: usize, ky: usize) -> Option<usize> {
-        (y * self.stride.height + ky * self.dilation.height)
-            .checked_sub(self.padding.height)
-            .filter(|&row| row < self.input.height)
+    /// Returns the output rows whose window reads a real input row, rather than padding, at kernel row `ky`.
+    pub(crate) fn valid_rows(&self, ky: usize) -> Range<usize> {
+        valid_range(
+            self.input.height,
+            self.output.height,
+            self.stride.height,
+            ky * self.dilation.height,
+            self.padding.height,
+        )
     }
 
-    /// Returns the input column read at output column `x` and kernel column `kx`, or `None` inside the padding.
-    pub(crate) fn col(&self, x: usize, kx: usize) -> Option<usize> {
-        (x * self.stride.width + kx * self.dilation.width)
-            .checked_sub(self.padding.width)
-            .filter(|&col| col < self.input.width)
+    /// Returns the output columns whose window reads a real input column, rather than padding, at kernel column `kx`.
+    pub(crate) fn valid_cols(&self, kx: usize) -> Range<usize> {
+        valid_range(
+            self.input.width,
+            self.output.width,
+            self.stride.width,
+            kx * self.dilation.width,
+            self.padding.width,
+        )
     }
 
     pub(crate) fn input_area(&self) -> usize {
@@ -98,6 +108,20 @@ impl Window {
     }
 }
 
+/// Returns the output positions `o` whose input coordinate `o * stride + offset - padding` lies inside `0..input`.
+fn valid_range(
+    input: usize,
+    output: usize,
+    stride: usize,
+    offset: usize,
+    padding: usize,
+) -> Range<usize> {
+    let start = padding.saturating_sub(offset).div_ceil(stride);
+    let end = (input + padding)
+        .checked_sub(offset + 1)
+        .map_or(0, |last| (last / stride + 1).min(output));
+    start.min(end)..end
+}
 /// 2-d convolution over a batch of images, like `torch.nn.functional.conv2d`.
 ///
 /// `input` has shape `[N, C, H, W]`, `weight` has shape `[out_channels, C, kh, kw]` and `bias` has shape `[out_channels]`. Each image is unfolded into columns and multiplied with all kernels in a single matrix product.
@@ -244,20 +268,42 @@ pub fn conv2d(
 
 /// Unfolds an image of shape `[channels, H, W]` into `cols` of shape `[channels * kh * kw, out_h * out_w]`, where each column holds one window.
 fn im2col(image: &[f32], channels: usize, window: &Window, cols: &mut [f32]) {
-    let (plane, width) = (window.input_area(), window.input.width);
+    let Window {
+        input,
+        kernel,
+        output,
+        stride,
+        padding,
+        dilation,
+    } = *window;
     let mut rows = cols.chunks_exact_mut(window.output_area().max(1));
-    for channel in image.chunks_exact(plane.max(1)).take(channels) {
-        for ky in 0..window.kernel.height {
-            for kx in 0..window.kernel.width {
+    for channel in image
+        .chunks_exact(window.input_area().max(1))
+        .take(channels)
+    {
+        for ky in 0..kernel.height {
+            let valid_rows = window.valid_rows(ky);
+            for kx in 0..kernel.width {
+                let valid_cols = window.valid_cols(kx);
+                let first_col = (valid_cols.start * stride.width + kx * dilation.width)
+                    .saturating_sub(padding.width);
                 let row = rows.next().unwrap();
-                for (y, out) in row.chunks_exact_mut(window.output.width).enumerate() {
-                    match window.row(y, ky) {
-                        Some(iy) => {
-                            for (x, out) in out.iter_mut().enumerate() {
-                                *out = window.col(x, kx).map_or(0.0, |ix| channel[iy * width + ix]);
-                            }
+                for (y, out) in row.chunks_exact_mut(output.width).enumerate() {
+                    if !valid_rows.contains(&y) || valid_cols.is_empty() {
+                        out.fill(0.0);
+                        continue;
+                    }
+                    let iy = y * stride.height + ky * dilation.height - padding.height;
+                    let source = &channel[iy * input.width + first_col..(iy + 1) * input.width];
+                    out[..valid_cols.start].fill(0.0);
+                    out[valid_cols.end..].fill(0.0);
+                    let dest = &mut out[valid_cols.clone()];
+                    if stride.width == 1 {
+                        dest.copy_from_slice(&source[..dest.len()]);
+                    } else {
+                        for (d, &s) in dest.iter_mut().zip(source.iter().step_by(stride.width)) {
+                            *d = s;
                         }
-                        None => out.fill(0.0),
                     }
                 }
             }
@@ -267,19 +313,41 @@ fn im2col(image: &[f32], channels: usize, window: &Window, cols: &mut [f32]) {
 
 /// Folds columns laid out like [`im2col`] back onto an image, adding the contributions of overlapping windows.
 fn col2im(cols: &[f32], channels: usize, window: &Window, image: &mut [f32]) {
-    let (plane, width) = (window.input_area(), window.input.width);
+    let Window {
+        input,
+        kernel,
+        output,
+        stride,
+        padding,
+        dilation,
+    } = *window;
     let mut rows = cols.chunks_exact(window.output_area().max(1));
-    for channel in image.chunks_exact_mut(plane.max(1)).take(channels) {
-        for ky in 0..window.kernel.height {
-            for kx in 0..window.kernel.width {
+    for channel in image
+        .chunks_exact_mut(window.input_area().max(1))
+        .take(channels)
+    {
+        for ky in 0..kernel.height {
+            let valid_rows = window.valid_rows(ky);
+            for kx in 0..kernel.width {
+                let valid_cols = window.valid_cols(kx);
+                let first_col = (valid_cols.start * stride.width + kx * dilation.width)
+                    .saturating_sub(padding.width);
                 let row = rows.next().unwrap();
-                for (y, values) in row.chunks_exact(window.output.width).enumerate() {
-                    let Some(iy) = window.row(y, ky) else {
-                        continue;
-                    };
-                    for (x, &value) in values.iter().enumerate() {
-                        if let Some(ix) = window.col(x, kx) {
-                            channel[iy * width + ix] += value;
+                if valid_cols.is_empty() {
+                    continue;
+                }
+                let lines = row.chunks_exact(output.width).enumerate();
+                for (y, values) in lines.take(valid_rows.end).skip(valid_rows.start) {
+                    let iy = y * stride.height + ky * dilation.height - padding.height;
+                    let target = &mut channel[iy * input.width + first_col..(iy + 1) * input.width];
+                    let values = &values[valid_cols.clone()];
+                    if stride.width == 1 {
+                        for (t, &v) in target.iter_mut().zip(values) {
+                            *t += v;
+                        }
+                    } else {
+                        for (t, &v) in target.iter_mut().step_by(stride.width).zip(values) {
+                            *t += v;
                         }
                     }
                 }

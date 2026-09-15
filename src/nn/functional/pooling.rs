@@ -1,5 +1,7 @@
 //! Pooling over images.
 
+use std::ops::Range;
+
 use crate::{
     nn::functional::conv::{Size2, Window},
     tensor::storage,
@@ -30,19 +32,25 @@ pub fn max_pool2d(
         stride.into(),
         padding.into(),
     );
-    let plane = window.input_area();
+    let (plane, width) = (window.input_area(), window.input.width);
     let len = output_len(input, &window);
     let mut out = storage::with_capacity(len);
     let mut argmax = Vec::with_capacity(len);
     for (p, channel) in input.data().chunks_exact(plane.max(1)).enumerate() {
-        for (oy, ox) in output_positions(&window) {
-            let (index, value) = covered(&window, oy, ox)
-                .map(|i| (i, channel[i]))
-                .reduce(|best, next| if next.1 > best.1 { next } else { best })
-                .unwrap();
-            out.push(value);
-            argmax.push(p * plane + index);
-        }
+        for_each_window(&window, |rows, cols| {
+            let first = rows.start * width + cols.start;
+            let mut best = (first, channel[first]);
+            for iy in rows {
+                let start = iy * width + cols.start;
+                for (offset, &value) in channel[start..iy * width + cols.end].iter().enumerate() {
+                    if value > best.1 {
+                        best = (start + offset, value);
+                    }
+                }
+            }
+            out.push(best.1);
+            argmax.push(p * plane + best.0);
+        });
     }
 
     let shape = input.shape().to_vec();
@@ -81,13 +89,24 @@ pub fn avg_pool2d(
         stride.into(),
         padding.into(),
     );
-    let (plane, area) = (window.input_area(), window.output_area());
+    let (plane, area, width) = (
+        window.input_area(),
+        window.output_area(),
+        window.input.width,
+    );
     let scale = 1.0 / (window.kernel.height * window.kernel.width) as f32;
     let mut out = storage::with_capacity(output_len(input, &window));
     for channel in input.data().chunks_exact(plane.max(1)) {
-        for (oy, ox) in output_positions(&window) {
-            out.push(covered(&window, oy, ox).map(|i| channel[i]).sum::<f32>() * scale);
-        }
+        for_each_window(&window, |rows, cols| {
+            let sum: f32 = rows
+                .map(|iy| {
+                    channel[iy * width + cols.start..iy * width + cols.end]
+                        .iter()
+                        .sum::<f32>()
+                })
+                .sum();
+            out.push(sum * scale);
+        });
     }
 
     let shape = input.shape().to_vec();
@@ -98,11 +117,15 @@ pub fn avg_pool2d(
             .chunks_exact_mut(plane.max(1))
             .zip(g.chunks_exact(area.max(1)))
         {
-            for ((oy, ox), &g) in output_positions(&window).zip(g) {
-                for i in covered(&window, oy, ox) {
-                    dx[i] += g * scale;
+            let mut grads = g.iter();
+            for_each_window(&window, |rows, cols| {
+                let g = grads.next().unwrap() * scale;
+                for iy in rows {
+                    for d in &mut dx[iy * width + cols.start..iy * width + cols.end] {
+                        *d += g;
+                    }
                 }
-            }
+            });
         }
         vec![Some(Tensor::from_vec(dx, shape.clone()))]
     })
@@ -132,20 +155,34 @@ fn pooling_window(
     )
 }
 
-fn output_positions(window: &Window) -> impl Iterator<Item = (usize, usize)> {
-    let Size2 { height, width } = window.output;
-    (0..height).flat_map(move |oy| (0..width).map(move |ox| (oy, ox)))
-}
-
-/// Returns the flat indices within one input plane that the window at `(oy, ox)` covers, skipping padding.
-fn covered(window: &Window, oy: usize, ox: usize) -> impl Iterator<Item = usize> + '_ {
-    (0..window.kernel.height)
-        .filter_map(move |ky| window.row(oy, ky))
-        .flat_map(move |iy| {
-            (0..window.kernel.width)
-                .filter_map(move |kx| window.col(ox, kx))
-                .map(move |ix| iy * window.input.width + ix)
-        })
+/// Calls `f` with the input rows and columns under each window in row-major output order, leaving out padding.
+fn for_each_window(window: &Window, mut f: impl FnMut(Range<usize>, Range<usize>)) {
+    // Padding is at most half the kernel, so `start + kernel - padding` never underflows.
+    let span = |position: usize, stride: usize, padding: usize, kernel: usize, input: usize| {
+        let start = position * stride;
+        start.saturating_sub(padding)..(start + kernel - padding).min(input)
+    };
+    let Window {
+        input,
+        kernel,
+        output,
+        stride,
+        padding,
+        ..
+    } = *window;
+    for oy in 0..output.height {
+        let rows = span(
+            oy,
+            stride.height,
+            padding.height,
+            kernel.height,
+            input.height,
+        );
+        for ox in 0..output.width {
+            let cols = span(ox, stride.width, padding.width, kernel.width, input.width);
+            f(rows.clone(), cols);
+        }
+    }
 }
 
 fn output_len(input: &Tensor, window: &Window) -> usize {
