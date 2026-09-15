@@ -4,6 +4,8 @@ mod activation;
 mod binary;
 mod create;
 mod display;
+mod manip;
+mod reduce;
 pub(crate) mod shape;
 mod unary;
 
