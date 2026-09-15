@@ -1,6 +1,6 @@
 //! Reverse-mode automatic differentiation.
 //!
-//! Tensor operations record a [`Node`] on their output whenever an input requires a gradient. [`Tensor::backward`] walks those nodes from the output back to the leaves and accumulates gradients on every leaf that requires one.
+//! Tensor operations record a graph node on their output whenever an input requires a gradient. [`Tensor::backward`] walks those nodes from the output back to the leaves and accumulates gradients on every leaf that requires one.
 
 use std::{
     cell::Cell,

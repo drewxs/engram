@@ -1,4 +1,4 @@
-//! General purpose machine learning library.
+#![doc = include_str!("../README.md")]
 
 pub mod autograd;
 pub mod data;
