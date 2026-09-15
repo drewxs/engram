@@ -13,6 +13,9 @@ pub mod utils;
 
 pub mod prelude;
 
+#[cfg(test)]
+mod tests;
+
 pub use autograd::no_grad;
 pub use random::manual_seed;
 pub use tensor::Tensor;
