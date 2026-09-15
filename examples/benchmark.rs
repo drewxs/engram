@@ -98,6 +98,28 @@ fn main() {
         optimizer.step();
     });
 
+    let rgb = Tensor::randn([32, 3, 32, 32]);
+    let hidden = Tensor::randn([32, 32, 16, 16]);
+    let feature_maps = Tensor::randn([32, 32, 32, 32]);
+    let conv_in = nn::Conv2d::new(3, 32, 3).padding(1);
+    let conv_hidden = nn::Conv2d::new(32, 64, 3).padding(1);
+    bench.run("conv2d 3 to 32, batch 32 of 32x32", || {
+        drop(black_box(no_grad(|| conv_in.forward(&rgb))))
+    });
+    bench.run("conv2d 32 to 64, batch 32 of 16x16", || {
+        drop(black_box(no_grad(|| conv_hidden.forward(&hidden))))
+    });
+    bench.run("conv2d 32 to 64 forward and backward", || {
+        conv_hidden.zero_grad();
+        conv_hidden.forward(&hidden).sum().backward();
+    });
+    bench.run("max_pool2d 2x2, batch 32 of 32x32x32", || {
+        drop(black_box(F::max_pool2d(&feature_maps, 2, 2, 0)))
+    });
+    bench.run("relu, batch 32 of 32x32x32", || {
+        drop(black_box(feature_maps.relu()))
+    });
+
     let cnn = nn::Sequential::new()
         .add(nn::Conv2d::new(3, 32, 3).padding(1))
         .add(nn::Relu)
