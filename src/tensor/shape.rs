@@ -160,6 +160,7 @@ pub(crate) fn for_each_offset<const N: usize>(
         }
     });
 }
+
 /// Calls `f(start, stride)` for every lane along `dim`. A lane holds the elements whose indices differ only in `dim`, found at `start + k * stride` for `k` in `0..shape[dim]`.
 pub(crate) fn for_each_lane(shape: &[usize], dim: usize, mut f: impl FnMut(usize, usize)) {
     let (outer, size, inner) = split_at_dim(shape, dim);

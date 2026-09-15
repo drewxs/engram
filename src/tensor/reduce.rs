@@ -182,6 +182,7 @@ mod tests {
         let mut values: Vec<f32> = (0..24).map(|i| i as f32).collect();
         crate::random::shuffle(&mut values);
         let separated = Tensor::from_vec(values, [2, 3, 4]);
+
         assert_gradients([&x], |t| t[0].sum());
         assert_gradients([&x], |t| t[0].mean());
         for dim in [0, 1, 2] {
