@@ -11,5 +11,9 @@ license = "MIT"
 [dependencies]
 matrixmultiply = "0.3.11"
 
+[features]
+# Multithreaded matrix multiplication. It speeds up large matrices but adds overhead for typical layer sizes, so it is opt-in.
+threads = ["matrixmultiply/threading"]
+
 [dev-dependencies]
 rusty-hook = "0.11.2"
