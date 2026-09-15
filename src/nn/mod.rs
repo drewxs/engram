@@ -19,7 +19,7 @@ pub use dropout::Dropout;
 pub use embedding::Embedding;
 pub use flatten::Flatten;
 pub use linear::Linear;
-pub use normalization::LayerNorm;
+pub use normalization::{BatchNorm, BatchNorm1d, BatchNorm2d, LayerNorm};
 pub use pooling::{AvgPool2d, MaxPool2d};
 pub use sequential::Sequential;
 
