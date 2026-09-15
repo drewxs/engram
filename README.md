@@ -5,8 +5,8 @@ General purpose machine learning library for Rust, with an API modeled on PyTorc
 [Documentation](https://engram-rs.vercel.app/engram/index.html)
 
 - N-dimensional tensors with broadcasting and reverse-mode automatic differentiation
-- Layers, activations, losses and weight initialization in `nn`, with a functional API in `nn::functional`
-- `Sgd` and `Adam` optimizers with momentum, weight decay and gradient clipping
+- Linear, convolution, pooling, normalization and embedding layers, activations, losses and weight initialization in `nn`, with a functional API in `nn::functional`
+- `Sgd` and `Adam` optimizers with momentum, weight decay, gradient clipping and learning rate schedules
 - `Dataset` and `DataLoader` for batching and shuffling
 - Saving and loading weights in the safetensors format
 - Seedable random number generation for reproducible runs

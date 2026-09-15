@@ -1,12 +1,16 @@
 //! Stateless functions behind the layers, like `torch.nn.functional`.
 
+mod conv;
 mod embedding;
 mod loss;
 mod normalization;
+mod pooling;
 
+pub use conv::*;
 pub use embedding::*;
 pub use loss::*;
 pub use normalization::*;
+pub use pooling::*;
 
 use crate::{
     random,

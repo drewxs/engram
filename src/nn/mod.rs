@@ -1,20 +1,26 @@
 //! Neural network layers, losses and initialization.
 
 mod activation;
+mod conv;
 mod dropout;
 mod embedding;
+mod flatten;
 pub mod functional;
 pub mod init;
 mod linear;
 mod normalization;
+mod pooling;
 mod sequential;
 pub mod utils;
 
 pub use activation::{Gelu, LeakyRelu, LogSoftmax, Relu, Sigmoid, Softmax, Tanh};
+pub use conv::Conv2d;
 pub use dropout::Dropout;
 pub use embedding::Embedding;
+pub use flatten::Flatten;
 pub use linear::Linear;
 pub use normalization::LayerNorm;
+pub use pooling::{AvgPool2d, MaxPool2d};
 pub use sequential::Sequential;
 
 use std::collections::BTreeMap;

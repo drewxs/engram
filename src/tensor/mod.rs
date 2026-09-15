@@ -12,7 +12,7 @@ pub(crate) mod storage;
 mod unary;
 
 pub(crate) use activation::sigmoid;
-pub(crate) use matmul::batched_gemm;
+pub(crate) use matmul::{batched_gemm, gemm};
 pub use shape::{Dim, IntoShape};
 pub use storage::empty_cache;
 

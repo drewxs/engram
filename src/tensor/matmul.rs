@@ -108,6 +108,7 @@ pub(crate) fn batched_gemm(a: &Tensor, transpose_a: bool, b: &Tensor, transpose_
                 a_strides,
                 b,
                 b_strides,
+                0.0,
                 chunks.next().unwrap(),
             );
         },
@@ -120,17 +121,22 @@ fn split_matrix(shape: &[usize]) -> (&[usize], [usize; 2]) {
     (batch, [matrix[0], matrix[1]])
 }
 
-/// Writes the `n` by `p` product of an `n` by `m` matrix and an `m` by `p` matrix into `c`. Each input is read with its `(row, column)` strides.
-fn gemm(
+/// Computes `c = a b + beta c` for an `n` by `m` matrix `a` and an `m` by `p` matrix `b`, reading each input with its `(row, column)` strides. A `beta` of zero ignores the previous contents of `c`.
+pub(crate) fn gemm(
     [n, m, p]: [usize; 3],
     a: &[f32],
     (rsa, csa): (usize, usize),
     b: &[f32],
     (rsb, csb): (usize, usize),
+    beta: f32,
     c: &mut [f32],
 ) {
-    if m == 0 {
-        c.fill(0.0);
+    if n == 0 || m == 0 || p == 0 {
+        if beta == 0.0 {
+            c.fill(0.0);
+        } else {
+            c.iter_mut().for_each(|v| *v *= beta);
+        }
         return;
     }
     assert!(
@@ -152,7 +158,7 @@ fn gemm(
             b.as_ptr(),
             rsb as isize,
             csb as isize,
-            0.0,
+            beta,
             c.as_mut_ptr(),
             p as isize,
             1,
