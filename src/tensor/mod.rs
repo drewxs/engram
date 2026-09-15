@@ -310,4 +310,36 @@ mod tests {
     fn rejects_mismatched_data() {
         Tensor::from_vec(vec![1.0, 2.0, 3.0], [2, 2]);
     }
+
+    #[test]
+    fn tensors_are_send_and_sync() {
+        fn assert_send_sync<T: Send + Sync>() {}
+        assert_send_sync::<Tensor>();
+    }
+
+    #[test]
+    fn releases_the_graph_once_outputs_drop() {
+        let w = Tensor::randn([3, 3]).set_requires_grad(true);
+        let loss = (w.matmul(&w).relu() * 2.0).sum();
+        assert!(Arc::strong_count(&w.0) > 1);
+        loss.backward();
+        drop(loss);
+        assert_eq!(Arc::strong_count(&w.0), 1);
+        assert_eq!(Arc::strong_count(&w.data()), 2);
+    }
+
+    #[test]
+    fn handles_empty_tensors() {
+        let empty = Tensor::zeros([0, 3]);
+        assert_eq!((&empty + &Tensor::ones([3])).shape(), &[0, 3]);
+        assert_eq!(empty.sum().item(), 0.0);
+        assert_eq!(empty.sum_dim(0, false), Tensor::zeros([3]));
+        assert_eq!(empty.matmul(&Tensor::ones([3, 2])).shape(), &[0, 2]);
+        assert_eq!(empty.softmax(-1).shape(), &[0, 3]);
+        assert_eq!(
+            Tensor::cat(&[empty.clone(), Tensor::ones([2, 3])], 0),
+            Tensor::ones([2, 3])
+        );
+        assert_eq!(empty.to_string(), "tensor([])");
+    }
 }
