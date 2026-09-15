@@ -10,6 +10,8 @@ mod reduce;
 pub(crate) mod shape;
 mod unary;
 
+pub(crate) use activation::sigmoid;
+pub(crate) use matmul::batched_gemm;
 pub use shape::{Dim, IntoShape};
 
 use std::sync::{

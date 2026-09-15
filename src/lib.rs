@@ -3,6 +3,7 @@
 pub mod autograd;
 pub mod linalg;
 pub mod metrics;
+pub mod nn;
 pub mod random;
 pub mod statistics;
 pub mod tensor;
