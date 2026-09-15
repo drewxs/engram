@@ -68,6 +68,7 @@ pub struct ExponentialLr {
 }
 
 impl ExponentialLr {
+    /// Creates a schedule that starts at `initial`.
     pub fn new(initial: f32, gamma: f32) -> ExponentialLr {
         ExponentialLr { initial, gamma }
     }
@@ -88,6 +89,7 @@ pub struct CosineAnnealing {
 }
 
 impl CosineAnnealing {
+    /// Creates a schedule that starts at `initial` and reaches `min` after `steps` steps.
     pub fn new(initial: f32, min: f32, steps: usize) -> CosineAnnealing {
         CosineAnnealing {
             initial,
@@ -144,6 +146,7 @@ pub struct ReduceOnPlateau {
 }
 
 impl ReduceOnPlateau {
+    /// Starts at `learning_rate` with a factor of 0.1 and a patience of 10 steps.
     pub fn new(learning_rate: f32) -> ReduceOnPlateau {
         ReduceOnPlateau {
             learning_rate,
@@ -174,6 +177,7 @@ impl ReduceOnPlateau {
         self
     }
 
+    /// Returns the current learning rate.
     pub fn learning_rate(&self) -> f32 {
         self.learning_rate
     }

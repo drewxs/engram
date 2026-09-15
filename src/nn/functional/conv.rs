@@ -8,7 +8,9 @@ use crate::{
 /// A height and width. A single number applies to both.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Size2 {
+    /// Number of rows.
     pub height: usize,
+    /// Number of columns.
     pub width: usize,
 }
 

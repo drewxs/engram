@@ -27,6 +27,7 @@ pub struct Conv2d {
 }
 
 impl Conv2d {
+    /// Creates a convolution with a stride of 1, no padding and no dilation.
     pub fn new(in_channels: usize, out_channels: usize, kernel_size: impl Into<Size2>) -> Conv2d {
         let kernel = kernel_size.into();
         let fan_in = in_channels * kernel.height * kernel.width;
@@ -41,6 +42,7 @@ impl Conv2d {
         }
     }
 
+    /// Sets the step between neighboring windows.
     pub fn stride(mut self, stride: impl Into<Size2>) -> Conv2d {
         self.stride = stride.into();
         self

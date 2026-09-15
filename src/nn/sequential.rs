@@ -20,6 +20,7 @@ pub struct Sequential {
 }
 
 impl Sequential {
+    /// Creates an empty model.
     pub fn new() -> Sequential {
         Sequential::default()
     }
@@ -36,10 +37,12 @@ impl Sequential {
         self.layers.push(Box::new(module));
     }
 
+    /// Returns the number of modules.
     pub fn len(&self) -> usize {
         self.layers.len()
     }
 
+    /// Returns true if the model holds no modules.
     pub fn is_empty(&self) -> bool {
         self.layers.is_empty()
     }

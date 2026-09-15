@@ -18,14 +18,17 @@ pub fn normal(tensor: &Tensor, mean: f32, std: f32) {
     });
 }
 
+/// Fills `tensor` with `value`.
 pub fn constant(tensor: &Tensor, value: f32) {
     tensor.update(|data| data.fill(value));
 }
 
+/// Fills `tensor` with zeros.
 pub fn zeros(tensor: &Tensor) {
     constant(tensor, 0.0);
 }
 
+/// Fills `tensor` with ones.
 pub fn ones(tensor: &Tensor) {
     constant(tensor, 1.0);
 }

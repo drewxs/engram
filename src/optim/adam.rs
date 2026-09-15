@@ -34,6 +34,7 @@ struct State {
 }
 
 impl Adam {
+    /// Creates an optimizer with betas of `(0.9, 0.999)`, an epsilon of `1e-8` and no weight decay.
     pub fn new(parameters: Vec<Tensor>, learning_rate: f32) -> Adam {
         let states = parameters.iter().map(|_| None).collect();
         Adam {
@@ -53,6 +54,7 @@ impl Adam {
         self
     }
 
+    /// Sets the term added to the denominator for numerical stability.
     pub fn eps(mut self, eps: f32) -> Adam {
         self.eps = eps;
         self

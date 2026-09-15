@@ -65,6 +65,7 @@ impl Rng {
         Self::new(RandomState::new().build_hasher().finish())
     }
 
+    /// Returns the next 64 random bits.
     pub fn next_u64(&mut self) -> u64 {
         let s = &mut self.state;
         let result = s[0].wrapping_add(s[3]).rotate_left(23).wrapping_add(s[0]);

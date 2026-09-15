@@ -61,6 +61,7 @@ pub type StateDict = BTreeMap<String, Tensor>;
 /// assert!(model.state_dict().contains_key("output.bias"));
 /// ```
 pub trait Module {
+    /// Computes the output of the module for `input`.
     fn forward(&self, input: &Tensor) -> Tensor;
 
     /// Returns every trainable tensor with a dotted name, such as `0.weight` for the first layer of a [`Sequential`]. The tensors share data with the module, so updating them updates the module.
@@ -73,6 +74,7 @@ pub trait Module {
         Vec::new()
     }
 
+    /// Returns every trainable tensor in the order of [`Module::named_parameters`].
     fn parameters(&self) -> Vec<Tensor> {
         self.named_parameters()
             .into_iter()
@@ -83,10 +85,12 @@ pub trait Module {
     /// Switches between training and evaluation behavior.
     fn set_training(&mut self, _training: bool) {}
 
+    /// Puts the module in training mode.
     fn train(&mut self) {
         self.set_training(true);
     }
 
+    /// Puts the module in evaluation mode, which turns off training behavior such as dropout.
     fn eval(&mut self) {
         self.set_training(false);
     }

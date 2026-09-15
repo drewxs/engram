@@ -23,6 +23,7 @@ pub struct LayerNorm {
 }
 
 impl LayerNorm {
+    /// Creates a layer with a learned scale starting at ones and an offset starting at zeros.
     pub fn new(normalized_shape: impl IntoShape) -> LayerNorm {
         let shape = normalized_shape.into_shape();
         LayerNorm {

@@ -21,6 +21,7 @@ pub struct Linear {
 }
 
 impl Linear {
+    /// Creates a layer mapping `in_features` inputs to `out_features` outputs.
     pub fn new(in_features: usize, out_features: usize) -> Linear {
         let bound = 1.0 / (in_features as f32).sqrt();
         Linear {

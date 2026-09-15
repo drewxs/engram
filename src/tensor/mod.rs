@@ -100,14 +100,17 @@ impl Tensor {
         }))
     }
 
+    /// Returns the size of every dimension.
     pub fn shape(&self) -> &[usize] {
         &self.0.shape
     }
 
+    /// Returns the number of dimensions.
     pub fn ndim(&self) -> usize {
         self.0.shape.len()
     }
 
+    /// Returns the number of elements.
     pub fn numel(&self) -> usize {
         shape::numel(&self.0.shape)
     }
@@ -178,6 +181,7 @@ impl Tensor {
                 .all(|(a, b)| (a - b).abs() <= tolerance)
     }
 
+    /// Returns true if operations on this tensor record gradients.
     pub fn requires_grad(&self) -> bool {
         self.0.requires_grad.load(Ordering::Relaxed)
     }

@@ -21,6 +21,7 @@ pub struct MaxPool2d {
 }
 
 impl MaxPool2d {
+    /// Creates a pooling layer whose stride equals the kernel size.
     pub fn new(kernel_size: impl Into<Size2>) -> MaxPool2d {
         let kernel_size = kernel_size.into();
         MaxPool2d {
@@ -30,6 +31,7 @@ impl MaxPool2d {
         }
     }
 
+    /// Sets the step between neighboring windows.
     pub fn stride(mut self, stride: impl Into<Size2>) -> MaxPool2d {
         self.stride = stride.into();
         self
@@ -57,6 +59,7 @@ pub struct AvgPool2d {
 }
 
 impl AvgPool2d {
+    /// Creates a pooling layer whose stride equals the kernel size.
     pub fn new(kernel_size: impl Into<Size2>) -> AvgPool2d {
         let kernel_size = kernel_size.into();
         AvgPool2d {
@@ -66,6 +69,7 @@ impl AvgPool2d {
         }
     }
 
+    /// Sets the step between neighboring windows.
     pub fn stride(mut self, stride: impl Into<Size2>) -> AvgPool2d {
         self.stride = stride.into();
         self

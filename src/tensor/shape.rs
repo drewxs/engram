@@ -2,6 +2,7 @@
 
 /// Types that describe the shape of a tensor, such as `[2, 3]` or `vec![4]`.
 pub trait IntoShape {
+    /// Converts the value into a list of dimension sizes.
     fn into_shape(self) -> Vec<usize>;
 }
 

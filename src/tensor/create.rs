@@ -31,14 +31,17 @@ impl Tensor {
         Tensor::from_vec(storage::full(shape::numel(&shape), value), shape)
     }
 
+    /// Creates a tensor of zeros with the same shape.
     pub fn zeros_like(&self) -> Tensor {
         Tensor::zeros(self.shape())
     }
 
+    /// Creates a tensor of ones with the same shape.
     pub fn ones_like(&self) -> Tensor {
         Tensor::ones(self.shape())
     }
 
+    /// Creates a tensor of the same shape filled with `value`.
     pub fn full_like(&self, value: f32) -> Tensor {
         Tensor::full(self.shape(), value)
     }

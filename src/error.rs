@@ -3,7 +3,9 @@
 use std::{fmt, io};
 
 #[derive(Debug)]
+/// Errors from fallible operations such as reading files and loading model state.
 pub enum Error {
+    /// Reading or writing a file failed.
     Io(io::Error),
     /// The data is not a valid safetensors file.
     Format(String),
@@ -11,6 +13,7 @@ pub enum Error {
     StateDict(String),
 }
 
+/// A result whose error type is [`Error`].
 pub type Result<T> = std::result::Result<T, Error>;
 
 impl fmt::Display for Error {

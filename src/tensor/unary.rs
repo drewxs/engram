@@ -23,10 +23,12 @@ impl Tensor {
         })
     }
 
+    /// Negates every element.
     pub fn neg(&self) -> Tensor {
         self.unary_op(|x| -x, |_, _| -1.0)
     }
 
+    /// Exponential function.
     pub fn exp(&self) -> Tensor {
         self.unary_op(f32::exp, |_, y| y)
     }
@@ -36,14 +38,17 @@ impl Tensor {
         self.unary_op(f32::ln, |x, _| 1.0 / x)
     }
 
+    /// Square root.
     pub fn sqrt(&self) -> Tensor {
         self.unary_op(f32::sqrt, |_, y| 0.5 / y)
     }
 
+    /// Squares every element.
     pub fn square(&self) -> Tensor {
         self.unary_op(|x| x * x, |x, _| 2.0 * x)
     }
 
+    /// Raises every element to `exponent`.
     pub fn pow(&self, exponent: f32) -> Tensor {
         self.unary_op(
             move |x| x.powf(exponent),
@@ -51,6 +56,7 @@ impl Tensor {
         )
     }
 
+    /// Absolute value.
     pub fn abs(&self) -> Tensor {
         self.unary_op(f32::abs, |x, _| {
             if x > 0.0 {

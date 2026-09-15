@@ -21,6 +21,7 @@ pub struct Sgd {
 }
 
 impl Sgd {
+    /// Creates an optimizer without momentum or weight decay.
     pub fn new(parameters: Vec<Tensor>, learning_rate: f32) -> Sgd {
         let velocities = vec![None; parameters.len()];
         Sgd {
@@ -33,6 +34,7 @@ impl Sgd {
         }
     }
 
+    /// Sets the momentum factor.
     pub fn momentum(mut self, momentum: f32) -> Sgd {
         self.momentum = momentum;
         self

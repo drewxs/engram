@@ -17,6 +17,7 @@ pub struct Embedding {
 }
 
 impl Embedding {
+    /// Creates a table of `num_embeddings` vectors of size `embedding_dim`.
     pub fn new(num_embeddings: usize, embedding_dim: usize) -> Embedding {
         Embedding {
             weight: Tensor::randn([num_embeddings, embedding_dim]).set_requires_grad(true),

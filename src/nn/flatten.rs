@@ -13,6 +13,7 @@ pub struct Flatten {
 }
 
 impl Flatten {
+    /// Creates a layer that merges dimensions `start_dim` through `end_dim`, inclusive.
     pub fn new(start_dim: isize, end_dim: isize) -> Flatten {
         Flatten { start_dim, end_dim }
     }

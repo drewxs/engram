@@ -8,12 +8,16 @@ use crate::Tensor;
 
 /// An indexable collection of samples.
 pub trait Dataset {
+    /// The type of one sample, which is also the type of a collated batch.
     type Item;
 
+    /// Returns the number of samples.
     fn len(&self) -> usize;
 
+    /// Loads the sample at `index`.
     fn get(&self, index: usize) -> Self::Item;
 
+    /// Returns true if the dataset holds no samples.
     fn is_empty(&self) -> bool {
         self.len() == 0
     }
@@ -48,6 +52,7 @@ impl<D: Dataset + ?Sized> Dataset for &D {
 
 /// Merges individual samples into a batch.
 pub trait Collate: Sized {
+    /// Combines samples into one batch.
     fn collate(items: Vec<Self>) -> Self;
 }
 
@@ -86,10 +91,12 @@ impl TensorDataset {
         TensorDataset { inputs, targets }
     }
 
+    /// Returns the inputs, one sample per entry along the first dimension.
     pub fn inputs(&self) -> &Tensor {
         &self.inputs
     }
 
+    /// Returns the targets, aligned with the inputs along the first dimension.
     pub fn targets(&self) -> &Tensor {
         &self.targets
     }

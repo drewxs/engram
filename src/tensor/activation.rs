@@ -8,10 +8,12 @@ use crate::{
 };
 
 impl Tensor {
+    /// Rectified linear unit, `max(0, x)`.
     pub fn relu(&self) -> Tensor {
         self.unary_op(|x| if x > 0.0 { x } else { 0.0 }, |x, _| f32::from(x > 0.0))
     }
 
+    /// Leaky rectified linear unit, which scales negative inputs by `negative_slope`.
     pub fn leaky_relu(&self, negative_slope: f32) -> Tensor {
         self.unary_op(
             move |x| if x > 0.0 { x } else { negative_slope * x },
@@ -19,10 +21,12 @@ impl Tensor {
         )
     }
 
+    /// Logistic sigmoid, `1 / (1 + exp(-x))`.
     pub fn sigmoid(&self) -> Tensor {
         self.unary_op(sigmoid, |_, y| y * (1.0 - y))
     }
 
+    /// Hyperbolic tangent.
     pub fn tanh(&self) -> Tensor {
         self.unary_op(f32::tanh, |_, y| 1.0 - y * y)
     }

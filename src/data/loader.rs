@@ -51,6 +51,7 @@ where
         self
     }
 
+    /// Returns the dataset being loaded.
     pub fn dataset(&self) -> &D {
         &self.dataset
     }
@@ -65,6 +66,7 @@ where
         }
     }
 
+    /// Returns true if an epoch has no batches.
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }

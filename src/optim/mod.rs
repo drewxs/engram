@@ -16,10 +16,13 @@ pub trait Optimizer {
     /// Applies one update to every parameter that has a gradient.
     fn step(&mut self);
 
+    /// Returns the parameters being optimized.
     fn parameters(&self) -> &[Tensor];
 
+    /// Returns the current learning rate.
     fn learning_rate(&self) -> f32;
 
+    /// Changes the learning rate used by later steps.
     fn set_learning_rate(&mut self, learning_rate: f32);
 
     /// Clears the gradient of every parameter.
