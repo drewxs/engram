@@ -292,6 +292,39 @@ impl Tensor {
             vec![Some(Tensor::from_vec(dx, input_shape.clone()))]
         })
     }
+
+    /// Splits the tensor into `chunks` pieces along `dim`, like `torch.chunk`. Every piece has the same size except possibly a smaller last one, so fewer pieces come back when the size does not divide evenly.
+    ///
+    /// ```
+    /// # use engram::Tensor;
+    /// let pieces = Tensor::arange(0.0, 5.0, 1.0).chunk(2, 0);
+    /// assert_eq!(pieces[0].to_vec(), vec![0.0, 1.0, 2.0]);
+    /// assert_eq!(pieces[1].to_vec(), vec![3.0, 4.0]);
+    /// ```
+    ///
+    /// # Panics
+    ///
+    /// Panics if `chunks` is zero.
+    pub fn chunk(&self, chunks: usize, dim: impl Dim) -> Vec<Tensor> {
+        assert!(chunks > 0, "chunk: the number of chunks must be positive");
+        let dim = dim.resolve(self.ndim());
+        self.split(self.shape()[dim].div_ceil(chunks).max(1), dim)
+    }
+
+    /// Splits the tensor along `dim` into pieces of `size` entries, with a smaller last piece when `size` does not divide the dimension, like `torch.split`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `size` is zero.
+    pub fn split(&self, size: usize, dim: impl Dim) -> Vec<Tensor> {
+        assert!(size > 0, "split: the piece size must be positive");
+        let dim = dim.resolve(self.ndim());
+        let len = self.shape()[dim];
+        (0..len)
+            .step_by(size)
+            .map(|start| self.narrow(dim, start, size.min(len - start)))
+            .collect()
+    }
 }
 
 /// Copies elements of `x` in the order visited by walking `shape` with `strides`.
@@ -377,5 +410,15 @@ mod tests {
         assert_gradients([&y, &y], |t| Tensor::stack(t, 0));
         assert_gradients([&x], |t| t[0].narrow(1, 1, 2));
         assert_gradients([&x], |t| t[0].index_select(1, &[2, 0, 2]));
+    }
+
+    #[test]
+    fn splits_into_pieces() {
+        let t = Tensor::arange(0.0, 14.0, 1.0).reshape([2, 7]);
+        let sizes = |pieces: Vec<Tensor>| pieces.iter().map(|p| p.shape()[1]).collect::<Vec<_>>();
+        assert_eq!(sizes(t.split(3, 1)), [3, 3, 1]);
+        assert_eq!(sizes(t.chunk(3, -1)), [3, 3, 1]);
+        assert_eq!(sizes(t.chunk(7, 1)), [1; 7]);
+        assert_eq!(Tensor::cat(&t.split(2, 1), 1), t);
     }
 }

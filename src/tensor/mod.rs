@@ -7,6 +7,7 @@ mod display;
 mod manip;
 mod matmul;
 mod reduce;
+mod select;
 pub(crate) mod shape;
 pub(crate) mod storage;
 mod unary;
