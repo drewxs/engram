@@ -1,6 +1,10 @@
 use crate::{
     random,
-    tensor::{shape, IntoShape},
+    tensor::{
+        shape,
+        storage::{self, CollectBuffer},
+        IntoShape,
+    },
     Tensor,
 };
 
@@ -24,7 +28,7 @@ impl Tensor {
     /// Creates a tensor filled with `value`.
     pub fn full(shape: impl IntoShape, value: f32) -> Tensor {
         let shape = shape.into_shape();
-        Tensor::from_vec(vec![value; shape::numel(&shape)], shape)
+        Tensor::from_vec(storage::full(shape::numel(&shape), value), shape)
     }
 
     pub fn zeros_like(&self) -> Tensor {
@@ -86,7 +90,7 @@ impl Tensor {
     pub fn uniform(shape: impl IntoShape, low: f32, high: f32) -> Tensor {
         let shape = shape.into_shape();
         let n = shape::numel(&shape);
-        let data = random::with_rng(|rng| (0..n).map(|_| rng.uniform(low, high)).collect());
+        let data = random::with_rng(|rng| (0..n).map(|_| rng.uniform(low, high)).collect_buffer());
         Tensor::from_vec(data, shape)
     }
 
@@ -94,7 +98,7 @@ impl Tensor {
     pub fn normal(shape: impl IntoShape, mean: f32, std: f32) -> Tensor {
         let shape = shape.into_shape();
         let n = shape::numel(&shape);
-        let data = random::with_rng(|rng| (0..n).map(|_| rng.normal(mean, std)).collect());
+        let data = random::with_rng(|rng| (0..n).map(|_| rng.normal(mean, std)).collect_buffer());
         Tensor::from_vec(data, shape)
     }
 }

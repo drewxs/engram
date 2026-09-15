@@ -1,6 +1,6 @@
 //! Elementwise math functions.
 
-use crate::Tensor;
+use crate::{tensor::storage::CollectBuffer, Tensor};
 
 impl Tensor {
     /// Applies `f` to every element. `df(x, y)` returns the derivative of `f` at input `x`, where `y` is the output, so the backward pass needs a single loop.
@@ -9,7 +9,7 @@ impl Tensor {
         F: Fn(f32) -> f32,
         D: Fn(f32, f32) -> f32 + Send + Sync + 'static,
     {
-        let data = self.data().iter().map(|&x| f(x)).collect();
+        let data = self.data().iter().map(|&x| f(x)).collect_buffer();
         let out = Tensor::from_vec(data, self.shape());
         let (input, output) = (self.clone(), out.clone());
         out.record(&[self], move |grad| {
@@ -18,7 +18,7 @@ impl Tensor {
                 .iter()
                 .zip(x.iter().zip(y.iter()))
                 .map(|(&g, (&x, &y))| g * df(x, y))
-                .collect();
+                .collect_buffer();
             vec![Some(Tensor::from_vec(data, input.shape()))]
         })
     }

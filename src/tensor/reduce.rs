@@ -1,7 +1,7 @@
 //! Reductions over every element or along a dimension.
 
 use crate::{
-    tensor::{shape, Dim},
+    tensor::{shape, storage, Dim},
     Tensor,
 };
 
@@ -113,7 +113,7 @@ impl Tensor {
         let input_shape = self.shape().to_vec();
         let out = Tensor::from_vec(values, out_shape).record(&[self], move |g| {
             let g = g.data();
-            let mut dx = vec![0.0; shape::numel(&input_shape)];
+            let mut dx = storage::zeros(shape::numel(&input_shape));
             let mut j = 0;
             shape::for_each_lane(&input_shape, dim, |start, stride| {
                 dx[start + indices[j] * stride] += g[j];
@@ -137,7 +137,7 @@ fn reduced_shape(shape: &[usize], dim: usize, keepdim: bool) -> Vec<usize> {
 
 fn sum_along(x: &[f32], shape: &[usize], dim: usize) -> Vec<f32> {
     let (outer, size, inner) = shape::split_at_dim(shape, dim);
-    let mut out = vec![0.0; outer * inner];
+    let mut out = storage::zeros(outer * inner);
     for (o, dst) in out.chunks_exact_mut(inner.max(1)).enumerate() {
         for s in 0..size {
             let start = (o * size + s) * inner;

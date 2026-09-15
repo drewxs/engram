@@ -4,7 +4,11 @@ mod loss;
 
 pub use loss::*;
 
-use crate::{random, tensor::batched_gemm, Tensor};
+use crate::{
+    random,
+    tensor::{batched_gemm, storage::CollectBuffer},
+    Tensor,
+};
 
 /// Applies the affine map `input @ weight.T + bias` over the last dimension.
 ///
@@ -90,7 +94,7 @@ pub fn dropout(input: &Tensor, p: f32, training: bool) -> Tensor {
     let mask = random::with_rng(|rng| {
         (0..input.numel())
             .map(|_| if rng.next_f32() < p { 0.0 } else { scale })
-            .collect()
+            .collect_buffer()
     });
     input * Tensor::from_vec(mask, input.shape())
 }

@@ -3,7 +3,7 @@
 use std::f64::consts::{PI, SQRT_2};
 
 use crate::{
-    tensor::{shape, Dim},
+    tensor::{shape, storage, Dim},
     Tensor,
 };
 
@@ -53,7 +53,7 @@ impl Tensor {
 
     fn softmax_impl(&self, dim: usize, log: bool) -> Tensor {
         let x = self.data();
-        let mut data = vec![0.0; x.len()];
+        let mut data = storage::zeros(x.len());
         shape::map_lanes(self.shape(), dim, &mut data, [&x[..]], |out, [x]| {
             // Shifting by the maximum keeps the exponentials from overflowing.
             let max = x.iter().copied().fold(f32::NEG_INFINITY, f32::max);
@@ -75,7 +75,7 @@ impl Tensor {
         let (shape, output) = (self.shape().to_vec(), out.clone());
         out.record(&[self], move |grad| {
             let (g, y) = (grad.data(), output.data());
-            let mut dx = vec![0.0; g.len()];
+            let mut dx = storage::zeros(g.len());
             shape::map_lanes(&shape, dim, &mut dx, [&g[..], &y[..]], |dx, [g, y]| {
                 if log {
                     let sum: f32 = g.iter().sum();

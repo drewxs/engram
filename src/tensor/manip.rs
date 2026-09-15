@@ -1,7 +1,7 @@
 //! Reshaping, reordering, joining and slicing.
 
 use crate::{
-    tensor::{binary::sum_to, shape, Dim, IntoShape},
+    tensor::{binary::sum_to, shape, storage, Dim, IntoShape},
     Tensor,
 };
 
@@ -166,7 +166,7 @@ impl Tensor {
         let mut out_shape = first.shape().to_vec();
         out_shape[dim] = sizes.iter().sum();
         let parts: Vec<_> = tensors.iter().map(Tensor::data).collect();
-        let mut data = Vec::with_capacity(shape::numel(&out_shape));
+        let mut data = storage::with_capacity(shape::numel(&out_shape));
         for o in 0..outer {
             for (part, &size) in parts.iter().zip(&sizes) {
                 data.extend_from_slice(&part[o * size * inner..(o + 1) * size * inner]);
@@ -216,7 +216,7 @@ impl Tensor {
         );
         let (outer, _, inner) = shape::split_at_dim(self.shape(), dim);
         let x = self.data();
-        let mut data = Vec::with_capacity(outer * len * inner);
+        let mut data = storage::with_capacity(outer * len * inner);
         for o in 0..outer {
             let base = (o * size + start) * inner;
             data.extend_from_slice(&x[base..base + len * inner]);
@@ -227,7 +227,7 @@ impl Tensor {
         let input_shape = self.shape().to_vec();
         Tensor::from_vec(data, out_shape).record(&[self], move |g| {
             let g = g.data();
-            let mut dx = vec![0.0; shape::numel(&input_shape)];
+            let mut dx = storage::zeros(shape::numel(&input_shape));
             for o in 0..outer {
                 let base = (o * size + start) * inner;
                 dx[base..base + len * inner]
@@ -262,7 +262,7 @@ impl Tensor {
         }
         let (outer, _, inner) = shape::split_at_dim(self.shape(), dim);
         let x = self.data();
-        let mut data = Vec::with_capacity(outer * indices.len() * inner);
+        let mut data = storage::with_capacity(outer * indices.len() * inner);
         for o in 0..outer {
             for &i in indices {
                 let base = (o * size + i) * inner;
@@ -275,7 +275,7 @@ impl Tensor {
         let (input_shape, indices) = (self.shape().to_vec(), indices.to_vec());
         Tensor::from_vec(data, out_shape).record(&[self], move |g| {
             let g = g.data();
-            let mut dx = vec![0.0; shape::numel(&input_shape)];
+            let mut dx = storage::zeros(shape::numel(&input_shape));
             let mut offset = 0;
             for o in 0..outer {
                 for &i in &indices {
@@ -298,7 +298,7 @@ impl Tensor {
 fn gather_strided(x: &[f32], shape: &[usize], strides: &[usize]) -> Vec<f32> {
     let inner = shape.last().copied().unwrap_or(1);
     let step = strides.last().copied().unwrap_or(0);
-    let mut data = Vec::with_capacity(shape::numel(shape));
+    let mut data = storage::with_capacity(shape::numel(shape));
     shape::for_each_row(shape, [strides], |[start]| {
         if step == 1 {
             data.extend_from_slice(&x[start..start + inner]);

@@ -1,7 +1,7 @@
 //! Matrix multiplication.
 
 use crate::{
-    tensor::{binary::sum_to, shape},
+    tensor::{binary::sum_to, shape, storage},
     Tensor,
 };
 
@@ -75,7 +75,7 @@ pub(crate) fn batched_gemm(a: &Tensor, transpose_a: bool, b: &Tensor, transpose_
 
     let mut out_shape = batch.clone();
     out_shape.extend([n, p]);
-    let mut out = vec![0.0; shape::numel(&out_shape)];
+    let mut out = storage::zeros(shape::numel(&out_shape));
     if out.is_empty() {
         return Tensor::from_vec(out, out_shape);
     }

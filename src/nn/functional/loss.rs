@@ -1,6 +1,12 @@
 //! Loss functions. Each one averages over the batch and returns a scalar.
 
-use crate::{tensor::sigmoid, Tensor};
+use crate::{
+    tensor::{
+        sigmoid,
+        storage::{self, CollectBuffer},
+    },
+    Tensor,
+};
 
 /// Mean squared error.
 ///
@@ -72,7 +78,7 @@ pub fn cross_entropy(input: &Tensor, target: &Tensor) -> Tensor {
     let x = input.clone();
     Tensor::scalar((total / n as f64) as f32).record(&[input], move |g| {
         let scale = g.item() / n;
-        let mut grad = x.to_vec();
+        let mut grad = x.data().iter().copied().collect_buffer();
         for (row, &label) in grad.chunks_exact_mut(classes).zip(&labels) {
             let lse = log_sum_exp(row);
             row.iter_mut().for_each(|v| *v = (*v - lse).exp() * scale);
@@ -97,7 +103,7 @@ pub fn nll_loss(input: &Tensor, target: &Tensor) -> Tensor {
     let shape = input.shape().to_vec();
     Tensor::scalar((total / n as f64) as f32).record(&[input], move |g| {
         let scale = -g.item() / n;
-        let mut grad = vec![0.0; labels.len() * classes];
+        let mut grad = storage::zeros(labels.len() * classes);
         for (i, &label) in labels.iter().enumerate() {
             grad[i * classes + label] = scale;
         }
@@ -128,7 +134,7 @@ fn pointwise_loss(
             .iter()
             .zip(t.data().iter())
             .map(|(&x, &t)| scale * grad(x, t))
-            .collect();
+            .collect_buffer();
         vec![Some(Tensor::from_vec(data, x.shape()))]
     })
 }

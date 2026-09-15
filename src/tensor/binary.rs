@@ -2,7 +2,13 @@
 
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
-use crate::{tensor::shape, Tensor};
+use crate::{
+    tensor::{
+        shape,
+        storage::{self, CollectBuffer},
+    },
+    Tensor,
+};
 
 impl Tensor {
     fn add_tensor(&self, other: &Tensor) -> Tensor {
@@ -110,17 +116,20 @@ pub(crate) fn zip_broadcast(
     });
     let (x, y) = (a.data(), b.data());
     let data = if a.shape() == b.shape() {
-        x.iter().zip(y.iter()).map(|(&x, &y)| f(x, y)).collect()
+        x.iter()
+            .zip(y.iter())
+            .map(|(&x, &y)| f(x, y))
+            .collect_buffer()
     } else if y.len() == 1 {
-        x.iter().map(|&x| f(x, y[0])).collect()
+        x.iter().map(|&x| f(x, y[0])).collect_buffer()
     } else if x.len() == 1 {
-        y.iter().map(|&y| f(x[0], y)).collect()
+        y.iter().map(|&y| f(x[0], y)).collect_buffer()
     } else {
         let sx = shape::broadcast_strides(a.shape(), &out_shape);
         let sy = shape::broadcast_strides(b.shape(), &out_shape);
         let inner = out_shape[out_shape.len() - 1];
         let steps = (sx[sx.len() - 1], sy[sy.len() - 1]);
-        let mut data = Vec::with_capacity(shape::numel(&out_shape));
+        let mut data = storage::with_capacity(shape::numel(&out_shape));
         shape::for_each_row(&out_shape, [&sx, &sy], |[i, j]| match steps {
             (1, 1) => data.extend(
                 x[i..i + inner]
@@ -143,7 +152,7 @@ pub(crate) fn sum_to(grad: &Tensor, shape: &[usize]) -> Tensor {
         return grad.clone();
     }
     let g = grad.data();
-    let mut out = vec![0.0; shape::numel(shape)];
+    let mut out = storage::zeros(shape::numel(shape));
     let strides = shape::broadcast_strides(shape, grad.shape());
     let inner = grad.shape().last().copied().unwrap_or(1).max(1);
     let step = strides.last().copied().unwrap_or(0);

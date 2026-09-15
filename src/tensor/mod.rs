@@ -8,11 +8,13 @@ mod manip;
 mod matmul;
 mod reduce;
 pub(crate) mod shape;
+pub(crate) mod storage;
 mod unary;
 
 pub(crate) use activation::sigmoid;
 pub(crate) use matmul::batched_gemm;
 pub use shape::{Dim, IntoShape};
+pub use storage::empty_cache;
 
 use std::sync::{
     atomic::{AtomicBool, Ordering},
@@ -20,6 +22,7 @@ use std::sync::{
 };
 
 use crate::autograd::{self, BackwardFn, Node};
+use storage::CollectBuffer;
 
 /// An n-dimensional array of `f32` values that can record gradients.
 ///
@@ -238,13 +241,17 @@ impl Tensor {
 /// Adds two tensors of the same shape without recording gradients.
 pub(crate) fn add_same_shape(a: &Tensor, b: &Tensor) -> Tensor {
     let (x, y) = (a.data(), b.data());
-    let data = x.iter().zip(y.iter()).map(|(x, y)| x + y).collect();
+    let data = x.iter().zip(y.iter()).map(|(x, y)| x + y).collect_buffer();
     Tensor::from_vec(data, a.shape())
 }
 
 impl Drop for Inner {
     // Dropping a long graph would otherwise recurse once per operation and can overflow the stack, so nodes that are no longer shared are unlinked iteratively.
     fn drop(&mut self) {
+        let data = self.data.get_mut().unwrap_or_else(PoisonError::into_inner);
+        if let Some(buffer) = Arc::get_mut(data) {
+            storage::recycle(std::mem::take(buffer));
+        }
         let Some(node) = self.node.take() else {
             return;
         };
