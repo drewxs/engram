@@ -1,8 +1,10 @@
 //! Stateless functions behind the layers, like `torch.nn.functional`.
 
+mod embedding;
 mod loss;
 mod normalization;
 
+pub use embedding::*;
 pub use loss::*;
 pub use normalization::*;
 

@@ -2,6 +2,7 @@
 
 mod activation;
 mod dropout;
+mod embedding;
 pub mod functional;
 pub mod init;
 mod linear;
@@ -11,6 +12,7 @@ pub mod utils;
 
 pub use activation::{Gelu, LeakyRelu, LogSoftmax, Relu, Sigmoid, Softmax, Tanh};
 pub use dropout::Dropout;
+pub use embedding::Embedding;
 pub use linear::Linear;
 pub use normalization::LayerNorm;
 pub use sequential::Sequential;
