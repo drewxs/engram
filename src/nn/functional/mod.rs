@@ -1,8 +1,10 @@
 //! Stateless functions behind the layers, like `torch.nn.functional`.
 
 mod loss;
+mod normalization;
 
 pub use loss::*;
+pub use normalization::*;
 
 use crate::{
     random,

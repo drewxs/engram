@@ -5,12 +5,14 @@ mod dropout;
 pub mod functional;
 pub mod init;
 mod linear;
+mod normalization;
 mod sequential;
 pub mod utils;
 
 pub use activation::{Gelu, LeakyRelu, LogSoftmax, Relu, Sigmoid, Softmax, Tanh};
 pub use dropout::Dropout;
 pub use linear::Linear;
+pub use normalization::LayerNorm;
 pub use sequential::Sequential;
 
 use std::collections::BTreeMap;
