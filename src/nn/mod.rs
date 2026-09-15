@@ -174,7 +174,7 @@ mod tests {
         Sequential::new()
             .add(Linear::new(3, 4))
             .add(Relu)
-            .add(Linear::without_bias(4, 2))
+            .add(Linear::new(4, 2).without_bias())
     }
 
     #[test]

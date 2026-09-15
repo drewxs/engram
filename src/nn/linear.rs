@@ -24,20 +24,18 @@ impl Linear {
     /// Creates a layer mapping `in_features` inputs to `out_features` outputs.
     pub fn new(in_features: usize, out_features: usize) -> Linear {
         let bound = 1.0 / (in_features as f32).sqrt();
+        let weight = Tensor::uniform([out_features, in_features], -bound, bound);
+        let bias = Tensor::uniform([out_features], -bound, bound);
         Linear {
-            bias: Some(Tensor::uniform([out_features], -bound, bound).set_requires_grad(true)),
-            ..Linear::without_bias(in_features, out_features)
+            weight: weight.set_requires_grad(true),
+            bias: Some(bias.set_requires_grad(true)),
         }
     }
 
-    /// Creates a layer with no bias term.
-    pub fn without_bias(in_features: usize, out_features: usize) -> Linear {
-        let bound = 1.0 / (in_features as f32).sqrt();
-        let weight = Tensor::uniform([out_features, in_features], -bound, bound);
-        Linear {
-            weight: weight.set_requires_grad(true),
-            bias: None,
-        }
+    /// Removes the bias term.
+    pub fn without_bias(mut self) -> Linear {
+        self.bias = None;
+        self
     }
 }
 
@@ -72,6 +70,6 @@ mod tests {
         assert!(layer.weight.abs().max().item() <= bound);
         assert!(layer.bias.as_ref().unwrap().abs().max().item() <= bound);
         assert_eq!(layer.parameters().len(), 2);
-        assert_eq!(Linear::without_bias(16, 8).parameters().len(), 1);
+        assert_eq!(Linear::new(16, 8).without_bias().parameters().len(), 1);
     }
 }

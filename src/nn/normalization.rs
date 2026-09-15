@@ -29,18 +29,16 @@ impl LayerNorm {
         LayerNorm {
             weight: Some(Tensor::ones(&shape).set_requires_grad(true)),
             bias: Some(Tensor::zeros(&shape).set_requires_grad(true)),
-            ..LayerNorm::without_affine(shape)
+            normalized_shape: shape,
+            eps: 1e-5,
         }
     }
 
-    /// Creates a layer that normalizes without a learned scale and offset.
-    pub fn without_affine(normalized_shape: impl IntoShape) -> LayerNorm {
-        LayerNorm {
-            weight: None,
-            bias: None,
-            normalized_shape: normalized_shape.into_shape(),
-            eps: 1e-5,
-        }
+    /// Removes the learned scale and offset, so the layer only normalizes.
+    pub fn without_affine(mut self) -> LayerNorm {
+        self.weight = None;
+        self.bias = None;
+        self
     }
 
     /// Sets the value added to the variance for numerical stability.
@@ -112,6 +110,12 @@ impl BatchNorm {
         }
     }
 
+    /// Removes the learned scale and offset, so the layer only normalizes.
+    pub fn without_affine(mut self) -> BatchNorm {
+        self.weight = None;
+        self.bias = None;
+        self
+    }
     /// Sets how far the running statistics move toward the statistics of each batch.
     pub fn momentum(mut self, momentum: f32) -> BatchNorm {
         self.momentum = momentum;
@@ -179,7 +183,8 @@ mod tests {
             .collect();
         assert_eq!(names, ["weight", "bias"]);
         assert_eq!(norm.num_parameters(), 24);
-        assert!(LayerNorm::without_affine([4]).parameters().is_empty());
+        assert!(LayerNorm::new([4]).without_affine().parameters().is_empty());
+        assert!(BatchNorm::new(4).without_affine().parameters().is_empty());
     }
 
     #[test]
