@@ -1,6 +1,7 @@
 //! General purpose machine learning library.
 
 pub mod autograd;
+pub mod data;
 pub mod linalg;
 pub mod metrics;
 pub mod nn;
