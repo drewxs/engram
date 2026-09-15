@@ -90,3 +90,48 @@ fn classifies_gaussian_blobs() {
         .item();
     assert!(accuracy > 0.95, "accuracy {accuracy}");
 }
+
+#[test]
+fn convolutional_network_detects_bar_orientation() {
+    manual_seed(3);
+    let samples = 256;
+    let mut images = vec![0.0; samples * 64];
+    let mut labels = Vec::with_capacity(samples);
+    for (i, image) in images.chunks_exact_mut(64).enumerate() {
+        let vertical = i % 2 == 0;
+        let line = (i / 2) % 6 + 1;
+        for k in 1..7 {
+            let (y, x) = if vertical { (k, line) } else { (line, k) };
+            image[y * 8 + x] = 1.0;
+        }
+        labels.push(f32::from(vertical));
+    }
+    let images =
+        Tensor::from_vec(images, [samples, 1, 8, 8]) + Tensor::normal([samples, 1, 8, 8], 0.0, 0.1);
+    let labels = Tensor::from_vec(labels, [samples]);
+    let loader =
+        DataLoader::new(TensorDataset::new(images.clone(), labels.clone()), 32).shuffle(true);
+
+    let model = nn::Sequential::new()
+        .add(nn::Conv2d::new(1, 4, 3).padding(1))
+        .add(nn::Relu)
+        .add(nn::MaxPool2d::new(2))
+        .add(nn::Flatten::default())
+        .add(nn::Linear::new(4 * 4 * 4, 2));
+    let mut opt = Adam::new(model.parameters(), 0.01);
+    for _ in 0..10 {
+        for (inputs, targets) in &loader {
+            let loss = F::cross_entropy(&model.forward(&inputs), &targets);
+            opt.zero_grad();
+            loss.backward();
+            opt.step();
+        }
+    }
+
+    let accuracy = no_grad(|| model.forward(&images))
+        .argmax(1, false)
+        .equal(labels)
+        .mean()
+        .item();
+    assert!(accuracy > 0.95, "accuracy {accuracy}");
+}
