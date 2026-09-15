@@ -6,6 +6,7 @@ pub mod functional;
 pub mod init;
 mod linear;
 mod sequential;
+pub mod utils;
 
 pub use activation::{Gelu, LeakyRelu, LogSoftmax, Relu, Sigmoid, Softmax, Tanh};
 pub use dropout::Dropout;

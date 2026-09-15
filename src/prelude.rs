@@ -5,5 +5,7 @@
 pub use crate::{
     manual_seed,
     nn::{self, functional as F, Module},
-    no_grad, tensor, Tensor,
+    no_grad,
+    optim::{self, Adam, Optimizer, Sgd},
+    tensor, Tensor,
 };
