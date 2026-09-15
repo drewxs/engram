@@ -146,6 +146,20 @@ pub(crate) fn for_each_row<const N: usize>(
     }
 }
 
+/// Calls `f` for every element of `shape` in row-major order, with the flat offset of that element in each tensor described by `strides`.
+pub(crate) fn for_each_offset<const N: usize>(
+    shape: &[usize],
+    strides: [&[usize]; N],
+    mut f: impl FnMut([usize; N]),
+) {
+    let inner = shape.last().copied().unwrap_or(1);
+    let steps: [usize; N] = std::array::from_fn(|i| strides[i].last().copied().unwrap_or(0));
+    for_each_row(shape, strides, |starts| {
+        for k in 0..inner {
+            f(std::array::from_fn(|i| starts[i] + k * steps[i]));
+        }
+    });
+}
 /// Calls `f(start, stride)` for every lane along `dim`. A lane holds the elements whose indices differ only in `dim`, found at `start + k * stride` for `k` in `0..shape[dim]`.
 pub(crate) fn for_each_lane(shape: &[usize], dim: usize, mut f: impl FnMut(usize, usize)) {
     let (outer, size, inner) = split_at_dim(shape, dim);

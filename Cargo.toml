@@ -9,6 +9,7 @@ readme = "README.md"
 license = "MIT"
 
 [dependencies]
+matrixmultiply = "0.3.11"
 
 [dev-dependencies]
 rusty-hook = "0.11.2"

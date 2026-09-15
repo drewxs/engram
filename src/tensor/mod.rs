@@ -5,6 +5,7 @@ mod binary;
 mod create;
 mod display;
 mod manip;
+mod matmul;
 mod reduce;
 pub(crate) mod shape;
 mod unary;
