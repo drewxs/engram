@@ -171,6 +171,43 @@ pub(crate) fn for_each_lane(shape: &[usize], dim: usize, mut f: impl FnMut(usize
     }
 }
 
+/// Calls `f` for every lane along `dim` with contiguous slices: the lane of `out` to write and the matching lanes of `inputs`. Lanes that are not contiguous in memory are gathered into scratch buffers and written back afterwards.
+pub(crate) fn map_lanes<const N: usize>(
+    shape: &[usize],
+    dim: usize,
+    out: &mut [f32],
+    inputs: [&[f32]; N],
+    mut f: impl FnMut(&mut [f32], [&[f32]; N]),
+) {
+    let (outer, size, inner) = split_at_dim(shape, dim);
+    if inner == 1 {
+        for o in 0..outer {
+            let lane = o * size..(o + 1) * size;
+            f(
+                &mut out[lane.clone()],
+                inputs.map(|input| &input[lane.clone()]),
+            );
+        }
+        return;
+    }
+    let mut out_lane = vec![0.0; size];
+    let mut input_lanes = vec![vec![0.0; size]; N];
+    for_each_lane(shape, dim, |start, stride| {
+        for (lane, input) in input_lanes.iter_mut().zip(&inputs) {
+            for (k, value) in lane.iter_mut().enumerate() {
+                *value = input[start + k * stride];
+            }
+        }
+        f(
+            &mut out_lane,
+            std::array::from_fn(|i| input_lanes[i].as_slice()),
+        );
+        for (k, &value) in out_lane.iter().enumerate() {
+            out[start + k * stride] = value;
+        }
+    });
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -8,8 +8,7 @@ use crate::{
 impl Tensor {
     /// Sums every element into a scalar.
     pub fn sum(&self) -> Tensor {
-        let total: f64 = self.data().iter().map(|&x| x as f64).sum();
-        let out = Tensor::scalar(total as f32);
+        let out = Tensor::scalar(sum_f64(&self.data()) as f32);
         let shape = self.shape().to_vec();
         out.record(&[self], move |g| vec![Some(Tensor::full(&shape, g.item()))])
     }
@@ -17,8 +16,7 @@ impl Tensor {
     /// Averages every element into a scalar.
     pub fn mean(&self) -> Tensor {
         let n = self.numel() as f32;
-        let total: f64 = self.data().iter().map(|&x| x as f64).sum();
-        let out = Tensor::scalar((total / n as f64) as f32);
+        let out = Tensor::scalar((sum_f64(&self.data()) / n as f64) as f32);
         let shape = self.shape().to_vec();
         out.record(&[self], move |g| {
             vec![Some(Tensor::full(&shape, g.item() / n))]
@@ -149,6 +147,24 @@ fn sum_along(x: &[f32], shape: &[usize], dim: usize) -> Vec<f32> {
         }
     }
     out
+}
+
+/// Sums in double precision without giving up vectorization, by accumulating fixed-size blocks in eight independent `f32` lanes.
+fn sum_f64(values: &[f32]) -> f64 {
+    values
+        .chunks(4096)
+        .map(|block| {
+            let mut lanes = [0.0f32; 8];
+            let chunks = block.chunks_exact(8);
+            let tail: f32 = chunks.remainder().iter().sum();
+            for chunk in chunks {
+                for (lane, &v) in lanes.iter_mut().zip(chunk) {
+                    *lane += v;
+                }
+            }
+            lanes.iter().sum::<f32>() as f64 + tail as f64
+        })
+        .sum()
 }
 
 #[cfg(test)]

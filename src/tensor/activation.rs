@@ -52,16 +52,22 @@ impl Tensor {
     }
 
     fn softmax_impl(&self, dim: usize, log: bool) -> Tensor {
-        let size = self.shape()[dim];
         let x = self.data();
         let mut data = vec![0.0; x.len()];
-        shape::for_each_lane(self.shape(), dim, |start, stride| {
-            let lane = (0..size).map(move |k| start + k * stride);
-            let max = lane.clone().map(|i| x[i]).fold(f32::NEG_INFINITY, f32::max);
-            let log_sum_exp = max + lane.clone().map(|i| (x[i] - max).exp()).sum::<f32>().ln();
-            for i in lane {
-                let log_p = x[i] - log_sum_exp;
-                data[i] = if log { log_p } else { log_p.exp() };
+        shape::map_lanes(self.shape(), dim, &mut data, [&x[..]], |out, [x]| {
+            // Shifting by the maximum keeps the exponentials from overflowing.
+            let max = x.iter().copied().fold(f32::NEG_INFINITY, f32::max);
+            for (o, &v) in out.iter_mut().zip(x) {
+                *o = (v - max).exp();
+            }
+            let sum: f32 = out.iter().sum();
+            if log {
+                let log_sum = sum.ln();
+                for (o, &v) in out.iter_mut().zip(x) {
+                    *o = v - max - log_sum;
+                }
+            } else {
+                out.iter_mut().for_each(|o| *o /= sum);
             }
         });
 
@@ -70,17 +76,16 @@ impl Tensor {
         out.record(&[self], move |grad| {
             let (g, y) = (grad.data(), output.data());
             let mut dx = vec![0.0; g.len()];
-            shape::for_each_lane(&shape, dim, |start, stride| {
-                let lane = (0..size).map(move |k| start + k * stride);
+            shape::map_lanes(&shape, dim, &mut dx, [&g[..], &y[..]], |dx, [g, y]| {
                 if log {
-                    let sum: f32 = lane.clone().map(|i| g[i]).sum();
-                    for i in lane {
-                        dx[i] = g[i] - y[i].exp() * sum;
+                    let sum: f32 = g.iter().sum();
+                    for ((d, &g), &y) in dx.iter_mut().zip(g).zip(y) {
+                        *d = g - y.exp() * sum;
                     }
                 } else {
-                    let dot: f32 = lane.clone().map(|i| g[i] * y[i]).sum();
-                    for i in lane {
-                        dx[i] = y[i] * (g[i] - dot);
+                    let dot: f32 = g.iter().zip(y).map(|(g, y)| g * y).sum();
+                    for ((d, &g), &y) in dx.iter_mut().zip(g).zip(y) {
+                        *d = y * (g - dot);
                     }
                 }
             });
